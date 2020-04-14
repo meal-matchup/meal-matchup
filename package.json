@@ -1,0 +1,28 @@
+{
+	"name": "meal-matchup",
+	"description": "",
+	"version": "1.0.0",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/meal-matchup/meal-matchup"
+	},
+	"bugs": {
+		"url": "https://github.com/meal-matchup/meal-matchup/issues"
+	},
+	"scripts": {
+		"build": "gatsby build",
+		"clean": "gatsby clean",
+		"develop": "gatsby develop",
+		"serve": "gatsby serve"
+	},
+	"dependencies": {
+		"gatsby": "^2.20.20",
+		"gatsby-plugin-react-helmet": "^3.2.2",
+		"gatsby-plugin-sass": "^2.2.1",
+		"node-sass": "^4.13.1",
+		"react": "^16.13.1",
+		"react-dom": "^16.13.1",
+		"react-helmet": "^6.0.0"
+	}
+}
