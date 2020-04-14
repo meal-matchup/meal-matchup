@@ -1,0 +1,26 @@
+.logo {
+	align-items: center;
+	display: flex;
+}
+
+.logo-icon {
+	display: none;
+	font-size: 2em;
+}
+
+.logo-text {
+	height: 100%;
+
+	svg {
+		height: 100%;
+		width: auto;
+	}
+}
+
+.logo-vertical {
+	flex-direction: column;
+}
+
+.logo-horizontal {
+	height: 2em;
+}

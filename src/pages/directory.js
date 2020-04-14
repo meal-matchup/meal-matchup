@@ -1,5 +1,4 @@
 import React from 'react';
-import { Calendar } from 'antd';
 
 import App, { AppPages } from '../components/App';
 import SEO from '../components/SEO';
@@ -7,11 +6,11 @@ import SEO from '../components/SEO';
 function IndexPage() {
 	return (
 		<App
-			pageId={AppPages.Calendar}
+			pageId={AppPages.Directory}
 		>
 			<SEO title="Meal Matchup" description="" />
 
-			<Calendar />
+			<p>Directory</p>
 		</App>
 	);
 }

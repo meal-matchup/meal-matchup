@@ -1,0 +1,30 @@
+// Colors
+$c-theme: hsl(120, 100, 15);
+$c-theme-copy: #fff;
+
+$c-content-background: #fff;
+$c-content-copy: #222;
+
+$c-footer-background: #fff;
+
+// Fonts
+$f-ui: sans-serif;
+$f-accent: 'Courier Prime', monospace;
+
+// Sizes
+$s-header-height: 64px;
+
+// Breakpoints
+$width-xs: 0;
+$width-sm: 576px;
+$width-md: 768px;
+$width-lg: 992px;
+$width-xl: 1200px;
+
+$breakpoints: (
+	xs: $width-xs,
+	sm: $width-sm,
+	md: $width-md,
+	lg: $width-lg,
+	xl: $width-xl,
+);

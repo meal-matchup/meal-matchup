@@ -1,0 +1,21 @@
+.auth-page {
+	align-items: center;
+	justify-content: center;
+
+	.app-footer {
+		text-align: center;
+	}
+
+	.app-inner-layout {
+		@include breakpoint(sm) {
+			box-shadow: 0 0 1em rgba(0, 0, 0, .25);
+			border-radius: 2em;
+			height: auto;
+		}
+
+		flex-grow: 0;
+		height: 100%;
+		max-width: $width-sm;
+		width: 100%;
+	}
+}

@@ -1,0 +1,18 @@
+:root {
+	--c-content-background: #{$c-content-background};
+	--c-content-copy: #{$c-content-copy};
+
+	// @include dark-mode {
+	// 	--c-content-background: #000;
+	// }
+}
+
+html {
+	height: 100%;
+}
+
+body {
+	background-color: $c-theme;
+	color: $c-theme-copy;
+	height: 100%;
+}
