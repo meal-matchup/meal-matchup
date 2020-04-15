@@ -4,7 +4,7 @@ require('dotenv').config({
 
 const {
 	NODE_ENV,
-	URL: NETLIFY_SITE_URL = 'https://app.mealmatchup.org',
+	URL: NETLIFY_SITE_URL = 'https://www.mmuw.xyz',
 	DEPLOY_PRIME_URL: NETLIFY_DEPLOY_URL = NETLIFY_SITE_URL,
 	CONTEXT: NETLIFY_ENV = NODE_ENV,
 } = process.env;

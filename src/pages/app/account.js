@@ -3,8 +3,8 @@ import firebase from 'gatsby-plugin-firebase';
 import { Descriptions } from 'antd';
 import debug from 'debug';
 
-import App, { AppPages } from '../components/App';
-import SEO from '../components/SEO';
+import App, { AppPages } from '../../components/App';
+import SEO from '../../components/SEO';
 
 function IndexPage() {
 	const [user, setUser] = useState(null);

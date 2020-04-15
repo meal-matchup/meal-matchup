@@ -85,14 +85,14 @@ function App({ authRequired = true, pageId, children }) {
 						theme="dark"
 					>
 						<Menu.Item key={AppPages.Calendar} className="sider-link">
-							<Link to="/">
+							<Link to="/app/">
 								<CalendarOutlined />
 								Calendar
 							</Link>
 						</Menu.Item>
 
 						<Menu.Item key={AppPages.Directory} className="sider-link">
-							<Link to="/directory">
+							<Link to="/app/directory">
 								<ContactsOutlined />
 								Directory
 							</Link>
@@ -120,7 +120,7 @@ function App({ authRequired = true, pageId, children }) {
 								selectedKeys={[pageId]}
 							>
 								<Menu.Item key={AppPages.Account} className="menu-link">
-									<Link to="/account">
+									<Link to="/app/account">
 										<Avatar className="menu-avatar" src={user.photoURL} />
 										{user.displayName ? user.displayName : AppPages.Account}
 									</Link>
