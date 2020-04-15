@@ -53,19 +53,20 @@
 
 .app-content {
 	background-color: transparent;
+	flex-shrink: 0;
 	padding: 0;
 }
 
 .app-footer {
 	background-color: transparent;
-	margin: 2em 0 0;
-	padding: 0;
+	padding: 2em 0;
 	text-align: right;
 }
 
 .app-inner-layout {
 	background-color: var(--c-content-background);
 	color: var(--c-content-copy);
+	overflow: auto;
 	padding: 2em;
 }
 
