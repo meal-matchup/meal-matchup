@@ -13,20 +13,24 @@ function IndexPage() {
 	useEffect(() => {
 		if (!firebase) return;
 
-		return firebase.auth().onAuthStateChanged(newUser => {
+		return firebase.auth().onAuthStateChanged((newUser) => {
 			if (!newUser) return setUser(newUser);
 
-			return firebase.firestore().collection('users').doc(newUser.uid)
+			return firebase
+				.firestore()
+				.collection('users')
+				.doc(newUser.uid)
 				.get()
-				.then(doc => {
+				.then((doc) => {
 					if (umbrella) return;
 					if (doc.exists && doc.data().umbrella) {
-						return doc.data().umbrella
-							.get()
-							.then(umbrellaDoc => {
+						return doc
+							.data()
+							.umbrella.get()
+							.then((umbrellaDoc) => {
 								setUmbrella(umbrellaDoc.data().name);
 							})
-							.catch(e => {
+							.catch((e) => {
 								debug('Unable to get umbrella', e);
 							});
 					}
@@ -38,23 +42,16 @@ function IndexPage() {
 	}, [user, umbrella]);
 
 	return (
-		<App
-			pageId={AppPages.Account}
-		>
+		<App pageId={AppPages.Account}>
 			<SEO title="My Account | Meal Matchup" description="" />
 
 			{user && (
 				<Descriptions column={1} bordered>
-					<Descriptions.Item label="Name">
-						{user.displayName}
-					</Descriptions.Item>
+					<Descriptions.Item label="Name">{user.displayName}</Descriptions.Item>
 
-					<Descriptions.Item label="Organization">
-						{umbrella}
-					</Descriptions.Item>
+					<Descriptions.Item label="Organization">{umbrella}</Descriptions.Item>
 				</Descriptions>
 			)}
-
 		</App>
 	);
 }
