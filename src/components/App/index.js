@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import debug from 'debug';
 import { Link } from 'gatsby';
 import firebase from 'gatsby-plugin-firebase';
 import { Avatar, Layout, Menu } from 'antd';
-import {
-	CalendarOutlined,
-	ContactsOutlined,
-} from '@ant-design/icons';
+import { CalendarOutlined, ContactsOutlined } from '@ant-design/icons';
 
 import * as AppPages from './AppPages';
 import Auth from '../Auth';
@@ -14,14 +12,55 @@ import { Logo } from '../../graphics/graphics';
 
 const { Sider, Header, Content, Footer } = Layout;
 
-
 function App({ authRequired = true, pageId, children }) {
 	const [user, setUser] = useState(null);
 
 	useEffect(() => {
 		if (!firebase) return;
 
-		return firebase.auth().onAuthStateChanged(user => setUser(user));
+		return firebase.auth().onAuthStateChanged((newUser) => {
+			// Set user to null when logged out
+			if (!newUser) {
+				localStorage.setItem('logged-in', 'false');
+				return setUser(newUser);
+			}
+
+			if (localStorage.getItem('logged-in') === 'true') {
+				if (user !== newUser) setUser(newUser);
+				return;
+			}
+
+			// Otherwise, check if they've been created in the DB before setting user
+			return firebase
+				.firestore()
+				.collection('users')
+				.doc(newUser.uid)
+				.get()
+				.then((doc) => {
+					if (doc.exists) {
+						localStorage.setItem('logged-in', 'true');
+						setUser(newUser);
+					} else {
+						return firebase
+							.firestore()
+							.collection('users')
+							.doc(newUser.uid)
+							.set({
+								email: newUser.email,
+							})
+							.then(() => {
+								localStorage.setItem('logged-in', 'true');
+								setUser(newUser);
+							})
+							.catch((e) => {
+								debug('Error setting document', e);
+							});
+					}
+				})
+				.catch((e) => {
+					debug('Error getting document', e);
+				});
+		});
 	}, [user]);
 
 	const logOut = () => firebase.auth().signOut();
@@ -36,12 +75,12 @@ function App({ authRequired = true, pageId, children }) {
 					width="300"
 				>
 					<div className="logo-container">
-						<Logo  color="#fff" />
+						<Logo color="#fff" />
 					</div>
 
 					<Menu
 						className="sider-menu"
-						selectedKeys={[ pageId ]}
+						selectedKeys={[pageId]}
 						mode="inline"
 						theme="dark"
 					>
@@ -78,17 +117,11 @@ function App({ authRequired = true, pageId, children }) {
 							<Menu
 								className="app-menu"
 								mode="horizontal"
-								selectedKeys={[ pageId ]}
+								selectedKeys={[pageId]}
 							>
-								<Menu.Item
-									key={AppPages.Account}
-									className="menu-link"
-								>
+								<Menu.Item key={AppPages.Account} className="menu-link">
 									<Link to="/account">
-										<Avatar
-											className="menu-avatar"
-											src={user.photoURL}
-										/>
+										<Avatar className="menu-avatar" src={user.photoURL} />
 										{user.displayName ? user.displayName : AppPages.Account}
 									</Link>
 								</Menu.Item>
@@ -105,9 +138,7 @@ function App({ authRequired = true, pageId, children }) {
 					{authRequired && !user ? <Auth /> : children}
 				</Content>
 
-				<Footer className="app-footer">
-					© 2020 Meal Matchup
-				</Footer>
+				<Footer className="app-footer">© 2020 Meal Matchup</Footer>
 			</Layout>
 		</Layout>
 	);

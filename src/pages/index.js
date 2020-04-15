@@ -6,9 +6,7 @@ import SEO from '../components/SEO';
 
 function IndexPage() {
 	return (
-		<App
-			pageId={AppPages.Calendar}
-		>
+		<App pageId={AppPages.Calendar}>
 			<SEO title="Meal Matchup" description="" />
 
 			<Calendar />
