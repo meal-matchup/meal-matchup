@@ -70,30 +70,6 @@
 	padding: 2em;
 }
 
-// .sider-link {
-// 	background-color: transparent;
-// 	color: $c-theme-copy;
-
-// 	&.ant-menu-item-selected {
-// 		background-color: rgba($c-theme-copy, .25) !important;
-// 	}
-
-// 	&:focus,
-// 	&:hover {
-// 		background-color: rgba($c-theme-copy, .1);
-// 		color: $c-theme-copy;
-// 	}
-
-// 	& > a {
-// 		color: $c-theme-copy;
-
-// 		&:focus,
-// 		&:hover {
-// 			color: $c-theme-copy;
-// 		}
-// 	}
-// }
-
 .ant-menu.sider-menu:not(.ant-menu-horizontal) {
 	background-color: transparent;
 	margin: 2em 0;
