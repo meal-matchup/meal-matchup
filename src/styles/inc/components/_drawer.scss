@@ -1,0 +1,9 @@
+.drawer.ant-drawer-open {
+	& > .ant-drawer-content-wrapper {
+		@include breakpoint(md) {
+			width: 720px !important;
+		}
+
+		width: 100% !important;
+	}
+}
