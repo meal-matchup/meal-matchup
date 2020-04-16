@@ -45,6 +45,12 @@ module.exports = {
 			},
 		},
 		{
+			resolve: 'gatsby-plugin-wordpress',
+			options: {
+				baseUrl: '',
+			},
+		},
+		{
 			resolve: 'gatsby-plugin-manifest',
 			options: {
 				icon: 'src/graphics/icon.png',
