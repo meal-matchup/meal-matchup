@@ -123,8 +123,6 @@ function Auth() {
 
 	return (
 		<div className="auth-screens">
-			<SEO title="Welcome to Meal Matchup" />
-
 			<AnimatePresence>
 				{activePage === 'welcome' && (
 					<AuthScreen id="welcome">
