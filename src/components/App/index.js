@@ -25,7 +25,8 @@ function App() {
 
 	// change loading when everything loaded
 	useEffect(() => {
-		if (!userLoading && !umbrellaLoading && !agencyLoading && !agenciesLoading) setLoading(false);
+		if (!userLoading && !umbrellaLoading && !agencyLoading && !agenciesLoading)
+			setLoading(false);
 	}, [loading, userLoading, umbrellaLoading, agencyLoading, agenciesLoading]);
 
 	// the cnurrent user; null if not logged in
@@ -50,10 +51,6 @@ function App() {
 		[AppPages.DIRECTORY.id]: <DirectoryView />,
 		[AppPages.ACCOUNT.id]: <AccountView user={user} agency={agency} />,
 	};
-
-	useEffect(() => {
-		console.log('agencies', agencies);
-	}, [agencies]);
 
 	useEffect(() => {
 		if (!umbrella) return;
@@ -101,13 +98,20 @@ function App() {
 
 			// If a user logged in, get the agency they belong to
 			if (newUser) {
+				// When logged in, need to load data
+				setUmbrellaLoading(true);
+				setAgenciesLoading(true);
+				setAgencyLoading(true);
+
 				try {
 					const userDoc = await firebase
 						.firestore()
 						.collection('users')
 						.doc(newUser.uid)
 						.get();
-					userDoc.data()
+
+					userDoc
+						.data()
 						.umbrella.get()
 						.then((umbrellaDoc) => {
 							setUmbrella({
@@ -116,7 +120,9 @@ function App() {
 							});
 							setUmbrellaLoading(false);
 						});
-					userDoc.data()
+
+					userDoc
+						.data()
 						.agency.get()
 						.then((agencyDoc) => {
 							setAgency({
@@ -132,6 +138,14 @@ function App() {
 				} catch (error) {
 					debug('Could not fetch user document', error);
 				}
+			} else {
+				// When not logged in, don't need to load anything
+				setUmbrella(null);
+				setUmbrellaLoading(false);
+				setAgencies(null);
+				setAgenciesLoading(false);
+				setAgency(null);
+				setAgencyLoading(false);
 			}
 		});
 	}, [user]);
