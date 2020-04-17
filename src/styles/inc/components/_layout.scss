@@ -95,3 +95,27 @@
 	background-color: transparent;
 	height: 100%;
 }
+
+.loading {
+	align-items: center;
+	background-color: $c-theme;
+	display: flex;
+	height: 100%;
+	justify-content: center;
+	left: 0;
+	position: fixed;
+	top: 0;
+	transition: opacity .3s, visibility .3s;
+	width: 100%;
+	z-index: 9999;
+
+	&[data-visible='true'] {
+		opacity: 1;
+		visibility: visible;
+	}
+
+	&[data-visible='false'] {
+		opacity: 0;
+		visibility: hidden;
+	}
+}

@@ -1,9 +1,13 @@
-.drawer.ant-drawer-open {
-	& > .ant-drawer-content-wrapper {
-		@include breakpoint(md) {
-			width: 720px !important;
-		}
+.drawer {
+	color: var(--c-content-copy);
 
-		width: 100% !important;
+	&.ant-drawer-open {
+		& > .ant-drawer-content-wrapper {
+			@include breakpoint(md) {
+				width: 720px !important;
+			}
+
+			width: 100% !important;
+		}
 	}
 }
