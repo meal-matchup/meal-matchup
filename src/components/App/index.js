@@ -6,7 +6,7 @@ import debug from 'debug';
 import { Layout, Menu, PageHeader } from 'antd';
 
 import Loading from './Loading';
-import { AppPages, SiderPages } from './Enums';
+import { AppPages, AgencyTypes, SiderPages } from './Enums';
 import { AccountView, CalendarView, DirectoryView } from './Views';
 
 import Auth from '../Auth';
@@ -103,41 +103,45 @@ function App() {
 				setAgenciesLoading(true);
 				setAgencyLoading(true);
 
-				try {
-					const userDoc = await firebase
-						.firestore()
-						.collection('users')
-						.doc(newUser.uid)
-						.get();
-
-					userDoc
-						.data()
-						.umbrella.get()
-						.then((umbrellaDoc) => {
-							setUmbrella({
-								id: umbrellaDoc.id,
-								name: umbrellaDoc.data().name,
+				return firebase
+					.firestore()
+					.collection('users')
+					.doc(newUser.uid)
+					.get()
+					.then((userDoc) => {
+						firebase
+							.firestore()
+							.collection('umbrellas')
+							.doc(userDoc.data().umbrella)
+							.get()
+							.then((umbrellaDoc) => {
+								setUmbrella({
+									id: umbrellaDoc.id,
+									name: umbrellaDoc.data().name,
+								});
+								setUmbrellaLoading(false);
 							});
-							setUmbrellaLoading(false);
-						});
 
-					userDoc
-						.data()
-						.agency.get()
-						.then((agencyDoc) => {
-							setAgency({
-								id: agencyDoc.id,
-								type: agencyDoc.data().type,
-								name: agencyDoc.data().name,
+						firebase
+							.firestore()
+							.collection('agencies')
+							.doc(userDoc.data().agency)
+							.get()
+							.then((agencyDoc) => {
+								setAgency({
+									id: agencyDoc.id,
+									type: agencyDoc.data().type,
+									name: agencyDoc.data().name,
+								});
+								setAgencyLoading(false);
+							})
+							.catch((error) => {
+								debug('Could not fetch agency document', error);
 							});
-							setAgencyLoading(false);
-						})
-						.catch((error) => {
-							debug('Could not fetch agency document', error);
-						});
-				} catch (error) {
-					debug('Could not fetch user document', error);
-				}
+					})
+					.catch((error) => {
+						debug('Could not fetch user document', error);
+					});
 			} else {
 				// When not logged in, don't need to load anything
 				setUmbrella(null);
@@ -244,3 +248,5 @@ function App() {
 }
 
 export default App;
+
+export { AgencyTypes, AppPages };
