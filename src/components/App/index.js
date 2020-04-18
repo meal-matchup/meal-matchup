@@ -46,7 +46,7 @@ function App() {
 
 	const appViews = {
 		[AppPages.CALENDAR.id]: (
-			<CalendarView agency={agency} agencies={agencies} />
+			<CalendarView umbrella={umbrella} agency={agency} agencies={agencies} />
 		),
 		[AppPages.DIRECTORY.id]: <DirectoryView />,
 		[AppPages.ACCOUNT.id]: <AccountView user={user} agency={agency} />,
