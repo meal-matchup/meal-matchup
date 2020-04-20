@@ -7,7 +7,7 @@ import { Badge, Button, Calendar } from 'antd';
 
 import PickupRequest from './PickupRequest';
 
-import { AgencyTypes } from '../../Enums';
+import { AgencyTypes, RequestTypes } from '../../Enums';
 
 function CalendarView({ umbrella, agency, agencies }) {
 	// Variables to show on calendar
@@ -62,6 +62,16 @@ function CalendarView({ umbrella, agency, agencies }) {
 		return date.getDay() === weekday && date >= from && date <= to;
 	};
 
+	const getRequestTitle = (request) => {
+		switch (request.type) {
+			case RequestTypes.PICKUP:
+				return 'Pickup Request';
+
+			default:
+				return 'Request';
+		}
+	};
+
 	const dateCellRender = (value) => {
 		const reqeustsOnDate = requests.filter((x) =>
 			isSameWeekdayInPeriod(
@@ -81,7 +91,7 @@ function CalendarView({ umbrella, agency, agencies }) {
 									? 'success'
 									: 'default'
 							}
-							text="Pickup Request"
+							text={getRequestTitle(request)}
 						/>
 					</li>
 				))}

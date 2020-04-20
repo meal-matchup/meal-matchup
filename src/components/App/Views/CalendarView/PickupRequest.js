@@ -14,7 +14,7 @@ import {
 	TimePicker,
 } from 'antd';
 
-import { AgencyTypes } from '../../Enums';
+import { AgencyTypes, RequestTypes } from '../../Enums';
 
 function PickupRequest({ open = false, onClose, umbrella, agency, agencies }) {
 	const [pickupRequestForm] = Form.useForm();
@@ -68,6 +68,7 @@ function PickupRequest({ open = false, onClose, umbrella, agency, agencies }) {
 				start: time[0].toDate(),
 				to: time[1].toDate(),
 			},
+			type: RequestTypes.PICKUP,
 		};
 		if (notes) requestData['notes'] = notes;
 

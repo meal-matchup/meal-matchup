@@ -7,6 +7,10 @@ export const AgencyTypes = {
 	RECEIVER: 'RECEIVER',
 };
 
+export const RequestTypes = {
+	PICKUP: 'PICKUP',
+};
+
 export const MenuLocations = {
 	SIDER: 'SIDER',
 	HEADER: 'HEADER',
