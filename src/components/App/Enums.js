@@ -32,7 +32,6 @@ export const AppPages = {
 	ACCOUNT: {
 		location: MenuLocations.HEADER,
 		id: 'ACCOUNT',
-		
 	},
 };
 
