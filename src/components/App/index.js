@@ -49,7 +49,9 @@ function App() {
 			<CalendarView umbrella={umbrella} agency={agency} agencies={agencies} />
 		),
 		[AppPages.DIRECTORY.id]: <DirectoryView agencies={agencies} />,
-		[AppPages.ACCOUNT.id]: <AccountView user={user} agency={agency} />,
+		[AppPages.ACCOUNT.id]: (
+			<AccountView umbrella={umbrella} user={user} agency={agency} />
+		),
 	};
 
 	useEffect(() => {
@@ -134,6 +136,7 @@ function App() {
 									id: agencyDoc.id,
 									type: agencyDoc.data().type,
 									name: agencyDoc.data().name,
+									approved: agencyDoc.data().approved,
 								});
 								setAgencyLoading(false);
 							})
