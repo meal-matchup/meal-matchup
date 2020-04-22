@@ -233,7 +233,9 @@ function App() {
 									className="menu-link"
 									onClick={() => changeView(AppPages.ACCOUNT.id)}
 								>
-									{user.displayName ? user.displayName : AppPages.ACCOUNT.title}
+									{user.displayName
+										? `Hi, ${user.displayName}`
+										: AppPages.ACCOUNT.title}
 								</Menu.Item>
 
 								<Menu.Item className="menu-link" onClick={logOut}>
