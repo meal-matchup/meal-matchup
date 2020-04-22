@@ -48,7 +48,9 @@ function App() {
 		[AppPages.CALENDAR.id]: (
 			<CalendarView umbrella={umbrella} agency={agency} agencies={agencies} />
 		),
-		[AppPages.DIRECTORY.id]: <DirectoryView />,
+		[AppPages.DIRECTORY.id]: (
+			<DirectoryView umbrella={umbrella} agency={agency} agencies={agencies}/>
+		),
 		[AppPages.ACCOUNT.id]: <AccountView user={user} agency={agency} />,
 	};
 
