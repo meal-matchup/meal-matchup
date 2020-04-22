@@ -2,8 +2,15 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import firebase from 'gatsby-plugin-firebase';
 import moment from 'moment';
+<<<<<<< HEAD
 
 import { Badge, Button, Calendar } from 'antd';
+=======
+import { AnimatePresence, motion } from 'framer-motion';
+
+import { Badge, Button, Calendar, Descriptions, Modal } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
+>>>>>>> dev
 
 import PickupRequest from './PickupRequest';
 
@@ -19,6 +26,11 @@ function CalendarView({ umbrella, agency, agencies }) {
 
 		let mounted = true;
 
+<<<<<<< HEAD
+=======
+		console.log('hi');
+
+>>>>>>> dev
 		const getRequests = async () =>
 			firebase
 				.firestore()
@@ -72,6 +84,17 @@ function CalendarView({ umbrella, agency, agencies }) {
 		}
 	};
 
+<<<<<<< HEAD
+=======
+	const [currentRequest, setCurrentRequest] = useState(null);
+	const [requestModalOpen, setRequestModalOpen] = useState(false);
+
+	const openRequestModal = (requestId) => {
+		setCurrentRequest(requests.filter((x) => x.id === requestId)[0]);
+		setRequestModalOpen(true);
+	};
+
+>>>>>>> dev
 	const dateCellRender = (value) => {
 		const reqeustsOnDate = requests.filter((x) =>
 			isSameWeekdayInPeriod(
@@ -85,6 +108,7 @@ function CalendarView({ umbrella, agency, agencies }) {
 			<ul className="events">
 				{reqeustsOnDate.map((request) => (
 					<li key={request.id}>
+<<<<<<< HEAD
 						<Badge
 							status={
 								request.delivererStatus && request.receiverStatus
@@ -93,6 +117,25 @@ function CalendarView({ umbrella, agency, agencies }) {
 							}
 							text={getRequestTitle(request)}
 						/>
+=======
+						<Button
+							style={{
+								margin: 0,
+								padding: 0,
+							}}
+							onClick={() => openRequestModal(request.id)}
+							type="link"
+						>
+							<Badge
+								status={
+									request.delivererStatus && request.receiverStatus
+										? 'success'
+										: 'default'
+								}
+								text={getRequestTitle(request)}
+							/>
+						</Button>
+>>>>>>> dev
 					</li>
 				))}
 			</ul>
@@ -104,6 +147,7 @@ function CalendarView({ umbrella, agency, agencies }) {
 
 	return (
 		<>
+<<<<<<< HEAD
 			<div className="events-calendar">
 				{requests && (
 					<div>
@@ -114,6 +158,101 @@ function CalendarView({ umbrella, agency, agencies }) {
 						/>
 					</div>
 				)}
+=======
+			<div
+				className="events-calendar"
+				style={{ height: '100%', position: 'relative', width: '100%' }}
+			>
+				<AnimatePresence exitBeforeEnter>
+					{requests && (
+						<motion.div
+							variants={{
+								hidden: {
+									opacity: 0,
+								},
+								visible: {
+									opacity: 1,
+								},
+							}}
+							initial="hidden"
+							animate="visible"
+							exit="hidden"
+						>
+							<h1>{selectedDate.format('MMMM')}</h1>
+							<Calendar
+								dateCellRender={dateCellRender}
+								onChange={setSelectedDate}
+							/>
+
+							<Modal
+								visible={requestModalOpen}
+								title={`Request for ${selectedDate.format('MMMM D, YYYY')}`}
+								footer={[
+									<Button key="decline" onClick={console.log}>Decline</Button>,
+									<Button key="accept" type="primary" onClick={console.log}>Accept</Button>,
+								]}
+								onCancel={() => setRequestModalOpen(false)}
+								centered
+							>
+								{currentRequest && (
+									<Descriptions
+										key={`descriptions-${currentRequest.id}`}
+										column={1}
+										bordered
+									>
+										<Descriptions.Item label="Donating Agency">
+											{
+												agencies.filter(
+													(x) => x.id === currentRequest.donator
+												)[0].name
+											}
+										</Descriptions.Item>
+
+										<Descriptions.Item label="Receiving Agency">
+											{
+												agencies.filter(
+													(x) => x.id === currentRequest.receiver
+												)[0].name
+											}
+										</Descriptions.Item>
+
+										<Descriptions.Item label="Delivering Agency">
+											{
+												agencies.filter(
+													(x) => x.id === currentRequest.deliverer
+												)[0].name
+											}
+										</Descriptions.Item>
+									</Descriptions>
+								)}
+							</Modal>
+						</motion.div>
+					)}
+					{!requests && (
+						<motion.div
+							variants={{
+								hidden: {
+									opacity: 0,
+								},
+								visible: {
+									opacity: 1,
+								},
+							}}
+							initial="hidden"
+							animate="visible"
+							exit="hidden"
+							style={{
+								left: '50%',
+								position: 'absolute',
+								top: '50%',
+								transform: 'translate3d(-50%, -50%, 0) scale(3)',
+							}}
+						>
+							<LoadingOutlined />
+						</motion.div>
+					)}
+				</AnimatePresence>
+>>>>>>> dev
 			</div>
 
 			<div className="calendar-buttons-container">

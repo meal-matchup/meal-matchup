@@ -47,9 +47,14 @@ function App() {
 	const appViews = {
 		[AppPages.CALENDAR.id]: (
 			<CalendarView umbrella={umbrella} agency={agency} agencies={agencies} />
+<<<<<<< HEAD
+=======
 		),
-		[AppPages.DIRECTORY.id]: <DirectoryView />,
-		[AppPages.ACCOUNT.id]: <AccountView user={user} agency={agency} />,
+		[AppPages.DIRECTORY.id]: <DirectoryView agencies={agencies} />,
+		[AppPages.ACCOUNT.id]: (
+			<AccountView umbrella={umbrella} user={user} agency={agency} />
+>>>>>>> dev
+		),
 	};
 
 	useEffect(() => {
@@ -72,6 +77,8 @@ function App() {
 								id: agencyDoc.id,
 								name: agencyDoc.data().name,
 								type: agencyDoc.data().type,
+								address: agencyDoc.data().address,
+								contact: agencyDoc.data().contact,
 							});
 						});
 						if (mounted) {
@@ -132,6 +139,7 @@ function App() {
 									id: agencyDoc.id,
 									type: agencyDoc.data().type,
 									name: agencyDoc.data().name,
+									approved: agencyDoc.data().approved,
 								});
 								setAgencyLoading(false);
 							})

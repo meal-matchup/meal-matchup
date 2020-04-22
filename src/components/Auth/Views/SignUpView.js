@@ -162,6 +162,18 @@ function SignUpView({ changeView }) {
 										[result.user.uid]: true,
 									},
 									approved: false,
+									address: {
+										line1: values.signup.agencyAddressLine1,
+										line2: values.signup.agencyAddressLine2 || '',
+										city: values.signup.agencyAddressCity,
+										state: values.signup.agencyAddressState,
+										zip: values.signup.agencyAddressZip,
+									},
+									contact: {
+										name: values.signup.agencyContactName,
+										email: values.signup.agencyContactEmail,
+										phone: values.signup.agencyContactPhone,
+									},
 								})
 								.then((newAgencyDoc) => {
 									return firebase
@@ -169,7 +181,7 @@ function SignUpView({ changeView }) {
 										.collection('users')
 										.doc(result.user.uid)
 										.set({
-											umbrella: umbrella,
+											umbrella: umbrella.id,
 											agency: newAgencyDoc.id,
 										})
 										.catch((error) => {
@@ -356,19 +368,158 @@ function SignUpView({ changeView }) {
 					</Form.Item>
 
 					{umbrella && agencyType && agencyId === 'new' && (
-						<Form.Item
-							name={['signup', 'agencyName']}
-							label="Agency Name"
-							rules={[
-								{
-									required: true,
-									message: 'Please enter the name of your agency',
-								},
-							]}
-							hasFeedback
-						>
-							<Input disabled={signingUp} type="text" />
-						</Form.Item>
+						<>
+							<Form.Item
+								name={['signup', 'agencyName']}
+								label="Agency Name"
+								rules={[
+									{
+										required: true,
+										message: 'Please enter the name of your agency',
+									},
+								]}
+								hasFeedback
+							>
+								<Input disabled={signingUp} type="text" />
+							</Form.Item>
+
+							<Form.Item
+								name={['signup', 'agencyContactName']}
+								label="Point of Contact name"
+								extra={`This will be visible to all ${umbrella.name} users.`}
+								rules={[
+									{
+										required: true,
+										message: 'Please enter the contact name for your agency',
+									},
+								]}
+							>
+								<Input disabled={signingUp} type="text" />
+							</Form.Item>
+
+							<Form.Item
+								name={['signup', 'agencyContactEmail']}
+								label="Point of Contact email address"
+								extra={`This will be visible to all ${umbrella.name} users.`}
+								rules={[
+									{
+										required: true,
+										type: 'email',
+										message: 'Please enter the contact email for your agency',
+									},
+								]}
+							>
+								<Input disabled={signingUp} type="email" />
+							</Form.Item>
+
+							<Form.Item
+								name={['signup', 'agencyContactPhone']}
+								label="Point of Contact phone number"
+								extra={`This will be visible to all ${umbrella.name} users.`}
+								rules={[
+									{
+										required: true,
+										message: 'Please enter the contact phone for your agency',
+									},
+								]}
+							>
+								<Input disabled={signingUp} type="tel" />
+							</Form.Item>
+
+							<Form.Item
+								extra={`This will be visible to all ${umbrella.name} users.`}
+							>
+								<Form.Item
+									name={['signup', 'agencyAddressLine1']}
+									label="Street Address"
+									rules={[
+										{
+											required: true,
+											message: 'Please enter the address of your agency',
+										},
+									]}
+									style={{ display: 'inline-block', width: 'calc(50% - 6px)' }}
+								>
+									<Input
+										disabled={signingUp}
+										placeholder="1 Fake Ave"
+										type="text"
+									/>
+								</Form.Item>
+
+								<Form.Item
+									name={['signup', 'agencyAddressLine2']}
+									label="Line 2"
+									style={{
+										display: 'inline-block',
+										width: 'calc(50% - 6px)',
+										margin: '0 0 0 12px',
+									}}
+								>
+									<Input disabled={signingUp} placeholder="#123" type="text" />
+								</Form.Item>
+							</Form.Item>
+
+							<Form.Item
+								extra={`This will be visible to all ${umbrella.name} users.`}
+							>
+								<Form.Item
+									name={['signup', 'agencyAddressCity']}
+									label="City"
+									rules={[
+										{
+											required: true,
+											message: 'Please enter the city your agency is in',
+										},
+									]}
+									style={{
+										display: 'inline-block',
+										width: 'calc((100% / 3) - 8px)',
+									}}
+								>
+									<Input
+										disabled={signingUp}
+										placeholder="Seattle"
+										type="text"
+									/>
+								</Form.Item>
+
+								<Form.Item
+									name={['signup', 'agencyAddressState']}
+									label="State"
+									rules={[
+										{
+											required: true,
+											message: 'Please enter the state your agency is in',
+										},
+									]}
+									style={{
+										display: 'inline-block',
+										width: 'calc((100% / 3) - 8px)',
+										margin: '0 12px',
+									}}
+								>
+									<Input disabled={signingUp} placeholder="WA" type="text" />
+								</Form.Item>
+
+								<Form.Item
+									name={['signup', 'agencyAddressZip']}
+									label="Zip"
+									rules={[
+										{
+											required: true,
+											message: 'Please enter the zip code your agency is in',
+										},
+									]}
+									style={{
+										display: 'inline-block',
+										width: 'calc((100% / 3) - 8px)',
+									}}
+								>
+									<Input disabled={signingUp} placeholder="98102" type="text" />
+								</Form.Item>
+							</Form.Item>
+						</>
 					)}
 
 					<Form.Item>
