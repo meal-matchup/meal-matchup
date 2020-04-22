@@ -48,7 +48,7 @@ function App() {
 		[AppPages.CALENDAR.id]: (
 			<CalendarView umbrella={umbrella} agency={agency} agencies={agencies} />
 		),
-		[AppPages.DIRECTORY.id]: <DirectoryView />,
+		[AppPages.DIRECTORY.id]: <DirectoryView agencies={agencies} />,
 		[AppPages.ACCOUNT.id]: (
 			<AccountView umbrella={umbrella} user={user} agency={agency} />
 		),
@@ -74,6 +74,8 @@ function App() {
 								id: agencyDoc.id,
 								name: agencyDoc.data().name,
 								type: agencyDoc.data().type,
+								address: agencyDoc.data().address,
+								contact: agencyDoc.data().contact,
 							});
 						});
 						if (mounted) {
