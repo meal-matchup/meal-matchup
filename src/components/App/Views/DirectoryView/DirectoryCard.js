@@ -1,7 +1,6 @@
 import React from 'react';
-import { Card } from 'antd';
 import { AgencyTypes } from '../../Enums';
-import { Row, Col } from 'antd';
+import { Card, Row, Col} from 'antd';
 import {
 	ShopOutlined,
 	ShoppingCartOutlined,
@@ -38,9 +37,9 @@ function DirectoryCard({ name, type, contact, address }) {
 			<Card
 				title={name}
 				extra={displayType.icon}
-				style={{ width: 500, margin: 20 }}
+				style={{ marginBottom: 20, marginRight: 20 }}
 			>
-				<Row style={{ width: 500}}>
+				<Row>
 					<Col span={12}>
 						<p>
 							<b>Primary Contact</b>

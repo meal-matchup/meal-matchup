@@ -2,20 +2,18 @@ import React, {useState } from 'react';
 import firebase from 'gatsby-plugin-firebase';
 
 import { AgencyTypes } from '../../Enums';
-import { Select } from 'antd';
+import { Select, Row, Col  } from 'antd';
 import DirectoryCard from './DirectoryCard';
-
 const { Option } = Select;
-
 
 function DirectoryView({ agencies }) {
 	const [filter, setFilter] = useState('ALL');
-	console.log(agencies)
+	agencies = agencies.sort((a, b) => a.name.localeCompare(b.name))
 	return (
 		<div>
 			<Select
 				defaultValue="ALL"
-				style={{ width: 175, marginLeft: 20 }}
+				style={{ width: 175, marginBottom: 20 }}
 				onChange={setFilter}
 			>
 				<Option value="ALL">All Agencies</Option>
@@ -25,29 +23,34 @@ function DirectoryView({ agencies }) {
 			</Select>
 			<div>
 				{agencies &&
-					agencies.map((agency) => {
-						if (filter === 'ALL') {
-							return (
-								<DirectoryCard
-									key={agency.name}
-									name={agency.name}
-									type={agency.type}
-									contact={agency.contact}
-									address={agency.address}
-								/>
-							);
-						} else if(agency.type === filter) {
-							return (
-								<DirectoryCard
-									key={agency.name}
-									name={agency.name}
-									type={agency.type}
-									contact={agency.contact}
-									address={agency.address}
-								/>
-							);
-						}
-					})}
+					<Row>
+						{agencies.map((agency) => {
+							if (filter === 'ALL') {
+								return (
+									<Col key={agency.name} span={24}>
+										<DirectoryCard
+											name={agency.name}
+											type={agency.type}
+											contact={agency.contact}
+											address={agency.address}
+										/>
+									</Col>
+								);
+							} else if(agency.type === filter) {
+								return (
+									<Col key={agency.name} span={24}>
+										<DirectoryCard
+											name={agency.name}
+											type={agency.type}
+											contact={agency.contact}
+											address={agency.address}
+										/>
+									</Col>
+								);
+							}
+						})}
+					</Row>
+					}
 			</div>
 		</div>
 	);
