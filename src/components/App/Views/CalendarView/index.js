@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import firebase from 'gatsby-plugin-firebase';
 import moment from 'moment';
+import { AnimatePresence, motion } from 'framer-motion';
 
 import { Badge, Button, Calendar } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
 
 import PickupRequest from './PickupRequest';
 
@@ -104,16 +106,56 @@ function CalendarView({ umbrella, agency, agencies }) {
 
 	return (
 		<>
-			<div className="events-calendar">
-				{requests && (
-					<div>
-						<h1>{selectedDate.format('MMMM')}</h1>
-						<Calendar
-							dateCellRender={dateCellRender}
-							onChange={setSelectedDate}
-						/>
-					</div>
-				)}
+			<div
+				className="events-calendar"
+				style={{ height: '100%', position: 'relative', width: '100%' }}
+			>
+				<AnimatePresence exitBeforeEnter>
+					{requests && (
+						<motion.div
+							variants={{
+								hidden: {
+									opacity: 0,
+								},
+								visible: {
+									opacity: 1,
+								},
+							}}
+							initial="hidden"
+							animate="visible"
+							exit="hidden"
+						>
+							<h1>{selectedDate.format('MMMM')}</h1>
+							<Calendar
+								dateCellRender={dateCellRender}
+								onChange={setSelectedDate}
+							/>
+						</motion.div>
+					)}
+					{!requests && (
+						<motion.div
+							variants={{
+								hidden: {
+									opacity: 0,
+								},
+								visible: {
+									opacity: 1,
+								},
+							}}
+							initial="hidden"
+							animate="visible"
+							exit="hidden"
+							style={{
+								left: '50%',
+								position: 'absolute',
+								top: '50%',
+								transform: 'translate3d(-50%, -50%, 0) scale(3)',
+							}}
+						>
+							<LoadingOutlined />
+						</motion.div>
+					)}
+				</AnimatePresence>
 			</div>
 
 			<div className="calendar-buttons-container">
