@@ -2,15 +2,10 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import firebase from 'gatsby-plugin-firebase';
 import moment from 'moment';
-<<<<<<< HEAD
-
-import { Badge, Button, Calendar } from 'antd';
-=======
 import { AnimatePresence, motion } from 'framer-motion';
 
 import { Badge, Button, Calendar, Descriptions, Modal } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
->>>>>>> dev
 
 import PickupRequest from './PickupRequest';
 
@@ -26,11 +21,6 @@ function CalendarView({ umbrella, agency, agencies }) {
 
 		let mounted = true;
 
-<<<<<<< HEAD
-=======
-		console.log('hi');
-
->>>>>>> dev
 		const getRequests = async () =>
 			firebase
 				.firestore()
@@ -84,8 +74,6 @@ function CalendarView({ umbrella, agency, agencies }) {
 		}
 	};
 
-<<<<<<< HEAD
-=======
 	const [currentRequest, setCurrentRequest] = useState(null);
 	const [requestModalOpen, setRequestModalOpen] = useState(false);
 
@@ -94,7 +82,6 @@ function CalendarView({ umbrella, agency, agencies }) {
 		setRequestModalOpen(true);
 	};
 
->>>>>>> dev
 	const dateCellRender = (value) => {
 		const reqeustsOnDate = requests.filter((x) =>
 			isSameWeekdayInPeriod(
@@ -108,16 +95,6 @@ function CalendarView({ umbrella, agency, agencies }) {
 			<ul className="events">
 				{reqeustsOnDate.map((request) => (
 					<li key={request.id}>
-<<<<<<< HEAD
-						<Badge
-							status={
-								request.delivererStatus && request.receiverStatus
-									? 'success'
-									: 'default'
-							}
-							text={getRequestTitle(request)}
-						/>
-=======
 						<Button
 							style={{
 								margin: 0,
@@ -135,7 +112,6 @@ function CalendarView({ umbrella, agency, agencies }) {
 								text={getRequestTitle(request)}
 							/>
 						</Button>
->>>>>>> dev
 					</li>
 				))}
 			</ul>
@@ -147,18 +123,6 @@ function CalendarView({ umbrella, agency, agencies }) {
 
 	return (
 		<>
-<<<<<<< HEAD
-			<div className="events-calendar">
-				{requests && (
-					<div>
-						<h1>{selectedDate.format('MMMM')}</h1>
-						<Calendar
-							dateCellRender={dateCellRender}
-							onChange={setSelectedDate}
-						/>
-					</div>
-				)}
-=======
 			<div
 				className="events-calendar"
 				style={{ height: '100%', position: 'relative', width: '100%' }}
@@ -252,7 +216,6 @@ function CalendarView({ umbrella, agency, agencies }) {
 						</motion.div>
 					)}
 				</AnimatePresence>
->>>>>>> dev
 			</div>
 
 			<div className="calendar-buttons-container">
