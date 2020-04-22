@@ -21,8 +21,6 @@ function CalendarView({ umbrella, agency, agencies }) {
 
 		let mounted = true;
 
-		console.log('hi');
-
 		const getRequests = async () =>
 			firebase
 				.firestore()
