@@ -18,16 +18,16 @@ import {
 
 import { AgencyTypes, RequestTypes } from '../../Enums';
 
-function PickupRequest({ open = false, onClose, umbrella, agency, agencies }) {
-	const [pickupRequestForm] = Form.useForm();
-	const [creatingPickupRequest, setCreatingPickupRequest] = useState(false);
-	const [pickupDateRangeStatus, setPickupDateRangeStatus] = useState(null);
-	const [pickupTimeRangeStatus, setPickupTimeRangeStatus] = useState(false);
+function Request({ open = false, onClose, umbrella, agency, agencies }) {
+	const [requestForm] = Form.useForm();
+	const [creatingRequest, setCreatingRequest] = useState(false);
+	const [requestDateRangeStatus, setRequestDateRangeStatus] = useState(null);
+	const [requestTimeRangeStatus, setRequestTimeRangeStatus] = useState(false);
 
 	const createPickupRequest = (values) => {
-		setCreatingPickupRequest(true);
-		setPickupDateRangeStatus('validating');
-		setPickupTimeRangeStatus('validating');
+		setCreatingRequest(true);
+		setRequestDateRangeStatus('validating');
+		setRequestTimeRangeStatus('validating');
 
 		let errors = false;
 
@@ -38,20 +38,20 @@ function PickupRequest({ open = false, onClose, umbrella, agency, agencies }) {
 			notes,
 			deliverer,
 			receiver,
-		} = values.pickup;
+		} = values.request;
 
 		if (!dates) {
-			setPickupDateRangeStatus('error');
+			setRequestDateRangeStatus('error');
 			errors = true;
 		}
 
 		if (!time) {
-			setPickupTimeRangeStatus('error');
+			setRequestTimeRangeStatus('error');
 			errors = true;
 		}
 
 		if (errors) {
-			setCreatingPickupRequest(false);
+			setCreatingRequest(false);
 			return false;
 		}
 
@@ -79,13 +79,13 @@ function PickupRequest({ open = false, onClose, umbrella, agency, agencies }) {
 			.collection('requests')
 			.add(requestData)
 			.then(() => {
-				setCreatingPickupRequest(false);
+				setCreatingRequest(false);
 				closeDrawer();
 			});
 	};
 
 	const closeDrawer = () => {
-		if (!creatingPickupRequest) onClose();
+		if (!creatingRequest) onClose();
 	};
 
 	const invalidDates = (now) => now && now < moment().endOf('day');
@@ -99,7 +99,7 @@ function PickupRequest({ open = false, onClose, umbrella, agency, agencies }) {
 			footer={
 				<div style={{ textAlign: 'right' }}>
 					<Button
-						disabled={creatingPickupRequest}
+						disabled={creatingRequest}
 						onClick={onClose}
 						style={{ marginRight: 8 }}
 					>
@@ -107,9 +107,9 @@ function PickupRequest({ open = false, onClose, umbrella, agency, agencies }) {
 					</Button>
 
 					<Button
-						disabled={creatingPickupRequest}
+						disabled={creatingRequest}
 						type="primary"
-						onClick={pickupRequestForm.submit}
+						onClick={requestForm.submit}
 					>
 						Submit
 					</Button>
@@ -117,7 +117,7 @@ function PickupRequest({ open = false, onClose, umbrella, agency, agencies }) {
 			}
 		>
 			<Form
-				form={pickupRequestForm}
+				form={requestForm}
 				onFinish={createPickupRequest}
 				initialValues={{
 					pickup: {
@@ -147,7 +147,7 @@ function PickupRequest({ open = false, onClose, umbrella, agency, agencies }) {
 				<Row gutter={16}>
 					<Col span={24}>
 						<Form.Item
-							name={['pickup', 'type']}
+							name={['request', 'type']}
 							label="Request Type"
 							rules={[
 								{
@@ -168,11 +168,11 @@ function PickupRequest({ open = false, onClose, umbrella, agency, agencies }) {
 					<Col span={12}>
 						<Form.Item
 							label="Date range"
-							name={['pickup', 'dates']}
-							validateStatus={pickupDateRangeStatus}
+							name={['request', 'dates']}
+							validateStatus={requestDateRangeStatus}
 						>
 							<DatePicker.RangePicker
-								disabled={creatingPickupRequest}
+								disabled={creatingRequest}
 								format="MMMM D, YYYY"
 								disabledDate={invalidDates}
 								style={{
@@ -185,11 +185,11 @@ function PickupRequest({ open = false, onClose, umbrella, agency, agencies }) {
 					<Col span={12}>
 						<Form.Item
 							label="Choose pickup time"
-							name={['pickup', 'time']}
-							validateStatus={pickupTimeRangeStatus}
+							name={['request', 'time']}
+							validateStatus={requestTimeRangeStatus}
 						>
 							<TimePicker.RangePicker
-								disabled={creatingPickupRequest}
+								disabled={creatingRequest}
 								format="h:mm a"
 								use12Hours={true}
 								minuteStep={10}
@@ -203,15 +203,15 @@ function PickupRequest({ open = false, onClose, umbrella, agency, agencies }) {
 
 				<Row gutter={16}>
 					<Col span={24}>
-						<Form.Item label="Frequency" name={['pickup', 'frequency']}>
-							<Select disabled={creatingPickupRequest}>
+						<Form.Item label="Frequency" name={['request', 'frequency']}>
+							<Select disabled={creatingRequest}>
 								<Select.Option value="weekly">Weekly</Select.Option>
 								<Select.Option value="biweekly">Biweekly</Select.Option>
 							</Select>
 						</Form.Item>
 
-						<Form.Item label="Notes" name={['pickup', 'notes']}>
-							<Input.TextArea disabled={creatingPickupRequest} rows={4} />
+						<Form.Item label="Notes" name={['request', 'notes']}>
+							<Input.TextArea disabled={creatingRequest} rows={4} />
 						</Form.Item>
 					</Col>
 				</Row>
@@ -220,7 +220,7 @@ function PickupRequest({ open = false, onClose, umbrella, agency, agencies }) {
 					<Col span={12}>
 						<Form.Item
 							label="Deliverer"
-							name={['pickup', 'deliverer']}
+							name={['request', 'deliverer']}
 							rules={[
 								{
 									required: true,
@@ -228,7 +228,7 @@ function PickupRequest({ open = false, onClose, umbrella, agency, agencies }) {
 								},
 							]}
 						>
-							<Select disabled={creatingPickupRequest}>
+							<Select disabled={creatingRequest}>
 								{agencies.map((theAgency) => {
 									if (theAgency.type === AgencyTypes.DELIVERER) {
 										return (
@@ -246,7 +246,7 @@ function PickupRequest({ open = false, onClose, umbrella, agency, agencies }) {
 					<Col span={12}>
 						<Form.Item
 							label="Receiver"
-							name={['pickup', 'receiver']}
+							name={['request', 'receiver']}
 							rules={[
 								{
 									required: true,
@@ -254,7 +254,7 @@ function PickupRequest({ open = false, onClose, umbrella, agency, agencies }) {
 								},
 							]}
 						>
-							<Select disabled={creatingPickupRequest}>
+							<Select disabled={creatingRequest}>
 								{agencies.map((theAgency) => {
 									if (theAgency.type === AgencyTypes.RECEIVER) {
 										return (
@@ -274,7 +274,7 @@ function PickupRequest({ open = false, onClose, umbrella, agency, agencies }) {
 	);
 }
 
-PickupRequest.propTypes = {
+Request.propTypes = {
 	open: PropTypes.bool,
 	onClose: PropTypes.func.isRequired,
 	umbrella: PropTypes.shape({
@@ -290,4 +290,4 @@ PickupRequest.propTypes = {
 	).isRequired,
 };
 
-export default PickupRequest;
+export default Request;

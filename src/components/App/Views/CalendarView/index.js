@@ -7,7 +7,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Badge, Button, Calendar, Descriptions, Modal } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 
-import PickupRequest from './PickupRequest';
+import Request from './Request';
 
 import { AgencyTypes, RequestTypes } from '../../Enums';
 
@@ -20,8 +20,6 @@ function CalendarView({ umbrella, agency, agencies }) {
 		if (!firebase || !umbrella || !agency || requests !== null) return;
 
 		let mounted = true;
-
-		console.log('hi');
 
 		const getRequests = async () =>
 			firebase
@@ -121,7 +119,7 @@ function CalendarView({ umbrella, agency, agencies }) {
 	};
 
 	// Variables for pickup request form
-	const [pickupRequestDrawerOpen, setPickupRequestDrawerOpen] = useState(false);
+	const [requestDrawerOpen, setRequestDrawerOpen] = useState(false);
 
 	return (
 		<>
@@ -222,10 +220,7 @@ function CalendarView({ umbrella, agency, agencies }) {
 
 			<div className="calendar-buttons-container">
 				{agency && agency.type === AgencyTypes.DONATOR && agencies && (
-					<Button
-						type="primary"
-						onClick={() => setPickupRequestDrawerOpen(true)}
-					>
+					<Button type="primary" onClick={() => setRequestDrawerOpen(true)}>
 						New Request
 					</Button>
 				)}
@@ -235,9 +230,9 @@ function CalendarView({ umbrella, agency, agencies }) {
 				agency &&
 				agency.type === AgencyTypes.DONATOR &&
 				agencies && (
-					<PickupRequest
-						open={pickupRequestDrawerOpen}
-						onClose={() => setPickupRequestDrawerOpen(false)}
+					<Request
+						open={requestDrawerOpen}
+						onClose={() => setRequestDrawerOpen(false)}
 						umbrella={umbrella}
 						agency={agency}
 						agencies={agencies}
