@@ -4,7 +4,7 @@ import firebase from 'gatsby-plugin-firebase';
 import moment from 'moment';
 import { AnimatePresence, motion } from 'framer-motion';
 
-import { Badge, Button, Calendar, Descriptions, Modal } from 'antd';
+import { Badge, Button, Calendar, Descriptions, Modal, Tooltip } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 
 import Request from './Request';
@@ -220,9 +220,18 @@ function CalendarView({ umbrella, agency, agencies }) {
 
 			<div className="calendar-buttons-container">
 				{agency && agency.type === AgencyTypes.DONATOR && agencies && (
-					<Button type="primary" onClick={() => setRequestDrawerOpen(true)}>
-						New Request
-					</Button>
+					<Tooltip
+						title={!agency.approved && 'Your account has not been approved yet'}
+						placement="topRight"
+					>
+						<Button
+							disabled={!agency.approved}
+							type="primary"
+							onClick={() => setRequestDrawerOpen(true)}
+						>
+							New Request
+						</Button>
+					</Tooltip>
 				)}
 			</div>
 
@@ -250,6 +259,7 @@ CalendarView.propTypes = {
 		id: PropTypes.string.isRequired,
 		type: PropTypes.string.isRequired,
 		name: PropTypes.string.isRequired,
+		approved: PropTypes.string.isRequired,
 	}),
 	agencies: PropTypes.array,
 };
