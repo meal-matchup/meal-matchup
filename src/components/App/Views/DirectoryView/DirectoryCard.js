@@ -1,6 +1,7 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { AgencyTypes } from '../../Enums';
-import { Card, Row, Col} from 'antd';
+import { Card, Descriptions } from 'antd';
 import {
 	ShopOutlined,
 	ShoppingCartOutlined,
@@ -8,61 +9,103 @@ import {
 } from '@ant-design/icons';
 
 function DirectoryCard({ name, type, contact, address }) {
-
-	let iconSize = '20px';
+	const iconSize = '1.5em';
 	const findType = (type) => {
-		if (type === AgencyTypes.DONATOR) {
-			return {
-				type: 'Donating Agency',
-				icon: <ShopOutlined style={{ fontSize : iconSize }} />,
-			};
-		} else if (type === AgencyTypes.DELIVERER) {
-			return {
-				type: 'Delivering Agency',
-				icon: <CarOutlined style={{ fontSize : iconSize }} />,
-			};
-		} else if (type === AgencyTypes.RECEIVER) {
-			return {
-				type: 'Recieving Agency',
-				icon: <ShoppingCartOutlined style={{ fontSize : iconSize }} />,
-			};
-		} else {
-			return {}
+		switch (type) {
+			case AgencyTypes.DONATOR:
+				return {
+					type: 'Donating Agency',
+					icon: <ShopOutlined style={{ fontSize: iconSize }} />,
+				};
+			case AgencyTypes.DELIVERER:
+				return {
+					type: 'Delivering Agency',
+					icon: <CarOutlined style={{ fontSize: iconSize }} />,
+				};
+			case AgencyTypes.RECEIVER:
+				return {
+					type: 'Receiving Agency',
+					icon: <ShoppingCartOutlined style={{ fontSize: iconSize }} />,
+				};
+			default:
+				return null;
 		}
 	};
 	let displayType = findType(type);
 
+	const gridStyle = {
+		height: '100%',
+		width: '50%',
+	};
+
 	return (
-		<div>
-			<Card
-				title={name}
-				extra={displayType.icon}
-				style={{ marginBottom: 20, marginRight: 20 }}
-			>
-				<Row>
-					<Col span={12}>
-						<p>
-							<b>Primary Contact</b>
-						</p>
-						{contact.name && <p>{contact.name}</p>}
-						{contact.email && <p>{contact.email}</p>}
-						{contact.phone && <p>{contact.phone}</p>}
-					</Col>
-					<Col span={12}>
-						<p>
-							<b>Address</b>
-						</p>
-						{address.line1 && <p>{address.line1}</p>}
-						{address.city && (
-							<p>
-								{address.city} {address.state}, {address.zip}
-							</p>
+		<Card
+			key={`card-${name}`}
+			title={name}
+			extra={[
+				<div
+					key={`${name}-icon-container`}
+					style={{ alignItems: 'center', display: 'flex' }}
+				>
+					<span key={`${name}-type`} style={{ marginRight: '.5em' }}>
+						{displayType.type}
+					</span>
+					{displayType.icon}
+				</div>,
+			]}
+		>
+			<Card.Grid style={gridStyle} hoverable={false}>
+				<Descriptions title="Primary Contact">
+					<Descriptions.Item>
+						{contact.name}
+						<br />
+						{contact.email}
+						<br />
+						{contact.phone}
+					</Descriptions.Item>
+				</Descriptions>
+			</Card.Grid>
+
+			<Card.Grid style={gridStyle} hoverable={false}>
+				<Descriptions title="Address">
+					<Descriptions.Item>
+						{address.line1}
+						<br />
+						{address.line2 && (
+							<>
+								{address.line2}
+								<br />
+							</>
 						)}
-					</Col>
-				</Row>
-				</Card>
-		</div>
+						{address.city}, {address.state} {address.zip}
+						{!address.line2 && (
+							<>
+								<br />
+								&nbsp;
+							</>
+						)}
+					</Descriptions.Item>
+				</Descriptions>
+			</Card.Grid>
+		</Card>
 	);
 }
+
+DirectoryCard.propTypes = {
+	name: PropTypes.string.isRequired,
+	type: PropTypes.string.isRequired,
+	contact: PropTypes.shape({
+		name: PropTypes.string.isRequired,
+		email: PropTypes.string.isRequired,
+		phone: PropTypes.string.isRequired,
+	}).isRequired,
+	address: PropTypes.shape({
+		line1: PropTypes.string.isRequired,
+		line2: PropTypes.string,
+		city: PropTypes.string.isRequired,
+		state: PropTypes.string.isRequired,
+		zip: PropTypes.string.isRequired,
+	}).isRequired,
+};
 
 export default DirectoryCard;
