@@ -76,6 +76,7 @@ function App() {
 								type: agencyDoc.data().type,
 								address: agencyDoc.data().address,
 								contact: agencyDoc.data().contact,
+								approved: agencyDoc.data().approved,
 							});
 						});
 						if (mounted) {

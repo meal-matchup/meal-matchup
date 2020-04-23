@@ -303,7 +303,7 @@ CalendarView.propTypes = {
 		id: PropTypes.string.isRequired,
 		type: PropTypes.string.isRequired,
 		name: PropTypes.string.isRequired,
-		approved: PropTypes.string.isRequired,
+		approved: PropTypes.bool.isRequired,
 	}),
 	agencies: PropTypes.array,
 };
