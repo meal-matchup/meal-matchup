@@ -3,11 +3,21 @@ import PropTypes from 'prop-types';
 import firebase from 'gatsby-plugin-firebase';
 import moment from 'moment';
 import { AnimatePresence, motion } from 'framer-motion';
+import debug from 'debug';
 
-import { Badge, Button, Calendar, Descriptions, Modal } from 'antd';
+import {
+	Badge,
+	Button,
+	Calendar,
+	Descriptions,
+	Modal,
+	message,
+	Popconfirm,
+	Tooltip,
+} from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 
-import PickupRequest from './PickupRequest';
+import Request from './Request';
 
 import { AgencyTypes, RequestTypes } from '../../Enums';
 
@@ -69,6 +79,9 @@ function CalendarView({ umbrella, agency, agencies }) {
 			case RequestTypes.PICKUP:
 				return 'Pickup Request';
 
+			case RequestTypes.BAGNTAG:
+				return 'Bag & Tag Request';
+
 			default:
 				return 'Request';
 		}
@@ -76,10 +89,44 @@ function CalendarView({ umbrella, agency, agencies }) {
 
 	const [currentRequest, setCurrentRequest] = useState(null);
 	const [requestModalOpen, setRequestModalOpen] = useState(false);
+	const [requestModalFooter, setRequestModalFooter] = useState(null);
+
+	const deleteRequest = () => {
+		const requestToDelete = currentRequest.id;
+
+		return firebase
+			.firestore()
+			.collection('requests')
+			.doc(requestToDelete)
+			.delete()
+			.then(() => {
+				message.success('Successfully deleted request');
+			})
+			.catch((e) => {
+				debug('Unable to delete request', e);
+				message.error('Could not delete request');
+			})
+	};
+
+	const requestDonatorButtons = [
+		<Button key="edit" onClick={console.log}>Edit</Button>,
+		<Popconfirm
+			key="delete"
+			title="This will delete the entire request series."
+			okText="I understand"
+			onConfirm={deleteRequest}
+		>
+			<Button key="delete" type="primary" danger>Delete</Button>
+		</Popconfirm>,
+	];
 
 	const openRequestModal = (requestId) => {
-		setCurrentRequest(requests.filter((x) => x.id === requestId)[0]);
+		const theRequest = requests.filter((x) => x.id === requestId)[0];
+		setCurrentRequest(theRequest);
 		setRequestModalOpen(true);
+		if (theRequest.donator === agency.id) {
+			setRequestModalFooter(requestDonatorButtons);
+		}
 	};
 
 	const dateCellRender = (value) => {
@@ -119,7 +166,7 @@ function CalendarView({ umbrella, agency, agencies }) {
 	};
 
 	// Variables for pickup request form
-	const [pickupRequestDrawerOpen, setPickupRequestDrawerOpen] = useState(false);
+	const [requestDrawerOpen, setRequestDrawerOpen] = useState(false);
 
 	return (
 		<>
@@ -150,11 +197,8 @@ function CalendarView({ umbrella, agency, agencies }) {
 
 							<Modal
 								visible={requestModalOpen}
-								title={`Request for ${selectedDate.format('MMMM D, YYYY')}`}
-								footer={[
-									<Button key="decline" onClick={console.log}>Decline</Button>,
-									<Button key="accept" type="primary" onClick={console.log}>Accept</Button>,
-								]}
+								title={`Request on ${selectedDate.format('MMMM D, YYYY')}`}
+								footer={requestModalFooter}
 								onCancel={() => setRequestModalOpen(false)}
 								centered
 							>
@@ -173,19 +217,19 @@ function CalendarView({ umbrella, agency, agencies }) {
 										</Descriptions.Item>
 
 										<Descriptions.Item label="Receiving Agency">
-											{
+											{currentRequest.receiver === AgencyTypes.ANY && 'Any'}
+											{currentRequest.receiver !== AgencyTypes.ANY &&
 												agencies.filter(
 													(x) => x.id === currentRequest.receiver
-												)[0].name
-											}
+												)[0].name}
 										</Descriptions.Item>
 
 										<Descriptions.Item label="Delivering Agency">
-											{
+											{currentRequest.deliverer === AgencyTypes.ANY && 'Any'}
+											{currentRequest.deliverer !== AgencyTypes.ANY &&
 												agencies.filter(
 													(x) => x.id === currentRequest.deliverer
-												)[0].name
-											}
+												)[0].name}
 										</Descriptions.Item>
 									</Descriptions>
 								)}
@@ -220,12 +264,18 @@ function CalendarView({ umbrella, agency, agencies }) {
 
 			<div className="calendar-buttons-container">
 				{agency && agency.type === AgencyTypes.DONATOR && agencies && (
-					<Button
-						type="primary"
-						onClick={() => setPickupRequestDrawerOpen(true)}
+					<Tooltip
+						title={!agency.approved && 'Your account has not been approved yet'}
+						placement="topRight"
 					>
-						New Pickup Request
-					</Button>
+						<Button
+							disabled={!agency.approved}
+							type="primary"
+							onClick={() => setRequestDrawerOpen(true)}
+						>
+							New Request
+						</Button>
+					</Tooltip>
 				)}
 			</div>
 
@@ -233,9 +283,9 @@ function CalendarView({ umbrella, agency, agencies }) {
 				agency &&
 				agency.type === AgencyTypes.DONATOR &&
 				agencies && (
-					<PickupRequest
-						open={pickupRequestDrawerOpen}
-						onClose={() => setPickupRequestDrawerOpen(false)}
+					<Request
+						open={requestDrawerOpen}
+						onClose={() => setRequestDrawerOpen(false)}
 						umbrella={umbrella}
 						agency={agency}
 						agencies={agencies}
@@ -253,6 +303,7 @@ CalendarView.propTypes = {
 		id: PropTypes.string.isRequired,
 		type: PropTypes.string.isRequired,
 		name: PropTypes.string.isRequired,
+		approved: PropTypes.string.isRequired,
 	}),
 	agencies: PropTypes.array,
 };
