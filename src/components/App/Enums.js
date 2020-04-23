@@ -9,6 +9,7 @@ export const AgencyTypes = {
 
 export const RequestTypes = {
 	PICKUP: 'PICKUP',
+	BAGNTAG: 'BAGNTAG',
 };
 
 export const MenuLocations = {

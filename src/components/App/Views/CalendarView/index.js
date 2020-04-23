@@ -226,7 +226,7 @@ function CalendarView({ umbrella, agency, agencies }) {
 						type="primary"
 						onClick={() => setPickupRequestDrawerOpen(true)}
 					>
-						New Pickup Request
+						New Request
 					</Button>
 				)}
 			</div>
