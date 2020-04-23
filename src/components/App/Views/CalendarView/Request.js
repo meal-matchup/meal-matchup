@@ -23,6 +23,7 @@ function Request({ open = false, onClose, umbrella, agency, agencies }) {
 	const [creatingRequest, setCreatingRequest] = useState(false);
 	const [requestDateRangeStatus, setRequestDateRangeStatus] = useState(null);
 	const [requestTimeRangeStatus, setRequestTimeRangeStatus] = useState(false);
+	const [requestType, setRequestType] = useState(null);
 
 	const createPickupRequest = (values) => {
 		setCreatingRequest(true);
@@ -38,6 +39,7 @@ function Request({ open = false, onClose, umbrella, agency, agencies }) {
 			notes,
 			deliverer,
 			receiver,
+			type,
 		} = values.request;
 
 		if (!dates) {
@@ -59,7 +61,6 @@ function Request({ open = false, onClose, umbrella, agency, agencies }) {
 		const requestData = {
 			umbrella: umbrella.id,
 			donator: agency.id,
-			receiver,
 			deliverer,
 			frequency,
 			dates: {
@@ -70,8 +71,9 @@ function Request({ open = false, onClose, umbrella, agency, agencies }) {
 				start: time[0].toDate(),
 				to: time[1].toDate(),
 			},
-			type: RequestTypes.PICKUP,
+			type,
 		};
+		if (type === RequestTypes.PICKUP) requestData['receiver'] = receiver;
 		if (notes) requestData['notes'] = notes;
 
 		firebase
@@ -157,7 +159,7 @@ function Request({ open = false, onClose, umbrella, agency, agencies }) {
 									},
 								]}
 							>
-								<Radio.Group>
+								<Radio.Group onChange={(e) => setRequestType(e.target.value)}>
 									<Radio value={RequestTypes.BAGNTAG}>Bag &amp; Tag Request</Radio>
 									<Radio value={RequestTypes.PICKUP}>Pickup Request</Radio>
 								</Radio.Group>
@@ -250,12 +252,12 @@ function Request({ open = false, onClose, umbrella, agency, agencies }) {
 								name={['request', 'receiver']}
 								rules={[
 									{
-										required: true,
+										required: requestType !== RequestTypes.BAGNTAG,
 										message: 'Please select a delivering agency',
 									},
 								]}
 							>
-								<Select disabled={creatingRequest}>
+								<Select disabled={creatingRequest || requestType === RequestTypes.BAGNTAG}>
 									{agencies.map((theAgency) => {
 										if (theAgency.type === AgencyTypes.RECEIVER) {
 											return (
