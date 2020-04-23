@@ -118,7 +118,7 @@ function Request({ open = false, onClose, umbrella, agency, agencies }) {
 				</div>
 			}
 		>
-			{(agency && agency.approved) ? (
+			{agency && agency.approved ? (
 				<Form
 					form={requestForm}
 					onFinish={createPickupRequest}
@@ -133,14 +133,22 @@ function Request({ open = false, onClose, umbrella, agency, agencies }) {
 					<Row gutter={16}>
 						<Col span={24}>
 							<p>
-								Use this form to schedule a new request. If accepted,	a Delivering Agency will either <strong>Bag &amp; Tag</strong> or <strong>Pickup</strong> your donations in the timeframe you specify.
+								Use this form to schedule a new request. If accepted, a
+								Delivering Agency will either <strong>Bag &amp; Tag</strong> or{' '}
+								<strong>Pickup</strong> your donations in the timeframe you
+								specify.
 							</p>
 
 							<p>
-								<strong>Bag &amp; Tag:</strong> A Bag &amp; Tag Request asks a Delivering Agency to come to your location. Then, they will properly bag, weigh, label, and freeze your donations.
+								<strong>Bag &amp; Tag:</strong> A Bag &amp; Tag Request asks a
+								Delivering Agency to come to your location. Then, they will
+								properly bag, weigh, label, and freeze your donations.
 							</p>
 							<p>
-								<strong>Pickup:</strong> A Pickup Request asks a Delivering Agency to come to your location and pick up a proprly bagged and frozen donation. From there, they will deliver the donation to a Receiving Agency.
+								<strong>Pickup:</strong> A Pickup Request asks a Delivering
+								Agency to come to your location and pick up a proprly bagged and
+								frozen donation. From there, they will deliver the donation to a
+								Receiving Agency.
 							</p>
 						</Col>
 					</Row>
@@ -160,7 +168,10 @@ function Request({ open = false, onClose, umbrella, agency, agencies }) {
 								]}
 							>
 								<Radio.Group onChange={(e) => setRequestType(e.target.value)}>
-									<Radio value={RequestTypes.BAGNTAG}>Bag &amp; Tag Request</Radio>
+									<Radio value={RequestTypes.BAGNTAG}>
+										Bag &amp; Tag Request
+									</Radio>
+
 									<Radio value={RequestTypes.PICKUP}>Pickup Request</Radio>
 								</Radio.Group>
 							</Form.Item>
@@ -257,7 +268,11 @@ function Request({ open = false, onClose, umbrella, agency, agencies }) {
 									},
 								]}
 							>
-								<Select disabled={creatingRequest || requestType === RequestTypes.BAGNTAG}>
+								<Select
+									disabled={
+										creatingRequest || requestType === RequestTypes.BAGNTAG
+									}
+								>
 									{agencies.map((theAgency) => {
 										if (theAgency.type === AgencyTypes.RECEIVER) {
 											return (
@@ -277,7 +292,9 @@ function Request({ open = false, onClose, umbrella, agency, agencies }) {
 				<Row gutter={16}>
 					<Col span={24}>
 						<p>
-							Sorry! Your account has not been approved yet. You will receive an email once your account is approved, and then you will be able to start creating requests!
+							Sorry! Your account has not been approved yet. You will receive an
+							email once your account is approved, and then you will be able to
+							start creating requests!
 						</p>
 					</Col>
 				</Row>
@@ -294,6 +311,7 @@ Request.propTypes = {
 	}),
 	agency: PropTypes.shape({
 		id: PropTypes.string.isRequired,
+		approved: PropTypes.bool.isRequired,
 	}).isRequired,
 	agencies: PropTypes.arrayOf(
 		PropTypes.shape({

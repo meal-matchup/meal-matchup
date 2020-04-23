@@ -53,7 +53,8 @@ function CalendarView({ umbrella, agency, agencies }) {
 							allRequests.push(theRequest);
 						} else {
 							if (
-								requestDoc.data()[agency.type.toLowerCase()] === 'any' ||
+								requestDoc.data()[agency.type.toLowerCase()] ===
+									AgencyTypes.ANY ||
 								requestDoc.data()[agency.type.toLowerCase()] === agency.id
 							) {
 								allRequests.push(theRequest);
@@ -105,18 +106,22 @@ function CalendarView({ umbrella, agency, agencies }) {
 			.catch((e) => {
 				debug('Unable to delete request', e);
 				message.error('Could not delete request');
-			})
+			});
 	};
 
 	const requestDonatorButtons = [
-		<Button key="edit" onClick={console.log}>Edit</Button>,
+		<Button key="edit" onClick={debug}>
+			Edit
+		</Button>,
 		<Popconfirm
 			key="delete"
 			title="This will delete the entire request series."
 			okText="I understand"
 			onConfirm={deleteRequest}
 		>
-			<Button key="delete" type="primary" danger>Delete</Button>
+			<Button key="delete" type="primary" danger>
+				Delete
+			</Button>
 		</Popconfirm>,
 	];
 
