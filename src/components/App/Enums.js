@@ -13,6 +13,11 @@ export const RequestTypes = {
 	BAGNTAG: 'BAGNTAG',
 };
 
+export const RequestTitles = {
+	PICKUP: 'Pickup Request',
+	BAGNTAG: 'Bag & Tag Request',
+};
+
 export const MenuLocations = {
 	SIDER: 'SIDER',
 	HEADER: 'HEADER',
