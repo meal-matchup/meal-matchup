@@ -61,7 +61,7 @@ function Request({ open = false, onClose, umbrella, agency, agencies }) {
 		const requestData = {
 			umbrella: umbrella.id,
 			donator: agency.id,
-			deliverer,
+			deliverer: AgencyTypes.ANY,
 			frequency,
 			dates: {
 				from: dates[0].toDate(),
@@ -73,7 +73,7 @@ function Request({ open = false, onClose, umbrella, agency, agencies }) {
 			},
 			type,
 		};
-		if (type === RequestTypes.PICKUP) requestData['receiver'] = receiver;
+		if (type === RequestTypes.PICKUP) requestData['receiver'] = AgencyTypes.ANY;
 		if (notes) requestData['notes'] = notes;
 
 		firebase
@@ -226,64 +226,6 @@ function Request({ open = false, onClose, umbrella, agency, agencies }) {
 
 							<Form.Item label="Notes" name={['request', 'notes']}>
 								<Input.TextArea disabled={creatingRequest} rows={4} />
-							</Form.Item>
-						</Col>
-					</Row>
-
-					<Row gutter={16}>
-						<Col span={12}>
-							<Form.Item
-								label="Deliverer"
-								name={['request', 'deliverer']}
-								rules={[
-									{
-										required: true,
-										message: 'Please select a delivering agency',
-									},
-								]}
-							>
-								<Select disabled={creatingRequest}>
-									{agencies.map((theAgency) => {
-										if (theAgency.type === AgencyTypes.DELIVERER) {
-											return (
-												<Select.Option key={theAgency.id} value={theAgency.id}>
-													{theAgency.name}
-												</Select.Option>
-											);
-										}
-									})}
-									<Select.Option value="any">Any</Select.Option>
-								</Select>
-							</Form.Item>
-						</Col>
-
-						<Col span={12}>
-							<Form.Item
-								label="Receiver"
-								name={['request', 'receiver']}
-								rules={[
-									{
-										required: requestType !== RequestTypes.BAGNTAG,
-										message: 'Please select a delivering agency',
-									},
-								]}
-							>
-								<Select
-									disabled={
-										creatingRequest || requestType === RequestTypes.BAGNTAG
-									}
-								>
-									{agencies.map((theAgency) => {
-										if (theAgency.type === AgencyTypes.RECEIVER) {
-											return (
-												<Select.Option key={theAgency.id} value={theAgency.id}>
-													{theAgency.name}
-												</Select.Option>
-											);
-										}
-									})}
-									<Select.Option value="any">Any</Select.Option>
-								</Select>
 							</Form.Item>
 						</Col>
 					</Row>
