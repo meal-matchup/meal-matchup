@@ -12,8 +12,6 @@ function AccountView({ user, umbrella, agency }) {
 		[AgencyTypes.DELIVERER]: 'Delivering Agency',
 	};
 
-	console.log(agency);
-
 	return (
 		<>
 			{user && umbrella && agency && (
@@ -51,9 +49,9 @@ function AccountView({ user, umbrella, agency }) {
 					</Descriptions.Item>
 					<Descriptions.Item label="Agency address">
 						{agency.address.line1}
-						<br/>
+						<br />
 						{agency.address.line2 && agency.address.line2}
-						{agency.address.line2 && <br/>}
+						{agency.address.line2 && <br />}
 						{agency.address.city}, {agency.address.state} {agency.address.zip}
 					</Descriptions.Item>
 				</Descriptions>
@@ -76,6 +74,13 @@ AccountView.propTypes = {
 		approved: PropTypes.bool.isRequired,
 		name: PropTypes.string.isRequired,
 		type: PropTypes.string.isRequired,
+		address: PropTypes.shape({
+			line1: PropTypes.string.isRequired,
+			line2: PropTypes.string,
+			city: PropTypes.string.isRequired,
+			state: PropTypes.string.isRequired,
+			zip: PropTypes.string.isRequired,
+		}).isRequired,
 	}),
 };
 
