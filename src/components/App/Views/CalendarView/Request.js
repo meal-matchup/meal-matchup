@@ -18,12 +18,11 @@ import {
 
 import { AgencyTypes, RequestTypes } from '../../Enums';
 
-function Request({ open = false, onClose, umbrella, agency, agencies }) {
+function Request({ open = false, onClose, umbrella, agency }) {
 	const [requestForm] = Form.useForm();
 	const [creatingRequest, setCreatingRequest] = useState(false);
 	const [requestDateRangeStatus, setRequestDateRangeStatus] = useState(null);
 	const [requestTimeRangeStatus, setRequestTimeRangeStatus] = useState(false);
-	const [requestType, setRequestType] = useState(null);
 
 	const createPickupRequest = (values) => {
 		setCreatingRequest(true);
@@ -32,15 +31,7 @@ function Request({ open = false, onClose, umbrella, agency, agencies }) {
 
 		let errors = false;
 
-		const {
-			dates,
-			time,
-			frequency,
-			notes,
-			deliverer,
-			receiver,
-			type,
-		} = values.request;
+		const { dates, time, frequency, notes, type } = values.request;
 
 		if (!dates) {
 			setRequestDateRangeStatus('error');
@@ -167,7 +158,7 @@ function Request({ open = false, onClose, umbrella, agency, agencies }) {
 									},
 								]}
 							>
-								<Radio.Group onChange={(e) => setRequestType(e.target.value)}>
+								<Radio.Group>
 									<Radio value={RequestTypes.BAGNTAG}>
 										Bag &amp; Tag Request
 									</Radio>
@@ -255,11 +246,6 @@ Request.propTypes = {
 		id: PropTypes.string.isRequired,
 		approved: PropTypes.bool.isRequired,
 	}).isRequired,
-	agencies: PropTypes.arrayOf(
-		PropTypes.shape({
-			id: PropTypes.string.isRequired,
-		})
-	).isRequired,
 };
 
 export default Request;
