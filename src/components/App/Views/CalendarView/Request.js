@@ -123,7 +123,7 @@ function Request({ open = false, onClose, umbrella, agency, agencies }) {
 					form={requestForm}
 					onFinish={createPickupRequest}
 					initialValues={{
-						pickup: {
+						request: {
 							frequency: 'weekly',
 						},
 					}}
