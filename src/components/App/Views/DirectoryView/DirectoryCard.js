@@ -42,6 +42,7 @@ function DirectoryCard({ name, type, contact, address }) {
 		<Card
 			key={`card-${name}`}
 			title={name}
+			size = "small"
 			extra={[
 				<div
 					key={`${name}-icon-container`}
