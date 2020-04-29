@@ -1,0 +1,29 @@
+.footer {
+    background-color: black;
+}
+
+.container {
+    background-color: #fff;
+    font-size: 16px;
+}
+
+.img_wrapper > img {
+    width: 394px;
+    height: 262px;
+}
+
+.item_wrapper {
+    display: flex;
+    flex-direction: row;
+    margin: 100px 200px;
+}
+
+.item {
+    padding-right: 100px;
+}
+
+hr {
+    width: 72%;
+    text-align: center;
+    color: rgb(56, 53, 53);
+}
