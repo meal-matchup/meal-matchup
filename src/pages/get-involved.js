@@ -78,6 +78,35 @@ function Header () {
     );
 }
 
+function Main () {
+    return (
+        <main id="page" role="main" style={{display: "block"}}>
+            <div id="item_container">
+                <div class="item_wrapper">
+                    <div class="item">
+                        <h1>Food Recovery in Your Community</h1>
+                        <p>
+                            Start or expand food recovery efforts in your campus, community or city. Contact our Coordinator and see how Meal Matchup or similar practices can apply to your community.
+                        </p>
+                    </div>
+                    <div class="img_wrapper"> 
+                        <img src="https://images.squarespace-cdn.com/content/v1/5aee05b75cfd79f523e4daf6/1528070452083-D90RHP9TOH5SJ2G05N0T/ke17ZwdGBToddI8pDm48kNZr331BLc-Rota1ZP1Yh3h7gQa3H78H3Y0txjaiv_0fDoOvxcdMmMKkDsyUqMSsMWxHk725yiiHCCLfrh8O1z4YTzHvnKhyp6Da-NYroOW3ZGjoBKy3azqku80C789l0hReLB75oIvKxcDxwlnLXaYNPa96OWO5Z21xzWqpQF_bv3E39NLc0xdQYNJZ7z0n0g/salad+bar.JPG"></img>
+                    </div>
+                </div>
+                <div class="item_wrapper">
+                    <div class="item">  
+                        <h1>Join Meal Matchup at the University of Washington</h1>
+                        <p>Join Meal Matchup at the University of Washington Seattle campus as a dining hall, volunteer, or non-profit organization. Contact our Coordinator to learn more about how Meal Matchup works and if Meal Matchup would be a good fit for you or your organization.</p>
+                    </div>
+                    <div class="img_wrapper">
+                        <img src="https://images.squarespace-cdn.com/content/v1/5aee05b75cfd79f523e4daf6/1526458179015-8A4YGBAK2ZJAK7SAO85X/ke17ZwdGBToddI8pDm48kK60W-ob1oA2Fm-j4E_9NQB7gQa3H78H3Y0txjaiv_0fDoOvxcdMmMKkDsyUqMSsMWxHk725yiiHCCLfrh8O1z4YTzHvnKhyp6Da-NYroOW3ZGjoBKy3azqku80C789l0kD6Ec8Uq9YczfrzwR7e2Mh5VMMOxnTbph8FXiclivDQnof69TlCeE0rAhj6HUpXkw/ashley-whitlatch-569234-unsplash.jpg"></img>
+                    </div>
+                </div>
+            </div>
+        </main>
+    );
+}
+
 function Get_Involved () {
     let containerStyle = { 
         background: "#fff", 
@@ -86,6 +115,7 @@ function Get_Involved () {
     return (
       <div className="container" style = {containerStyle}>
           <Header/>
+          <Main/>
       </div>
     );
 }
