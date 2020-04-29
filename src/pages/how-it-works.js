@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Col, Row } from 'antd'
-import logo from '../graphics/donation-map.png'
+import map from '../graphics/donation-map.png'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTruck, faUtensils, faShoppingBasket, faUserPlus} from '@fortawesome/free-solid-svg-icons'
 
@@ -180,7 +180,7 @@ function howItWorks() {
             use Meal Matchup to schedule, log, and deliver donations. Not pictured in the diagram 
             below are specific pages and/or features within Meal Matchup. Please see above videos 
             and PDF tutorials for a detailed account. </p>
-          <img src={logo} style={image} alt="Donation Road Map"/>
+          <img src={map} style={image} alt="Donation Road Map"/>
         </div>
       </Col>
     </div>
