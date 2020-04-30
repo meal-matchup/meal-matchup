@@ -19,8 +19,10 @@ exports.createPages = async ({ graphql, actions }) => {
 		result.data.pages.edges.forEach((page) => {
 			const { id, status } = page.node;
 			if (status !== 'publish') return;
+			const slug = page.node.path.replace('/mealmatchup/', '/');
+
 			createPage({
-				path: page.node.path,
+				path: slug,
 				component: path.resolve('./src/templates/page.js'),
 				context: {
 					id,

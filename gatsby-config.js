@@ -47,15 +47,10 @@ module.exports = {
 		{
 			resolve: 'gatsby-source-wordpress',
 			options: {
-				baseUrl: 'mealmatchup.wordpress.com',
+				baseUrl: 'sites.uw.edu/mealmatchup',
 				protocol: 'https',
-				hostingWPCOM: true,
-				auth: {
-					wpcom_app_clientSecret: process.env.WORDPRESS_CLIENT_SECRET,
-					wpcom_app_clientId: process.env.WORDPRESS_CLIENT_ID,
-					wpcom_user: process.env.WORDPRESS_CLIENT_USER,
-					wpcom_pass: process.env.WORDPRESS_CLIENT_PASS,
-				},
+				hostingWPCOM: false,
+				useACT: false,
 			},
 		},
 		{
