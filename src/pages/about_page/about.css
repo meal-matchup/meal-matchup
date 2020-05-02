@@ -1,0 +1,58 @@
+* {
+  padding: 0em 1em;
+}
+
+
+h1, h2 {
+  font-family: 'Helvetica Neue', sans-serif;
+}
+
+h1 {
+  font-size: 1.5em;
+  color: #303030;
+}
+
+h2 {
+  font-size: 1.2em;
+}
+
+p, li {
+
+  color: #5e5e5e;
+}
+
+a {
+  padding:0;
+  text-decoration: none;
+  color: #3d9991;
+}
+
+
+
+ul {
+  padding-left: 3.5em;
+  margin-top: 0em;
+  margin-bottom: 0em;
+}
+
+li {
+  line-height: 1.75em;
+}
+
+
+
+.springqphoto {
+  width: 75%;
+  margin: auto;
+}
+.section-divider-medium {
+  padding: 1em;
+}
+
+.section-divider-large {
+  padding: 2.5em;
+}
+
+img {
+  width:19em;
+}
