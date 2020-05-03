@@ -1,0 +1,55 @@
+body {
+	background-color: 'white';
+	font-family: "proxima-nova","Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+
+.MainBody h2 {
+	text-align: center;
+	text-transform: uppercase;
+	letter-spacing: 2px;
+	font-family: "proxima-nova",sans-serif;
+	line-height: 1.2em;
+	font-weight: bold;
+}
+
+.MainBody h3 {
+	line-height: 1.2em;
+	font-family: "proxima-nova",sans-serif;;
+	font-weight: 600;
+	font-style: normal;
+	font-size: 23px;
+	letter-spacing: 0px;
+	text-transform: none;
+	line-height: 1.2em;
+	color: rgba(26,26,26,.9);
+	width: 72%;
+	text-align: center;
+}
+
+.centerText {
+	text-align: center;
+}
+
+hr {
+	width: 72%;
+	text-align: center;
+	color: rgb(136, 132, 132);
+}
+
+.centerIcon {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+}
+
+.solutionGreenBox {
+	background-color: rgba(80,143,61,.83);
+	padding: 10%;
+	box-sizing: border-box;
+}
+
+.min-font {
+	font-size: 13px;
+	color: white;
+}
