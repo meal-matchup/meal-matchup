@@ -1,5 +1,5 @@
 import React from 'react';
-import { CalendarOutlined, ContactsOutlined } from '@ant-design/icons';
+import { CalendarOutlined, ContactsOutlined, ProfileOutlined } from '@ant-design/icons';
 
 export const AgencyTypes = {
 	DONATOR: 'DONATOR',
@@ -36,6 +36,12 @@ export const AppPages = {
 		icon: <ContactsOutlined />,
 		title: 'Directory',
 	},
+	FOODLOGS: {
+		location: MenuLocations.SIDER,
+		id: 'FOODLOGS',
+		icon: <ProfileOutlined />,
+		title: 'Food Logs',
+	},
 	ACCOUNT: {
 		location: MenuLocations.HEADER,
 		id: 'ACCOUNT',
@@ -43,6 +49,6 @@ export const AppPages = {
 	},
 };
 
-export const SiderPages = [AppPages.CALENDAR, AppPages.DIRECTORY];
+export const SiderPages = [AppPages.CALENDAR, AppPages.DIRECTORY, AppPages.FOODLOGS];
 
 export const HeaderPages = [AppPages.ACCOUNT];

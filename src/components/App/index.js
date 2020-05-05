@@ -7,7 +7,7 @@ import { Layout, Menu, PageHeader } from 'antd';
 
 import Loading from './Loading';
 import { AppPages, AgencyTypes, SiderPages } from './Enums';
-import { AccountView, CalendarView, DirectoryView } from './Views';
+import { AccountView, CalendarView, DirectoryView, FoodLogsView } from './Views';
 
 import Auth from '../Auth';
 
@@ -51,6 +51,9 @@ function App() {
 		[AppPages.DIRECTORY.id]: <DirectoryView agencies={agencies} />,
 		[AppPages.ACCOUNT.id]: (
 			<AccountView umbrella={umbrella} user={user} agency={agency} />
+		),
+		[AppPages.FOODLOGS.id]: (
+			<FoodLogsView/>
 		),
 	};
 
