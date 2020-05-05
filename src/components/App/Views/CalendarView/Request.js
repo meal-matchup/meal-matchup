@@ -64,7 +64,21 @@ function Request({ open = false, onClose, umbrella, agency }) {
 			},
 			type,
 		};
-		if (type === RequestTypes.PICKUP) requestData['receiver'] = AgencyTypes.ANY;
+		if (type === RequestTypes.PICKUP) {
+			requestData['receiver'] = AgencyTypes.ANY;
+			const occurrences = [];
+			for (
+				let date = dates[0].toDate();
+				date <= dates[1].toDate();
+				date.setDate(date.getDate() + 7)
+			) {
+				occurrences.push({
+					date: new Date(date),
+					complete: false,
+				});
+			}
+			requestData['occurrences'] = occurrences;
+		}
 		if (notes) requestData['notes'] = notes;
 
 		firebase

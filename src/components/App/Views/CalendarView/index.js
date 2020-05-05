@@ -19,7 +19,7 @@ import { LoadingOutlined } from '@ant-design/icons';
 
 import Request from './Request';
 
-import { AgencyTypes, RequestTitles } from '../../Enums';
+import { AgencyTypes, RequestTitles, RequestTypes } from '../../Enums';
 
 class CalendarView extends React.Component {
 	static propTypes = {
@@ -105,33 +105,56 @@ class CalendarView extends React.Component {
 
 		return requestsOnDate.length > 0 ? (
 			<ul className="events">
-				{requestsOnDate.map((request) => (
-					<li key={request.id}>
-						<Button
-							style={{
-								margin: 0,
-								padding: 0,
-							}}
-							onClick={() => this.openRequestModal(request.id)}
-							type="link"
-						>
-							<Badge
-								status={
-									this.props.agency.type === AgencyTypes.DONATOR
-										? request.deliverer !== AgencyTypes.ANY
-											? 'success'
-											: 'default'
-										: request[this.props.agency.type.toLowerCase()] !== 'any'
-										? 'success'
-										: 'default'
-								}
-								text={RequestTitles[request.type]}
-							/>
-						</Button>
-					</li>
-				))}
+				{requestsOnDate.map((request) => {
+					let occurrence;
+					if (request.type === RequestTypes.PICKUP) {
+						occurrence = request.occurrences.filter((x) =>
+							this.isSameDate(x.date.toDate(), value.toDate())
+						)[0];
+					}
+
+					let status = 'default';
+					if (request.type === RequestTypes.PICKUP) {
+						if (
+							(this.props.agency.type === AgencyTypes.DONATOR &&
+								request.deliverer !== AgencyTypes.ANY) ||
+							(request[this.props.agency.type.toLowerCase()] !==
+								AgencyTypes.ANY &&
+								occurrence &&
+								!occurrence.complete)
+						) {
+							status = 'warning';
+						}
+						if (occurrence && occurrence.complete) {
+							status = 'success';
+						}
+					}
+
+					return (
+						<li key={request.id}>
+							<Button
+								style={{
+									margin: 0,
+									padding: 0,
+								}}
+								onClick={() => this.openRequestModal(request.id)}
+								type="link"
+							>
+								<Badge status={status} text={RequestTitles[request.type]} />
+							</Button>
+						</li>
+					);
+				})}
 			</ul>
 		) : null;
+	}
+
+	isSameDate(date1, date2) {
+		return (
+			date1.getFullYear() === date2.getFullYear() &&
+			date1.getMonth() === date2.getMonth() &&
+			date1.getDate() === date2.getDate()
+		);
 	}
 
 	isSameWeekdayInPeriod(from, to, date) {
@@ -192,12 +215,21 @@ class CalendarView extends React.Component {
 
 	openRequestModal(requestId) {
 		const theRequest = this.state.requests.filter((x) => x.id === requestId)[0];
+
+		const { agency } = this.props;
+
+		let footer = this.requestModalFooters[agency.type];
+
+		if (agency.type !== AgencyTypes.DONATOR) {
+			const claimed = theRequest[agency.type.toLowerCase()] !== AgencyTypes.ANY;
+			footer = this.requestModalFooters[agency.type][
+				claimed ? 'claimed' : 'unclaimed'
+			];
+		}
+
 		this.setState({
 			currentRequest: theRequest,
-			requestModalFooter:
-				this.props.agency.type === AgencyTypes.DONATOR
-					? this.requestModalFooters[this.props.agency.type]
-					: this.requestModalFooters[this.props.agency.type][theRequest[this.props.agency.type.toLowerCase()] !== AgencyTypes.ANY ? 'claimed' : 'unclaimed'],
+			requestModalFooter: footer,
 			requestModalOpen: true,
 		});
 	}
@@ -320,7 +352,14 @@ class CalendarView extends React.Component {
 
 								<Modal
 									visible={requestModalOpen}
-									title={`Request on ${selectedDate.format('MMMM D, YYYY')}`}
+									title={`Request on ${selectedDate.format('MMMM D, YYYY')} (${
+										currentRequest &&
+										currentRequest.occurrences.filter((x) =>
+											this.isSameDate(x.date.toDate(), selectedDate.toDate())
+										)[0].complete
+											? 'Completed'
+											: 'Not done yet'
+									})`}
 									footer={requestModalFooter}
 									onCancel={this.closeRequestModal}
 									centered
