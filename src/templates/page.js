@@ -2,10 +2,19 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'gatsby';
 
+import Layout from '../components/Layout';
+import Page from '../components/Page';
+
 function PageTemplate({ data }) {
 	const { title } = data.page;
 
-	return <h1>{title}</h1>;
+	return (
+		<Layout>
+			<Page title={title} isHome={false}>
+				this is a page!
+			</Page>
+		</Layout>
+	);
 }
 
 PageTemplate.propTypes = {
