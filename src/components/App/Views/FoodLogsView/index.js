@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Card, Select, Tabs, Row } from 'antd';
+import { Statistic, Card, Select, Tabs, Row } from 'antd';
 
 import FoodLogsCard from './FoodLogsCard';
 
@@ -42,18 +42,7 @@ function FoodLogsView() {
 							maxWidth: 400,
 						}}
 					>
-						<div
-							style={{
-								display: 'flex',
-								flexDirection: 'row',
-								alignItems: 'center',
-								justifyContent: 'space-between',
-								width: 200,
-							}}
-						>
-							<p style={{ fontSize: 30, paddingTop: 15 }}> 220</p>
-							<p> Total Pounds Donated </p>
-						</div>
+						<Statistic title="Total Pounds Donated" value="220" />
 
 						<Select
 							defaultValue="ALL"
@@ -67,26 +56,15 @@ function FoodLogsView() {
 						</Select>
 					</div>
 					{food && (
-						<Card size="small" title={'Items Donated	'}>
-							{food.map((item) => {
+						<Card size="small" title={'Items Donated'}>
+							{food.map((item, index) => {
 								return (
 									<Card.Grid
 										style={gridStyle}
-										key={item.item}
+										key={`${item} ${index}`}
 										hoverable={false}
 									>
-										<div
-											style={{
-												display: 'flex',
-												flexDirection: 'row',
-												alignItems: 'center',
-												justifyContent: 'space-between',
-												width: 200,
-											}}
-										>
-											<div><b>{item.item}</b></div>
-											<div>{`${item.amount}lbs`} </div>
-										</div>
+										<Statistic title={item.item} value={item.amount} precision={1} suffix="lbs" />
 									</Card.Grid>
 								);
 							})}

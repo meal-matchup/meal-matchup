@@ -18,6 +18,7 @@ import {
 import { LoadingOutlined } from '@ant-design/icons';
 
 import Request from './Request';
+import Log from './Log';
 
 import { AgencyTypes, RequestTitles, RequestTypes } from '../../Enums';
 
@@ -43,6 +44,7 @@ class CalendarView extends React.Component {
 			mounted: null,
 			requests: null,
 			requestDrawerOpen: false,
+			logDrawerOpen: false,
 			selectedDate: moment(),
 		};
 
@@ -291,8 +293,18 @@ class CalendarView extends React.Component {
 			requestModalOpen,
 			requestModalFooter,
 			requestDrawerOpen,
+			logDrawerOpen,
 			selectedDate,
 		} = this.state;
+
+		const occurrence =
+			currentRequest &&
+			currentRequest.occurrences &&
+			currentRequest.occurrences.filter((x) =>
+				this.isSameDate(x.date.toDate(), selectedDate.toDate())
+			)[0];
+
+		const today = new Date();
 
 		const currentRequestInfo = currentRequest && {
 			when: `
@@ -397,6 +409,39 @@ class CalendarView extends React.Component {
 													{currentRequest.notes}
 												</Descriptions.Item>
 											)}
+
+											{occurrence && (
+												<Descriptions.Item label="Status">
+													{occurrence.complete ? (
+														<strong>Completed</strong>
+													) : (
+														<>
+															<strong>Not completed yet</strong>
+															<br />
+															{this.props.agency.type ===
+															AgencyTypes.DELIVERER ? (
+																<Button
+																	style={{
+																		display:
+																			occurrence.date.toDate() <= today
+																				? 'inline-block'
+																				: 'none',
+																	}}
+																	onClick={() => {
+																		this.setState({ logDrawerOpen: true });
+																		this.closeRequestModal();
+																	}}
+																	type="link"
+																>
+																	Fill out food log
+																</Button>
+															) : (
+																'Did the delivering agency pick up this donation? If so, they need to confirm this.'
+															)}
+														</>
+													)}
+												</Descriptions.Item>
+											)}
 										</Descriptions>
 									)}
 								</Modal>
@@ -461,6 +506,19 @@ class CalendarView extends React.Component {
 							umbrella={this.props.umbrella}
 							agency={this.props.agency}
 							agencies={this.props.agencies}
+						/>
+					)}
+
+				{this.props.umbrella &&
+					this.props.agency &&
+					this.props.agency.type === AgencyTypes.DELIVERER &&
+					this.props.agencies &&
+					currentRequest && (
+						<Log
+							open={logDrawerOpen}
+							onClose={() => this.setState({ logDrawerOpen: false })}
+							request={null}
+							occurrence={currentRequest.occurrences && currentRequest.occurrences.filter((x) => this.isSameDate(x.date.toDate(), selectedDate.toDate()))[0]}
 						/>
 					)}
 			</>
