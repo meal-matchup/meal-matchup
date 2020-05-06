@@ -4,17 +4,14 @@ import { Row, Col } from 'antd';
 
 function NavBar () {
     return (
-        <Row>
-            <Col span={2}>
+        <Row id="nav">
+            <Col span={2} id="nav_img">
                 <img src="//static1.squarespace.com/static/5aee05b75cfd79f523e4daf6/t/5ced930d104c7b1fe213c959/1582793180802/?format=1500w" style={{width: "70px", height: "45px"}}></img>
             </Col>
             <Col span={8} offset={13}>
                 <Space direction="horizontal" size="large">
                     <div className="collection" >
-                        <a href="/contact">Contact</a>
-                    </div>
-                    <div className="collection homepage" >
-                    <a href="/Home">Home</a>
+                        <a href="/Home">Home</a>
                     </div>
                     <div className="collection" >
                         <a href="/about">About</a>
@@ -25,6 +22,9 @@ function NavBar () {
                     <div className="collection" >
                         <a href="/get-involved">Get Involved</a>
                     </div>
+                    <div className="collection" >
+                        <a href="/contact">Contact</a>
+                    </div>
                 </Space>
            </Col>
         </Row>
@@ -32,26 +32,9 @@ function NavBar () {
 }
 
 function Header () {
-    let headerInnerStyle = {
-        padding: "20px 0",
-        display: "table",
-        width: "100%",
-        boxSizing: "border-box"
-    }
-    let headerStyle = {
-        padding: "0 20px",
-        boxSizing: "border-box",
-        zIndex: "1000",
-        top: "0",
-        left: "0",
-        width: "100%",
-        lineHeight: "1em",
-        backgroundColor: "#f7f7f7",
-        position: "relative"
-    }
     return (
-        <header id="header" className="show-on-scroll" data-offset-el=".index-section" data-offset-behavior="bottom" role="banner" style={headerStyle}>
-            <div className="header-inner" style={headerInnerStyle}>
+        <header id="header" className="show-on-scroll" data-offset-el=".index-section" data-offset-behavior="bottom" role="banner">
+            <div id="header-inner">
                 <div id="logoWrapper" className="wrapper" data-content-field="site-title">
                     <NavBar/>
                 </div>
@@ -64,7 +47,7 @@ function Main () {
     return (
         <main id="page" role="main" style={{display: "block"}}>
             <div id="item_container">
-                <Row>
+                <Row className="item-wrapper">
                     <Col span={8} offset={4}>
                         <div className="item">
                             <div className="item-info">
@@ -74,7 +57,7 @@ function Main () {
                                 </p>
                             </div>
                             <div className="btn_wrapper">
-                                <Button type="primary">Learn More</Button>
+                                <Button type="primary" className="learn-more">Learn More</Button>
                             </div>
                         </div>
                     </Col>
@@ -85,7 +68,7 @@ function Main () {
                     </Col>
                 </Row>
                 <hr></hr>
-                <Row>
+                <Row className="item-wrapper">
                     <Col span={8} offset={4}>
                         <div className="item">
                             <div className="item-info">  
@@ -93,7 +76,7 @@ function Main () {
                                 <p>Join Meal Matchup at the University of Washington Seattle campus as a dining hall, volunteer, or non-profit organization. Contact our Coordinator to learn more about how Meal Matchup works and if Meal Matchup would be a good fit for you or your organization.</p>
                             </div>
                             <div className="btn_wrapper">
-                                <Button type="primary">Learn More</Button>
+                                <Button type="primary" className = "learn-more">Learn More</Button>
                             </div>
                         </div>
                     </Col>
