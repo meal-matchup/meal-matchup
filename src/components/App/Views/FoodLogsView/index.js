@@ -40,9 +40,12 @@ function FoodLogsView() {
 							justifyContent: 'space-between',
 							width: '70vw',
 							maxWidth: 400,
+							marginBottom: 10,
 						}}
 					>
-						<Statistic title="Total Pounds Donated" value="220" />
+						<Card size="small" title={'Total Donated'} style = {{width: 200}}>
+							<Statistic value="220" precision={1} suffix="lbs" />
+						</Card>
 
 						<Select
 							defaultValue="ALL"
@@ -64,7 +67,12 @@ function FoodLogsView() {
 										key={`${item} ${index}`}
 										hoverable={false}
 									>
-										<Statistic title={item.item} value={item.amount} precision={1} suffix="lbs" />
+										<Statistic
+											title={item.item}
+											value={item.amount}
+											precision={1}
+											suffix="lbs"
+										/>
 									</Card.Grid>
 								);
 							})}
