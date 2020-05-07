@@ -14,8 +14,7 @@ import {
 	Col,
 	Row,
 } from 'antd';
-import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
-
+import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { AuthPages } from '../Enums';
 import { AgencyTypes } from '../../App';
 
@@ -177,6 +176,7 @@ function SignUpView({ changeView }) {
 										email: values.signup.agencyContactEmail,
 										phone: values.signup.agencyContactPhone,
 									},
+									users: values.users,
 								})
 								.then((newAgencyDoc) => {
 									return firebase
@@ -447,7 +447,6 @@ function SignUpView({ changeView }) {
 																	rules={[
 																		{
 																			required: true,
-																			type: 'email',
 																			message: 'Please enter a name',
 																		},
 																	]}
