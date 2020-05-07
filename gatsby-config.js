@@ -47,7 +47,7 @@ module.exports = {
 		{
 			resolve: 'gatsby-source-wordpress',
 			options: {
-				baseUrl: 'sites.uw.edu/mealmatchup',
+				baseUrl: 'depts.washington.edu/mealmatchup/wordpress',
 				protocol: 'https',
 				hostingWPCOM: false,
 				useACT: false,

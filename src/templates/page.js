@@ -5,12 +5,14 @@ import { graphql } from 'gatsby';
 import Layout from '../components/Layout';
 import Page from '../components/Page';
 
-function PageTemplate({ data }) {
+function PageTemplate({ data, pageContext }) {
+	console.log(pageContext);
 	const { title } = data.page;
+	const isHome = pageContext.slug === '/';
 
 	return (
 		<Layout>
-			<Page title={title} isHome={false}>
+			<Page title={title} isHome={isHome}>
 				this is a page!
 			</Page>
 		</Layout>
@@ -20,6 +22,8 @@ function PageTemplate({ data }) {
 PageTemplate.propTypes = {
 	pageContext: PropTypes.shape({
 		id: PropTypes.string.isRequired,
+		status: PropTypes.string.isRequired,
+		slug: PropTypes.string.isRequired,
 	}).isRequired,
 	data: PropTypes.shape({
 		page: PropTypes.shape({

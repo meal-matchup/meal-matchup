@@ -5,6 +5,18 @@ exports.createPages = async ({ graphql, actions }) => {
 
 	await graphql(`
 		{
+			site {
+				siteMetadata {
+					title
+					description
+				}
+			}
+
+			metadata: wordpressSiteMetadata {
+				name
+				description
+			}
+
 			pages: allWordpressPage {
 				edges {
 					node {
@@ -19,14 +31,14 @@ exports.createPages = async ({ graphql, actions }) => {
 		result.data.pages.edges.forEach((page) => {
 			const { id, status } = page.node;
 			if (status !== 'publish') return;
-			const slug = page.node.path.replace('/mealmatchup/', '/');
+			const slug = page.node.path.replace('/mealmatchup/wordpress/', '/');
 
 			createPage({
 				path: slug,
 				component: path.resolve('./src/templates/page.js'),
 				context: {
 					id,
-					status,
+					slug,
 				},
 			});
 		});
