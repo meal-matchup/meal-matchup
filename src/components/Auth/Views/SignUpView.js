@@ -176,7 +176,7 @@ function SignUpView({ changeView }) {
 										email: values.signup.agencyContactEmail,
 										phone: values.signup.agencyContactPhone,
 									},
-									users: values.users,
+									users: values.users || null,
 								})
 								.then((newAgencyDoc) => {
 									return firebase
