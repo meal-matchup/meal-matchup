@@ -1,0 +1,89 @@
+#nav {
+    color: rgba(26, 26, 26, 0.7);
+    font-size: 18px;
+    font-family: proxima-nova;
+    padding: 20px 0px;
+    background-color:#f2f2f2;
+
+}
+
+.collection {
+    font-size: 12px;
+    font-family: proxima-nova;
+    padding: 9px 12px;
+}
+
+.collection > a {
+    color: rgba(0, 0, 0, 0.9);
+}
+
+.collection > a:hover {
+    color:  #36B3A8;
+}
+
+.footer {
+    background-color: black;
+}
+
+.container {
+    background-color: #fff;
+    font-size: 16px;
+}
+
+.img_wrapper > img {
+    width: 394px;
+    height: 262px;
+}
+
+hr {
+    width: 72%;
+    text-align: center;
+    color: rgb(136, 132, 132);
+}
+
+.footer-info {
+    color: white;
+}
+
+#header {
+    padding: "0 20px";
+    box-sizing: "border-box";
+    z-index: "1000";
+    top: "0";
+    left: "0";
+    width: "100%";
+    line-height: "1em";
+    background-color: "#f7f7f7";
+    position: "relative";
+}
+
+#header-inner {
+    padding: "20px 0";
+    display: "table";
+    width: "100%";
+    box-sizing: "border-box";
+}
+
+.learn-more {
+    background-color: #36B3A8;
+    border-radius: 300px;
+    color: #ffffff;
+    padding: 21px 34px;
+    font-family: "proxima-nova" "Helvetica Neue";
+    font-size: 14px;
+    border: hidden;
+    text-align: center;
+    line-height: 0.4em;
+}
+
+.item-wrapper {
+    padding: 100px 0px;
+}
+
+#nav_img {
+    padding-left: 20px;
+}
+
+.learn-more:hover {
+    background-color: #36B3A8;
+}

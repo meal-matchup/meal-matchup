@@ -1,5 +1,4 @@
 import React from 'react';
-
 import App from '../../components/App';
 
 function AppPage() {
@@ -7,3 +6,4 @@ function AppPage() {
 }
 
 export default AppPage;
+
