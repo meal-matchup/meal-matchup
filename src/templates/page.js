@@ -6,7 +6,6 @@ import Layout from '../components/Layout';
 import Page from '../components/Page';
 
 function PageTemplate({ data, pageContext }) {
-	console.log(pageContext);
 	const { title } = data.page;
 	const isHome = pageContext.slug === '/';
 
