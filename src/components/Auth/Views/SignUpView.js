@@ -11,7 +11,10 @@ import {
 	Layout,
 	PageHeader,
 	Select,
+	Col,
+	Row,
 } from 'antd';
+import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 
 import { AuthPages } from '../Enums';
 import { AgencyTypes } from '../../App';
@@ -425,7 +428,84 @@ function SignUpView({ changeView }) {
 							>
 								<Input disabled={signingUp} type="tel" />
 							</Form.Item>
-
+							{agencyType === AgencyTypes.DELIVERER && (
+								<>
+									<Form.List name="users" label="Deliverers">
+										{(fields, { add, remove }) => {
+											/**
+											 * `fields` internal fill with `name`, `key`, `fieldKey` props.
+											 * You can extends this into sub field to support multiple dynamic fields.
+											 */
+											return (
+												<div>
+													{fields.map((field) => (
+														<Row key={field.key}>
+															<Col span={11}>
+																<Form.Item
+																	name={[field.name, 'name']}
+																	fieldKey={[field.fieldKey, 'name']}
+																	rules={[
+																		{
+																			required: true,
+																			type: 'email',
+																			message: 'Please enter a name',
+																		},
+																	]}
+																>
+																	<Input placeholder="Name" />
+																</Form.Item>
+															</Col>
+															<Col span={1}></Col>
+															<Col span={11}>
+																<Form.Item
+																	name={[field.name, 'email']}
+																	fieldKey={[field.fieldKey, 'email']}
+																	rules={[
+																		{
+																			required: true,
+																			type: 'email',
+																			message: 'Please enter an email address',
+																		},
+																	]}
+																>
+																	<Input placeholder="Email" />
+																</Form.Item>
+															</Col>
+															<Col span={1}>
+																<div
+																	style={{
+																		display: 'flex',
+																		justifyContent: 'center',
+																		marginTop: 8,
+																	}}
+																>
+																	<MinusCircleOutlined
+																		className="dynamic-delete-button"
+																		onClick={() => {
+																			remove(field.name);
+																		}}
+																	/>
+																</div>
+															</Col>
+														</Row>
+													))}
+													<Form.Item extra="These are the members in your organization who will be performing deliveries.">
+														<Button
+															type="dashed"
+															onClick={() => {
+																add();
+															}}
+															style={{ width: '100%' }}
+														>
+															<PlusOutlined /> Add Deliverers
+														</Button>
+													</Form.Item>
+												</div>
+											);
+										}}
+									</Form.List>
+								</>
+							)}
 							<Form.Item
 								extra={`This will be visible to all ${umbrella.name} users.`}
 							>
