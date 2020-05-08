@@ -16,8 +16,14 @@ import {
 	Tooltip,
 	Select,
 	Drawer,
+	Form,
+	Input,
 } from 'antd';
-import { LoadingOutlined } from '@ant-design/icons';
+import {
+	LoadingOutlined,
+	MinusCircleOutlined,
+	PlusOutlined,
+} from '@ant-design/icons';
 
 import Request from './Request';
 import Log from './Log';
@@ -44,6 +50,7 @@ class CalendarView extends React.Component {
 		this.state = {
 			currentRequest: null,
 			claimDeliverers: [],
+			manualDeliverers: [],
 			mounted: null,
 			requests: null,
 			claimDrawerVisible: false,
@@ -86,11 +93,7 @@ class CalendarView extends React.Component {
 						key="claim"
 						type="primary"
 						onClick={() => {
-							if (agency.users) {
-								this.openClaimDrawer();
-							} else {
-								this.claimRequest();
-							}
+							this.openClaimDrawer();
 						}}
 					>
 						Claim
@@ -323,6 +326,7 @@ class CalendarView extends React.Component {
 			claimDrawerOpen,
 			claimDrawerVisible,
 			claimDeliverers,
+			manualDeliverers,
 			requestModalOpen,
 			requestModalFooter,
 			requestDrawerOpen,
@@ -333,7 +337,7 @@ class CalendarView extends React.Component {
 		const { Option } = Select;
 
 		const children = [];
-		if (this.props.agency) {
+		if (this.props.agency && this.props.agency.users) {
 			this.props.agency.users.map((person) => {
 				children.push(<Option key={person.name}>{person.name}</Option>);
 			});
@@ -427,33 +431,13 @@ class CalendarView extends React.Component {
 											key="claimDrawer"
 											title="Confirm Claim"
 											placement="bottom"
-											closable={false}
+											height="top"
+											closable={true}
 											onClose={this.closeClaimDrawer}
 											visible={claimDrawerOpen}
 											getContainer={false}
 											destroyOnClose={true}
 											style={{ position: 'absolute' }}
-											footer={
-												<div>
-													<Button onClick={this.closeClaimDrawer}>
-														{' '}
-														Cancel
-													</Button>
-													<Button
-														type="primary"
-														style={{ marginLeft: 7 }}
-														onClick={() => {
-															this.claimRequest()
-														}}
-													>
-														Confirm
-													</Button>
-												</div>
-											}
-											footerStyle={{
-												display: 'flex',
-												flexDirection: 'row-reverse',
-											}}
 										>
 											<div>
 												Input the default delivers for this delivery. If nothing
@@ -461,17 +445,107 @@ class CalendarView extends React.Component {
 												deliverer.
 											</div>
 											<br />
-											<Select
-												mode="multiple"
-												style={{ width: '100%' }}
-												placeholder="Please select"
-												defaultValue={[]}
-												onChange={(value) => {
-													this.setState({ claimDeliverers: value });
+											{children.length > 0 && (
+												<Select
+													mode="multiple"
+													style={{ width: '100%' }}
+													placeholder="Please select default deliverers"
+													defaultValue={[]}
+													onChange={(value) => {
+														this.setState({ claimDeliverers: value });
+													}}
+												>
+													{children}
+												</Select>
+											)}
+											{children.length > 0 && (
+												<>
+													<div>
+														<br />
+													</div>
+													<div>
+														You can manually enter deliverer emails here.
+													</div>
+													<br />
+												</>
+											)}
+											<Form
+												name="dynamic_form_item"
+												onFinish={(values) => {
+													this.setState({ manualDeliverers: values.names });
 												}}
 											>
-												{children}
-											</Select>
+												<Form.List name="names">
+													{(fields, { add, remove }) => {
+														return (
+															<div>
+																{fields.map((field, index) => (
+																	<Form.Item required={true} key={field.key}>
+																		<Form.Item
+																			{...field}
+																			validateTrigger={['onChange', 'onBlur']}
+																			rules={[
+																				{
+																					required: true,
+																					message:
+																						"please input the deliverer's email or delete this field.",
+																				},
+																			]}
+																			noStyle
+																		>
+																			<Input
+																				placeholder="deliverer email"
+																				style={{ width: '93.5%' }}
+																			/>
+																		</Form.Item>
+																		<MinusCircleOutlined
+																			className="dynamic-delete-button"
+																			style={{ margin: '0 8px' }}
+																			onClick={() => {
+																				remove(field.name);
+																			}}
+																		/>
+																	</Form.Item>
+																))}
+																<Form.Item>
+																	<Button
+																		type="dashed"
+																		onClick={() => {
+																			add();
+																		}}
+																		style={{ width: '100%' }}
+																	>
+																		<PlusOutlined /> Add Deliverer
+																	</Button>
+																</Form.Item>
+																<Form.Item>
+																	<div
+																		style={{
+																			display: 'flex',
+																			flexDirection: 'row-reverse',
+																		}}
+																	>
+																		<Button
+																			type="primary"
+																			style={{ marginLeft: 7 }}
+																			htmlType="submit"
+																			onClick={() => {
+																				this.closeClaimDrawer()
+																				this.claimRequest();
+																			}}
+																		>
+																			Confirm
+																		</Button>
+																		<Button onClick={this.closeClaimDrawer}>
+																			Cancel
+																		</Button>
+																	</div>
+																</Form.Item>
+															</div>
+														);
+													}}
+												</Form.List>
+											</Form>
 										</Drawer>
 									)}
 									{currentRequest && (
