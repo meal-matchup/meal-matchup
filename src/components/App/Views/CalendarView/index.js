@@ -14,6 +14,8 @@ import {
 	message,
 	Popconfirm,
 	Tooltip,
+	Select,
+	Drawer,
 } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 
@@ -41,13 +43,15 @@ class CalendarView extends React.Component {
 
 		this.state = {
 			currentRequest: null,
+			claimDeliverers: [],
 			mounted: null,
 			requests: null,
+			claimDrawerVisible: false,
+			claimDrawerOpen: false,
 			requestDrawerOpen: false,
 			logDrawerOpen: false,
 			selectedDate: moment(),
 		};
-
 		this.getRequests = this.getRequests.bind(this);
 		this.claimRequest = this.claimRequest.bind(this);
 		this.deleteRequest = this.deleteRequest.bind(this);
@@ -78,14 +82,19 @@ class CalendarView extends React.Component {
 					<Button key="cancel" onClick={this.closeRequestModal}>
 						Cancel
 					</Button>,
-					<Popconfirm
+					<Button
 						key="claim"
-						title="Claim this request series?"
-						okText="Yes"
-						onConfirm={this.claimRequest}
+						type="primary"
+						onClick={() => {
+							if (agency.users) {
+								this.openClaimDrawer();
+							} else {
+								this.claimRequest();
+							}
+						}}
 					>
-						<Button type="primary">Claim</Button>
-					</Popconfirm>,
+						Claim
+					</Button>,
 				],
 				claimed: [
 					<Button key="cancel" onClick={this.closeRequestModal}>
@@ -208,6 +217,27 @@ class CalendarView extends React.Component {
 		this.setState({ mounted: false });
 	}
 
+	openClaimDrawer = () => {
+		this.setState({
+			claimDrawerVisible: true,
+			claimDrawerOpen: true,
+		});
+	};
+
+	closeClaimDrawer = () => {
+		this.setState({
+			claimDrawerOpen: false,
+		});
+		setTimeout(
+			function () {
+				this.setState({
+					claimDrawerVisible: false,
+				});
+			}.bind(this),
+			230
+		);
+	};
+
 	closeRequestModal() {
 		this.setState({
 			currentRequest: null,
@@ -290,12 +320,24 @@ class CalendarView extends React.Component {
 		const {
 			currentRequest,
 			requests,
+			claimDrawerOpen,
+			claimDrawerVisible,
+			claimDeliverers,
 			requestModalOpen,
 			requestModalFooter,
 			requestDrawerOpen,
 			logDrawerOpen,
 			selectedDate,
 		} = this.state;
+
+		const { Option } = Select;
+
+		const children = [];
+		if (this.props.agency) {
+			this.props.agency.users.map((person) => {
+				children.push(<Option key={person.name}>{person.name}</Option>);
+			});
+		}
 
 		const occurrence =
 			currentRequest &&
@@ -326,11 +368,15 @@ class CalendarView extends React.Component {
 			deliverer:
 				currentRequest.deliverer === AgencyTypes.ANY
 					? { name: 'Any (Unclaimed)' }
-					: this.props.agencies.filter((x) => x.id === currentRequest.deliverer)[0],
+					: this.props.agencies.filter(
+							(x) => x.id === currentRequest.deliverer
+					  )[0],
 			receiver:
 				currentRequest.receiver === AgencyTypes.ANY
 					? { name: 'Any (Unclaimed)' }
-					: this.props.agencies.filter((x) => x.id === currentRequest.receiver)[0],
+					: this.props.agencies.filter(
+							(x) => x.id === currentRequest.receiver
+					  )[0],
 		};
 
 		return (
@@ -361,8 +407,8 @@ class CalendarView extends React.Component {
 									dateCellRender={this.dateCellRender}
 									onChange={(value) => this.setState({ selectedDate: value })}
 								/>
-
 								<Modal
+									style={{ overflow: 'hidden' }}
 									visible={requestModalOpen}
 									title={`Request on ${selectedDate.format('MMMM D, YYYY')} (${
 										currentRequest &&
@@ -376,6 +422,58 @@ class CalendarView extends React.Component {
 									onCancel={this.closeRequestModal}
 									centered
 								>
+									{claimDrawerVisible && (
+										<Drawer
+											key="claimDrawer"
+											title="Confirm Claim"
+											placement="bottom"
+											closable={false}
+											onClose={this.closeClaimDrawer}
+											visible={claimDrawerOpen}
+											getContainer={false}
+											destroyOnClose={true}
+											style={{ position: 'absolute' }}
+											footer={
+												<div>
+													<Button onClick={this.closeClaimDrawer}>
+														{' '}
+														Cancel
+													</Button>
+													<Button
+														type="primary"
+														style={{ marginLeft: 7 }}
+														onClick={() => {
+															this.claimRequest()
+														}}
+													>
+														Confirm
+													</Button>
+												</div>
+											}
+											footerStyle={{
+												display: 'flex',
+												flexDirection: 'row-reverse',
+											}}
+										>
+											<div>
+												Input the default delivers for this delivery. If nothing
+												is input the primary contact will be used as the default
+												deliverer.
+											</div>
+											<br />
+											<Select
+												mode="multiple"
+												style={{ width: '100%' }}
+												placeholder="Please select"
+												defaultValue={[]}
+												onChange={(value) => {
+													this.setState({ claimDeliverers: value });
+												}}
+											>
+												{children}
+											</Select>
+										</Drawer>
+									)}
 									{currentRequest && (
 										<Descriptions column={1} bordered>
 											<Descriptions.Item label="When">
@@ -518,7 +616,12 @@ class CalendarView extends React.Component {
 							open={logDrawerOpen}
 							onClose={() => this.setState({ logDrawerOpen: false })}
 							request={null}
-							occurrence={currentRequest.occurrences && currentRequest.occurrences.filter((x) => this.isSameDate(x.date.toDate(), selectedDate.toDate()))[0]}
+							occurrence={
+								currentRequest.occurrences &&
+								currentRequest.occurrences.filter((x) =>
+									this.isSameDate(x.date.toDate(), selectedDate.toDate())
+								)[0]
+							}
 						/>
 					)}
 			</>
