@@ -494,6 +494,29 @@ class CalendarView extends React.Component {
 											closable={true}
 											onClose={this.closeClaimDrawer}
 											visible={claimDrawerOpen}
+											footer = {
+												<div
+													style={{
+														display: 'flex',
+														flexDirection: 'row-reverse',
+													}}
+												>
+													<Button
+														type="primary"
+														style={{ marginLeft: 7 }}
+														htmlType="submit"
+														onClick={() => {
+															this.closeClaimDrawer()
+															this.claimRequest();
+														}}
+													>
+														Confirm
+													</Button>
+													<Button onClick={this.closeClaimDrawer}>
+														Cancel
+													</Button>
+												</div>
+											}
 											getContainer={false}
 											destroyOnClose={true}
 											style={{ position: 'absolute' }}
@@ -576,29 +599,6 @@ class CalendarView extends React.Component {
 																	>
 																		<PlusOutlined /> Add Deliverer
 																	</Button>
-																</Form.Item>
-																<Form.Item>
-																	<div
-																		style={{
-																			display: 'flex',
-																			flexDirection: 'row-reverse',
-																		}}
-																	>
-																		<Button
-																			type="primary"
-																			style={{ marginLeft: 7 }}
-																			htmlType="submit"
-																			onClick={() => {
-																				this.closeClaimDrawer()
-																				this.claimRequest();
-																			}}
-																		>
-																			Confirm
-																		</Button>
-																		<Button onClick={this.closeClaimDrawer}>
-																			Cancel
-																		</Button>
-																	</div>
 																</Form.Item>
 															</div>
 														);
