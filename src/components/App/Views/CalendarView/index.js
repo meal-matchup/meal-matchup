@@ -394,6 +394,10 @@ class CalendarView extends React.Component {
 				children.push(<Option key={person.name}>{person.name}</Option>);
 			});
 		}
+		const onFinish = values => {
+			console.log('Received values of form:', values);
+		  };
+
 
 		const occurrence =
 			currentRequest &&
@@ -502,12 +506,14 @@ class CalendarView extends React.Component {
 													}}
 												>
 													<Button
+														form = "dynamic_form_item"
 														type="primary"
 														style={{ marginLeft: 7 }}
 														htmlType="submit"
 														onClick={() => {
 															this.closeClaimDrawer()
 															this.claimRequest();
+
 														}}
 													>
 														Confirm
@@ -552,7 +558,9 @@ class CalendarView extends React.Component {
 												</>
 											)}
 											<Form
+												id = "dynamic_form_item"
 												name="dynamic_form_item"
+												onFinish={onFinish}
 												onChange={(e) =>
 													this.handleManualEmailsChange(e, e.target.id)
 												}
