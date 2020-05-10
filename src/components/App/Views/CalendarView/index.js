@@ -129,7 +129,6 @@ class CalendarView extends React.Component {
 			return { ...email, email: e.target.value };
 		});
 		this.setState({ manualDeliverers: newManualEmails });
-		console.log(newManualEmails);
 	}
 
 	dateCellRender(value) {
@@ -226,9 +225,9 @@ class CalendarView extends React.Component {
 
 	componentDidMount() {
 		this.setState({ mounted: true });
-		if (this.state.manualDeliverers.length > 0) {
-			this.setState({ manualDeliverers: [{email: ''}]});
-		}
+		// if (this.state.manualDeliverers.length > 0) {
+		// 	this.setState({ manualDeliverers: [{email: ''}]});
+		// }
 	}
 
 	componentDidUpdate() {
@@ -328,20 +327,9 @@ class CalendarView extends React.Component {
 			const newManualEmails = this.state.manualDeliverers.map((email) => {
 					return email.email;
 			});
-			// for (let i = 0; i < this.state.manualDeliverers.length; i++) {
-			// 	manual_emails.push(this.state.manualDeliverers[i].email);
-			// }
-			console.log(newManualEmails);
 			// set delivery list to be the correct list (depending on manual, drawer selection, or no selection)
 			let deliverer_entry_type = '';
 			let complete_deliverers_list = this.state.claimDeliverers.concat(newManualEmails);
-			// if (deliverers_list.length == 0) {
-			// 	console.log("MANUAL ENTRY");
-			// 	deliverers_list = this.state.manualDeliverers;
-			// 	deliverer_entry_type = 'manual';
-			// 	console.log("LIST");
-			// 	console.log(deliverers_list);
-			// }
 			// if no deliverers were specified, default to primary contact
 			if (complete_deliverers_list.length == 0) {
 				complete_deliverers_list = [this.props.agency.contact.name];
