@@ -40,6 +40,11 @@ class CalendarView extends React.Component {
 			type: PropTypes.string.isRequired,
 			name: PropTypes.string.isRequired,
 			approved: PropTypes.bool.isRequired,
+			contact: PropTypes.shape({
+				name: PropTypes.string.isRequired,
+				email: PropTypes.string.isRequired,
+				phone: PropTypes.string.isRequired,
+			}),
 		}),
 		agencies: PropTypes.array,
 	};
@@ -50,7 +55,7 @@ class CalendarView extends React.Component {
 		this.state = {
 			currentRequest: null,
 			claimDeliverers: [],
-			manualDeliverers: [],
+			manualDeliverers: [{ email: '' }],
 			mounted: null,
 			requests: null,
 			claimDrawerVisible: false,
@@ -64,6 +69,7 @@ class CalendarView extends React.Component {
 		this.deleteRequest = this.deleteRequest.bind(this);
 		this.dateCellRender = this.dateCellRender.bind(this);
 		this.closeRequestModal = this.closeRequestModal.bind(this);
+		this.handleManualEmailsChange = this.handleManualEmailsChange.bind(this);
 
 		this.requestModalFooters = {
 			[AgencyTypes.DONATOR]: [
@@ -106,6 +112,24 @@ class CalendarView extends React.Component {
 				],
 			},
 		};
+	}
+
+	handleManualEmailsChange(e, id) {
+		let idx = parseInt(id.charAt(id.length - 1));
+		let manualDeliverersCopy = this.state.manualDeliverers;
+		e.preventDefault();
+		if (idx >= this.state.manualDeliverers.length) {
+			// add new entry;
+			manualDeliverersCopy = manualDeliverersCopy.concat([{ email: '' }]);
+		}
+		const newManualEmails = manualDeliverersCopy.map((email, eidx) => {
+			if (idx !== eidx) {
+				return email;
+			}
+			return { ...email, email: e.target.value };
+		});
+		this.setState({ manualDeliverers: newManualEmails });
+		console.log(newManualEmails);
 	}
 
 	dateCellRender(value) {
@@ -202,6 +226,9 @@ class CalendarView extends React.Component {
 
 	componentDidMount() {
 		this.setState({ mounted: true });
+		if (this.state.manualDeliverers.length > 0) {
+			this.setState({ manualDeliverers: [{email: ''}]});
+		}
 	}
 
 	componentDidUpdate() {
@@ -230,6 +257,7 @@ class CalendarView extends React.Component {
 	closeClaimDrawer = () => {
 		this.setState({
 			claimDrawerOpen: false,
+			manualDeliverers: [{ email: '' }],
 		});
 		setTimeout(
 			function () {
@@ -291,14 +319,49 @@ class CalendarView extends React.Component {
 	claimRequest() {
 		if (this.state.currentRequest) {
 			// Only try to claim if there's a request to be claimed
+			this.props.agency.users.map((person) => {
+				if (this.state.claimDeliverers.some(item => person.name === item)) {
+					console.log(person.email);
+					// send the emails here
+				}
+			});
+			const newManualEmails = this.state.manualDeliverers.map((email) => {
+					return email.email;
+			});
+			// for (let i = 0; i < this.state.manualDeliverers.length; i++) {
+			// 	manual_emails.push(this.state.manualDeliverers[i].email);
+			// }
+			console.log(newManualEmails);
+			// set delivery list to be the correct list (depending on manual, drawer selection, or no selection)
+			let deliverer_entry_type = '';
+			let complete_deliverers_list = this.state.claimDeliverers.concat(newManualEmails);
+			// if (deliverers_list.length == 0) {
+			// 	console.log("MANUAL ENTRY");
+			// 	deliverers_list = this.state.manualDeliverers;
+			// 	deliverer_entry_type = 'manual';
+			// 	console.log("LIST");
+			// 	console.log(deliverers_list);
+			// }
+			// if no deliverers were specified, default to primary contact
+			if (complete_deliverers_list.length == 0) {
+				complete_deliverers_list = [this.props.agency.contact.name];
+				deliverer_entry_type = 'primary';
+			}
+			const occ_copy = [];
+			for (let i = 0; i < this.state.currentRequest.occurrences.length; i++) {
+				occ_copy[i] = this.state.currentRequest.occurrences[i];
+				occ_copy[i]['deliverers'] = complete_deliverers_list;
+			}
 			return firebase
 				.firestore()
 				.collection('requests')
 				.doc(this.state.currentRequest.id)
 				.update({
 					[this.props.agency.type.toLowerCase()]: this.props.agency.id,
+					occurrences: occ_copy,
 				})
 				.then(() => {
+					// clear old states
 					this.getRequests();
 					this.closeRequestModal();
 				})
@@ -337,6 +400,7 @@ class CalendarView extends React.Component {
 		const { Option } = Select;
 
 		const children = [];
+		const user_map = {};
 		if (this.props.agency && this.props.agency.users) {
 			this.props.agency.users.map((person) => {
 				children.push(<Option key={person.name}>{person.name}</Option>);
@@ -352,6 +416,12 @@ class CalendarView extends React.Component {
 
 		const today = new Date();
 
+		let assigned_deliverers = currentRequest && (occurrence.deliverers && occurrence.deliverers[0]);
+		if (occurrence && occurrence.deliverers) {
+			for (let i = 1; i < occurrence.deliverers.length; i++) {
+				assigned_deliverers += ', ' + occurrence.deliverers[i];
+			}
+		}
 		const currentRequestInfo = currentRequest && {
 			when: `
 				${moment(currentRequest.dates.from.toDate()).format('MMMM D, YYYY')}
@@ -381,6 +451,7 @@ class CalendarView extends React.Component {
 					: this.props.agencies.filter(
 							(x) => x.id === currentRequest.receiver
 					  )[0],
+			deliverers: occurrence.deliverers ? {name: assigned_deliverers} : { name : 'Unassigned'},
 		};
 
 		return (
@@ -440,7 +511,7 @@ class CalendarView extends React.Component {
 											style={{ position: 'absolute' }}
 										>
 											<div>
-												Input the default delivers for this delivery. If nothing
+												Input the default deliverers for this delivery. If nothing
 												is input the primary contact will be used as the default
 												deliverer.
 											</div>
@@ -471,9 +542,9 @@ class CalendarView extends React.Component {
 											)}
 											<Form
 												name="dynamic_form_item"
-												onFinish={(values) => {
-													this.setState({ manualDeliverers: values.names });
-												}}
+												onChange={(e) =>
+													this.handleManualEmailsChange(e, e.target.id)
+												}
 											>
 												<Form.List name="names">
 													{(fields, { add, remove }) => {
@@ -567,6 +638,10 @@ class CalendarView extends React.Component {
 													Directions
 												</a>
 											</Descriptions.Item>
+											{this.props.agency.type ===
+															AgencyTypes.DELIVERER &&
+											(<Descriptions.Item label="Assigned 	Deliverers">{currentRequestInfo.deliverers.name}
+											</Descriptions.Item>)}
 
 											<Descriptions.Item label="Delivering Agency">
 												{currentRequestInfo.deliverer.name}
