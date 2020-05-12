@@ -240,7 +240,10 @@ class CalendarView extends React.Component {
 		this.setState({
 			claimDrawerOpen: false,
 			claimDeliverers: [],
+<<<<<<< HEAD
 			editDeliverers: false,
+=======
+>>>>>>> cf0c950c54687a498006bd6e99c5bf25f278b1ab
 		});
 		setTimeout(
 			function () {
@@ -310,9 +313,13 @@ class CalendarView extends React.Component {
 			});
 
 			// set delivery list to be the correct list (depending on manual, drawer selection, or no selection)
+<<<<<<< HEAD
 			let complete_deliverers_list = this.state.claimDeliverers.concat(
 				entered_emails
 			);
+=======
+			let complete_deliverers_list = this.state.claimDeliverers.concat(entered_emails);
+>>>>>>> cf0c950c54687a498006bd6e99c5bf25f278b1ab
 			// if no deliverers were specified, default to primary contact
 			if (complete_deliverers_list.length == 0) {
 				complete_deliverers_list = [this.props.agency.contact.name];
@@ -375,6 +382,20 @@ class CalendarView extends React.Component {
 				children.push(<Option key={person.name}>{person.name}</Option>);
 			});
 		}
+<<<<<<< HEAD
+=======
+
+		const onFinish = values => {
+			console.log('Received values of form:', values);
+			console.log("claimed delivereres entered", this.state.claimDeliverers);
+			let emails = [];
+			if (values !== undefined && values.names !== undefined) {
+				emails = values.names;
+			}
+			this.closeClaimDrawer();
+			this.claimRequest(emails);
+		};
+>>>>>>> cf0c950c54687a498006bd6e99c5bf25f278b1ab
 
 		const onFinish = (values) => {
 			console.log('Received values of form:', values);

@@ -143,6 +143,7 @@ function App() {
 									approved: agencyDoc.data().approved,
 									address: agencyDoc.data().address,
 									users: agencyDoc.data().users,
+									contact: agencyDoc.data().contact,
 								});
 								setAgencyLoading(false);
 							})
