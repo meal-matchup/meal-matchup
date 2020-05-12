@@ -308,13 +308,10 @@ class CalendarView extends React.Component {
 			});
 
 			// set delivery list to be the correct list (depending on manual, drawer selection, or no selection)
-			let deliverer_entry_type = '';
 			let complete_deliverers_list = this.state.claimDeliverers.concat(entered_emails);
 			// if no deliverers were specified, default to primary contact
 			if (complete_deliverers_list.length == 0) {
-				// complete_deliverers_list = [this.props.agency.contact.name];
-				complete_deliverers_list = ['primary contact'];
-				deliverer_entry_type = 'primary';
+				complete_deliverers_list = [this.props.agency.contact.name];
 			}
 			const occ_copy = [];
 			for (let i = 0; i < this.state.currentRequest.occurrences.length; i++) {
@@ -330,7 +327,6 @@ class CalendarView extends React.Component {
 					occurrences: occ_copy,
 				})
 				.then(() => {
-					// clear old states
 					this.getRequests();
 					this.closeRequestModal();
 				})
