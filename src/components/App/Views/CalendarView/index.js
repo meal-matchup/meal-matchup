@@ -31,23 +31,23 @@ import Log from './Log';
 import { AgencyTypes, RequestTitles, RequestTypes } from '../../Enums';
 
 class CalendarView extends React.Component {
-	static propTypes = {
-		umbrella: PropTypes.shape({
-			id: PropTypes.string.isRequired,
-		}),
-		agency: PropTypes.shape({
-			id: PropTypes.string.isRequired,
-			type: PropTypes.string.isRequired,
-			name: PropTypes.string.isRequired,
-			approved: PropTypes.bool.isRequired,
-			contact: PropTypes.shape({
-				name: PropTypes.string.isRequired,
-				email: PropTypes.string.isRequired,
-				phone: PropTypes.string.isRequired,
-			}),
-		}),
-		agencies: PropTypes.array,
-	};
+	// static propTypes = {
+	// 	umbrella: PropTypes.shape({
+	// 		id: PropTypes.string.isRequired,
+	// 	}),
+	// 	agency: PropTypes.shape({
+	// 		id: PropTypes.string.isRequired,
+	// 		type: PropTypes.string.isRequired,
+	// 		name: PropTypes.string.isRequired,
+	// 		approved: PropTypes.bool.isRequired,
+	// 		contact: PropTypes.shape({
+	// 			name: PropTypes.string.isRequired,
+	// 			email: PropTypes.string.isRequired,
+	// 			phone: PropTypes.string.isRequired,
+	// 		}).isRequired,
+	// 	}),
+	// 	agencies: PropTypes.array,
+	// };
 
 	constructor(props) {
 		super(props);
@@ -55,7 +55,7 @@ class CalendarView extends React.Component {
 		this.state = {
 			currentRequest: null,
 			claimDeliverers: [],
-			manualDeliverers: [{ email: '' }],
+			manualDeliverers: [],
 			mounted: null,
 			requests: null,
 			claimDrawerVisible: false,
@@ -70,7 +70,6 @@ class CalendarView extends React.Component {
 		this.deleteRequest = this.deleteRequest.bind(this);
 		this.dateCellRender = this.dateCellRender.bind(this);
 		this.closeRequestModal = this.closeRequestModal.bind(this);
-		this.handleManualEmailsChange = this.handleManualEmailsChange.bind(this);
 
 		this.requestModalFooters = {
 			[AgencyTypes.DONATOR]: [
@@ -113,23 +112,6 @@ class CalendarView extends React.Component {
 				],
 			},
 		};
-	}
-
-	handleManualEmailsChange(e, id) {
-		let idx = parseInt(id.charAt(id.length - 1));
-		let manualDeliverersCopy = this.state.manualDeliverers;
-		e.preventDefault();
-		if (idx >= this.state.manualDeliverers.length) {
-			// add new entry;
-			manualDeliverersCopy = manualDeliverersCopy.concat([{ email: '' }]);
-		}
-		const newManualEmails = manualDeliverersCopy.map((email, eidx) => {
-			if (idx !== eidx) {
-				return email;
-			}
-			return { ...email, email: e.target.value };
-		});
-		this.setState({ manualDeliverers: newManualEmails });
 	}
 
 	dateCellRender(value) {
@@ -226,9 +208,9 @@ class CalendarView extends React.Component {
 
 	componentDidMount() {
 		this.setState({ mounted: true });
-		// if (this.state.manualDeliverers.length > 0) {
-		// 	this.setState({ manualDeliverers: [{email: ''}]});
-		// }
+		if (this.state.manualDeliverers.length > 0) {
+			this.setState({ manualDeliverers: [] });
+		}
 	}
 
 	componentDidUpdate() {
@@ -257,7 +239,7 @@ class CalendarView extends React.Component {
 	closeClaimDrawer = () => {
 		this.setState({
 			claimDrawerOpen: false,
-			manualDeliverers: [{ email: '' }],
+			claimDeliverers: [],
 			editDeliverers: false,
 		});
 		setTimeout(
@@ -317,7 +299,7 @@ class CalendarView extends React.Component {
 		}
 	}
 
-	claimRequest() {
+	claimRequest(entered_emails) {
 		if (this.state.currentRequest) {
 			// Only try to claim if there's a request to be claimed
 			this.props.agency.users.map((person) => {
@@ -326,18 +308,14 @@ class CalendarView extends React.Component {
 					// send the emails here
 				}
 			});
-			const newManualEmails = this.state.manualDeliverers.map((email) => {
-				return email.email;
-			});
+
 			// set delivery list to be the correct list (depending on manual, drawer selection, or no selection)
-			let deliverer_entry_type = '';
 			let complete_deliverers_list = this.state.claimDeliverers.concat(
-				newManualEmails
+				entered_emails
 			);
 			// if no deliverers were specified, default to primary contact
 			if (complete_deliverers_list.length == 0) {
 				complete_deliverers_list = [this.props.agency.contact.name];
-				deliverer_entry_type = 'primary';
 			}
 			const occ_copy = [];
 			for (let i = 0; i < this.state.currentRequest.occurrences.length; i++) {
@@ -353,7 +331,6 @@ class CalendarView extends React.Component {
 					occurrences: occ_copy,
 				})
 				.then(() => {
-					// clear old states
 					this.getRequests();
 					this.closeRequestModal();
 				})
@@ -393,14 +370,21 @@ class CalendarView extends React.Component {
 		const { Option } = Select;
 
 		const children = [];
-		const user_map = {};
 		if (this.props.agency && this.props.agency.users) {
 			this.props.agency.users.map((person) => {
 				children.push(<Option key={person.name}>{person.name}</Option>);
 			});
 		}
+
 		const onFinish = (values) => {
 			console.log('Received values of form:', values);
+			console.log("claimed delivereres entered", this.state.claimDeliverers);
+			let emails = [];
+			if (values !== undefined && values.names !== undefined) {
+				emails = values.names;
+			}
+			this.closeClaimDrawer();
+			this.claimRequest(emails);
 		};
 
 		const occurrence =
@@ -519,10 +503,6 @@ class CalendarView extends React.Component {
 														type="primary"
 														style={{ marginLeft: 7 }}
 														htmlType="submit"
-														onClick={() => {
-															this.closeClaimDrawer();
-															this.claimRequest();
-														}}
 													>
 														Confirm
 													</Button>
@@ -578,9 +558,6 @@ class CalendarView extends React.Component {
 												id="dynamic_form_item"
 												name="dynamic_form_item"
 												onFinish={onFinish}
-												onChange={(e) =>
-													this.handleManualEmailsChange(e, e.target.id)
-												}
 											>
 												<Form.List name="names">
 													{(fields, { add, remove }) => {
@@ -807,4 +784,21 @@ class CalendarView extends React.Component {
 	}
 }
 
+CalendarView.propTypes = {
+	umbrella: PropTypes.shape({
+		id: PropTypes.string.isRequired,
+	}),
+	agency: PropTypes.shape({
+		id: PropTypes.string.isRequired,
+		type: PropTypes.string.isRequired,
+		name: PropTypes.string.isRequired,
+		approved: PropTypes.bool.isRequired,
+		contact: PropTypes.shape({
+			name: PropTypes.string.isRequired,
+			email: PropTypes.string.isRequired,
+			phone: PropTypes.string.isRequired,
+		}).isRequired,
+	}),
+	agencies: PropTypes.array,
+};
 export default CalendarView;
