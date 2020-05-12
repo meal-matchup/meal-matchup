@@ -60,6 +60,7 @@ class CalendarView extends React.Component {
 			requests: null,
 			claimDrawerVisible: false,
 			claimDrawerOpen: false,
+			editDeliverers: false,
 			requestDrawerOpen: false,
 			logDrawerOpen: false,
 			selectedDate: moment(),
@@ -257,6 +258,7 @@ class CalendarView extends React.Component {
 		this.setState({
 			claimDrawerOpen: false,
 			manualDeliverers: [{ email: '' }],
+			editDeliverers: false,
 		});
 		setTimeout(
 			function () {
@@ -319,17 +321,19 @@ class CalendarView extends React.Component {
 		if (this.state.currentRequest) {
 			// Only try to claim if there's a request to be claimed
 			this.props.agency.users.map((person) => {
-				if (this.state.claimDeliverers.some(item => person.name === item)) {
+				if (this.state.claimDeliverers.some((item) => person.name === item)) {
 					console.log(person.email);
 					// send the emails here
 				}
 			});
 			const newManualEmails = this.state.manualDeliverers.map((email) => {
-					return email.email;
+				return email.email;
 			});
 			// set delivery list to be the correct list (depending on manual, drawer selection, or no selection)
 			let deliverer_entry_type = '';
-			let complete_deliverers_list = this.state.claimDeliverers.concat(newManualEmails);
+			let complete_deliverers_list = this.state.claimDeliverers.concat(
+				newManualEmails
+			);
 			// if no deliverers were specified, default to primary contact
 			if (complete_deliverers_list.length == 0) {
 				complete_deliverers_list = [this.props.agency.contact.name];
@@ -378,6 +382,7 @@ class CalendarView extends React.Component {
 			claimDrawerVisible,
 			claimDeliverers,
 			manualDeliverers,
+			editDeliverers,
 			requestModalOpen,
 			requestModalFooter,
 			requestDrawerOpen,
@@ -394,10 +399,9 @@ class CalendarView extends React.Component {
 				children.push(<Option key={person.name}>{person.name}</Option>);
 			});
 		}
-		const onFinish = values => {
+		const onFinish = (values) => {
 			console.log('Received values of form:', values);
-		  };
-
+		};
 
 		const occurrence =
 			currentRequest &&
@@ -408,7 +412,8 @@ class CalendarView extends React.Component {
 
 		const today = new Date();
 
-		let assigned_deliverers = currentRequest && (occurrence.deliverers && occurrence.deliverers[0]);
+		let assigned_deliverers =
+			currentRequest && occurrence.deliverers && occurrence.deliverers[0];
 		if (occurrence && occurrence.deliverers) {
 			for (let i = 1; i < occurrence.deliverers.length; i++) {
 				assigned_deliverers += ', ' + occurrence.deliverers[i];
@@ -443,7 +448,9 @@ class CalendarView extends React.Component {
 					: this.props.agencies.filter(
 							(x) => x.id === currentRequest.receiver
 					  )[0],
-			deliverers: occurrence.deliverers ? {name: assigned_deliverers} : { name : 'Unassigned'},
+			deliverers: occurrence.deliverers
+				? { name: assigned_deliverers }
+				: { name: 'Unassigned' },
 		};
 
 		return (
@@ -492,13 +499,15 @@ class CalendarView extends React.Component {
 									{claimDrawerVisible && (
 										<Drawer
 											key="claimDrawer"
-											title="Confirm Claim"
+											title={
+												editDeliverers ? 'Edit Deliverers' : 'Confirm Claim'
+											}
 											placement="bottom"
 											height="top"
 											closable={true}
 											onClose={this.closeClaimDrawer}
 											visible={claimDrawerOpen}
-											footer = {
+											footer={
 												<div
 													style={{
 														display: 'flex',
@@ -506,14 +515,13 @@ class CalendarView extends React.Component {
 													}}
 												>
 													<Button
-														form = "dynamic_form_item"
+														form="dynamic_form_item"
 														type="primary"
 														style={{ marginLeft: 7 }}
 														htmlType="submit"
 														onClick={() => {
-															this.closeClaimDrawer()
+															this.closeClaimDrawer();
 															this.claimRequest();
-
 														}}
 													>
 														Confirm
@@ -527,11 +535,20 @@ class CalendarView extends React.Component {
 											destroyOnClose={true}
 											style={{ position: 'absolute' }}
 										>
-											<div>
-												Input the default deliverers for this delivery. If nothing
-												is input the primary contact will be used as the default
-												deliverer.
-											</div>
+											{editDeliverers && (
+												<div>
+													Input the deliverers for this specific request. If
+													nothing is input the primary contact will be used the
+													deliverer for this date.
+												</div>
+											)}
+											{!editDeliverers && (
+												<div>
+													Input the default deliverers for this delivery. If
+													nothing is input the primary contact will be used as
+													the default deliverer.
+												</div>
+											)}
 											<br />
 											{children.length > 0 && (
 												<Select
@@ -558,7 +575,7 @@ class CalendarView extends React.Component {
 												</>
 											)}
 											<Form
-												id = "dynamic_form_item"
+												id="dynamic_form_item"
 												name="dynamic_form_item"
 												onFinish={onFinish}
 												onChange={(e) =>
@@ -634,10 +651,26 @@ class CalendarView extends React.Component {
 													Directions
 												</a>
 											</Descriptions.Item>
-											{this.props.agency.type ===
-															AgencyTypes.DELIVERER &&
-											(<Descriptions.Item label="Assigned 	Deliverers">{currentRequestInfo.deliverers.name}
-											</Descriptions.Item>)}
+											{this.props.agency.type === AgencyTypes.DELIVERER && (
+												<Descriptions.Item label="Assigned 	Deliverers">
+													{currentRequestInfo.deliverers.name}
+													{currentRequestInfo.deliverer.name ===
+														this.props.agency.name && (
+														<>
+															<br />
+															<a
+																role="button"
+																onClick={() => {
+																	this.setState({ editDeliverers: true });
+																	this.openClaimDrawer();
+																}}
+															>
+																Edit Deliverers
+															</a>
+														</>
+													)}
+												</Descriptions.Item>
+											)}
 
 											<Descriptions.Item label="Delivering Agency">
 												{currentRequestInfo.deliverer.name}
