@@ -291,13 +291,13 @@ class CalendarView extends React.Component {
 		return deliverers_list;
 	}
 
-	handleEditDeliverers(editted_deliverers) {
+	handleEditDeliverers(edited_deliverers) {
 		if (this.state.currentRequest) {
 			const occ_copy = [];
 			this.state.currentRequest.occurrences.map((occurrence, idx) => {
 				occ_copy[idx] = occurrence;
 				if (this.isSameDate(occurrence.date.toDate(),this.state.selectedDate.toDate())) {
-					occ_copy[idx]['deliverers'] = editted_deliverers;
+					occ_copy[idx]['deliverers'] = edited_deliverers;
 				}
 			});
 			return firebase
