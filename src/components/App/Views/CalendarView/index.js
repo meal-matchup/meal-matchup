@@ -31,24 +31,6 @@ import Log from './Log';
 import { AgencyTypes, RequestTitles, RequestTypes } from '../../Enums';
 
 class CalendarView extends React.Component {
-	// static propTypes = {
-	// 	umbrella: PropTypes.shape({
-	// 		id: PropTypes.string.isRequired,
-	// 	}),
-	// 	agency: PropTypes.shape({
-	// 		id: PropTypes.string.isRequired,
-	// 		type: PropTypes.string.isRequired,
-	// 		name: PropTypes.string.isRequired,
-	// 		approved: PropTypes.bool.isRequired,
-	// 		contact: PropTypes.shape({
-	// 			name: PropTypes.string.isRequired,
-	// 			email: PropTypes.string.isRequired,
-	// 			phone: PropTypes.string.isRequired,
-	// 		}).isRequired,
-	// 	}),
-	// 	agencies: PropTypes.array,
-	// };
-
 	constructor(props) {
 		super(props);
 
@@ -67,6 +49,7 @@ class CalendarView extends React.Component {
 		};
 		this.getRequests = this.getRequests.bind(this);
 		this.claimRequest = this.claimRequest.bind(this);
+		this.handlEditDeliverers = this.handleEditDeliverers.bind(this);
 		this.deleteRequest = this.deleteRequest.bind(this);
 		this.dateCellRender = this.dateCellRender.bind(this);
 		this.closeRequestModal = this.closeRequestModal.bind(this);
@@ -226,7 +209,10 @@ class CalendarView extends React.Component {
 	}
 
 	componentWillUnmount() {
-		this.setState({ mounted: false });
+		this.setState({
+			mounted: false,
+			claimDeliverers: [],
+		});
 	}
 
 	openClaimDrawer = () => {
@@ -239,7 +225,6 @@ class CalendarView extends React.Component {
 	closeClaimDrawer = () => {
 		this.setState({
 			claimDrawerOpen: false,
-			claimDeliverers: [],
 		});
 		setTimeout(
 			function () {
@@ -294,6 +279,39 @@ class CalendarView extends React.Component {
 				.catch((e) => {
 					debug('Unable to delete request', e);
 					message.error('Could not delete request');
+				});
+		}
+	}
+
+	handleEditDeliverers(entered_emails) {
+		if (this.state.currentRequest) {
+			let editted_deliverers_list = this.state.claimDeliverers.concat(entered_emails);
+			if (editted_deliverers_list.length == 0) {
+				editted_deliverers_list = [this.props.agency.contact.name];
+			}
+			const occ_copy = [];
+			this.state.currentRequest.occurrences.map((occurrence, idx) => {
+				occ_copy[idx] = occurrence;
+				if (this.isSameDate(occurrence.date.toDate(),this.state.selectedDate.toDate())) {
+					occ_copy[idx]['deliverers'] = editted_deliverers_list;
+				}
+			});
+
+			return firebase
+				.firestore()
+				.collection('requests')
+				.doc(this.state.currentRequest.id)
+				.update({
+					occurrences: occ_copy,
+				})
+				.then(() => {
+					this.getRequests();
+					this.closeRequestModal();
+				})
+				.catch((e) => {
+					debug('Unable to edit request', e);
+					message.error('Could not edit request');
+					this.closeRequestModal();
 				});
 		}
 	}
@@ -374,14 +392,16 @@ class CalendarView extends React.Component {
 		}
 
 		const onFinish = values => {
-			console.log('Received values of form:', values);
-			console.log("claimed delivereres entered", this.state.claimDeliverers);
 			let emails = [];
 			if (values !== undefined && values.names !== undefined) {
 				emails = values.names;
 			}
 			this.closeClaimDrawer();
-			this.claimRequest(emails);
+			if (this.state.editDeliverers) {
+				this.handleEditDeliverers(emails);
+			} else {
+				this.claimRequest(emails);
+			}
 		};
 
 		const occurrence =
