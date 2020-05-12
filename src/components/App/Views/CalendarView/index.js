@@ -283,20 +283,23 @@ class CalendarView extends React.Component {
 		}
 	}
 
-	handleEditDeliverers(entered_emails) {
+	getAssignedDeliverers(entered_emails) {
+		let deliverers_list = this.state.claimDeliverers.concat(entered_emails);
+		if (deliverers_list.length == 0) {
+			deliverers_list = [this.props.agency.contact.name];
+		}
+		return deliverers_list;
+	}
+
+	handleEditDeliverers(editted_deliverers) {
 		if (this.state.currentRequest) {
-			let editted_deliverers_list = this.state.claimDeliverers.concat(entered_emails);
-			if (editted_deliverers_list.length == 0) {
-				editted_deliverers_list = [this.props.agency.contact.name];
-			}
 			const occ_copy = [];
 			this.state.currentRequest.occurrences.map((occurrence, idx) => {
 				occ_copy[idx] = occurrence;
 				if (this.isSameDate(occurrence.date.toDate(),this.state.selectedDate.toDate())) {
-					occ_copy[idx]['deliverers'] = editted_deliverers_list;
+					occ_copy[idx]['deliverers'] = editted_deliverers;
 				}
 			});
-
 			return firebase
 				.firestore()
 				.collection('requests')
@@ -307,6 +310,7 @@ class CalendarView extends React.Component {
 				.then(() => {
 					this.getRequests();
 					this.closeRequestModal();
+					message.success('Successfully editted request');
 				})
 				.catch((e) => {
 					debug('Unable to edit request', e);
@@ -316,7 +320,7 @@ class CalendarView extends React.Component {
 		}
 	}
 
-	claimRequest(entered_emails) {
+	claimRequest(assigned_deliverers) {
 		if (this.state.currentRequest) {
 			// Only try to claim if there's a request to be claimed
 			this.props.agency.users.map((person) => {
@@ -325,18 +329,11 @@ class CalendarView extends React.Component {
 					// send the emails here
 				}
 			});
-
-			// set delivery list to be the correct list (depending on manual, drawer selection, or no selection)
-			let complete_deliverers_list = this.state.claimDeliverers.concat(entered_emails);
-			// if no deliverers were specified, default to primary contact
-			if (complete_deliverers_list.length == 0) {
-				complete_deliverers_list = [this.props.agency.contact.name];
-			}
 			const occ_copy = [];
-			for (let i = 0; i < this.state.currentRequest.occurrences.length; i++) {
-				occ_copy[i] = this.state.currentRequest.occurrences[i];
-				occ_copy[i]['deliverers'] = complete_deliverers_list;
-			}
+			this.state.currentRequest.occurrences.map((occurrence, idx) => {
+				occ_copy[idx] = occurrence;
+				occ_copy[idx]['deliverers'] = assigned_deliverers;
+			});
 			return firebase
 				.firestore()
 				.collection('requests')
@@ -396,11 +393,12 @@ class CalendarView extends React.Component {
 			if (values !== undefined && values.names !== undefined) {
 				emails = values.names;
 			}
+			let assigned_deliverers = this.getAssignedDeliverers(emails);
 			this.closeClaimDrawer();
 			if (this.state.editDeliverers) {
-				this.handleEditDeliverers(emails);
+				this.handleEditDeliverers(assigned_deliverers);
 			} else {
-				this.claimRequest(emails);
+				this.claimRequest(assigned_deliverers);
 			}
 		};
 
