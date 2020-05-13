@@ -18,6 +18,8 @@ import {
 	Drawer,
 	Form,
 	Input,
+	Row,
+	Col,
 } from 'antd';
 import {
 	LoadingOutlined,
@@ -238,6 +240,8 @@ class CalendarView extends React.Component {
 
 	closeRequestModal() {
 		this.setState({
+			editDeliverers:false,
+			claimDrawerOpen:false,
 			currentRequest: null,
 			requestModalOpen: false,
 		});
@@ -296,7 +300,12 @@ class CalendarView extends React.Component {
 			const occ_copy = [];
 			this.state.currentRequest.occurrences.map((occurrence, idx) => {
 				occ_copy[idx] = occurrence;
-				if (this.isSameDate(occurrence.date.toDate(),this.state.selectedDate.toDate())) {
+				if (
+					this.isSameDate(
+						occurrence.date.toDate(),
+						this.state.selectedDate.toDate()
+					)
+				) {
 					occ_copy[idx]['deliverers'] = edited_deliverers;
 				}
 			});
@@ -381,14 +390,7 @@ class CalendarView extends React.Component {
 
 		const { Option } = Select;
 
-		const children = [];
-		if (this.props.agency && this.props.agency.users) {
-			this.props.agency.users.map((person) => {
-				children.push(<Option key={person.name}>{person.name}</Option>);
-			});
-		}
-
-		const onFinish = values => {
+		const onFinish = (values) => {
 			let emails = [];
 			if (values !== undefined && values.names !== undefined) {
 				emails = values.names;
@@ -545,26 +547,28 @@ class CalendarView extends React.Component {
 												</div>
 											)}
 											<br />
-											{children.length > 0 && (
-												<Select
-													mode="multiple"
-													style={{ width: '100%' }}
-													placeholder="Please select default deliverers"
-													defaultValue={[]}
-													onChange={(value) => {
-														this.setState({ claimDeliverers: value });
-													}}
-												>
-													{children}
-												</Select>
-											)}
-											{children.length > 0 && (
+											{this.props.agency && this.props.agency.users && (
 												<>
+													<Select
+														mode="multiple"
+														style={{ width: '100%' }}
+														placeholder="Please select default deliverers"
+														defaultValue={[]}
+														onChange={(value) => {
+															this.setState({ claimDeliverers: value });
+														}}
+													>
+														{this.props.agency.users.map((person) => (
+															<Option key={person.name}>{person.name}</Option>
+														))}
+													</Select>
 													<div>
 														<br />
 													</div>
 													<div>
-														You can manually enter deliverer emails here.
+														If you do not have any deliverers saved, you can
+														manually add new ones here and they will be added to
+														your account and attached to this request.
 													</div>
 													<br />
 												</>
@@ -578,49 +582,71 @@ class CalendarView extends React.Component {
 													{(fields, { add, remove }) => {
 														return (
 															<div>
-																{fields.map((field, index) => (
-																	<Form.Item required={true} key={field.key}>
+																{fields.map((field) => (
+																	<Row key={field.key}>
+																	<Col span={11}>
 																		<Form.Item
-																			{...field}
-																			validateTrigger={['onChange', 'onBlur']}
+																			name={[field.name, 'name']}
+																			fieldKey={[field.fieldKey, 'name']}
 																			rules={[
 																				{
 																					required: true,
-																					message:
-																						"please input the deliverer's email or delete this field.",
+																					message: 'Please enter a name',
 																				},
 																			]}
-																			noStyle
 																		>
-																			<Input
-																				placeholder="deliverer email"
-																				style={{ width: '93.5%' }}
-																			/>
+																			<Input placeholder="Name" />
 																		</Form.Item>
-																		<MinusCircleOutlined
-																			className="dynamic-delete-button"
-																			style={{ margin: '0 8px' }}
-																			onClick={() => {
-																				remove(field.name);
+																	</Col>
+																	<Col span={1}></Col>
+																	<Col span={11}>
+																		<Form.Item
+																			name={[field.name, 'email']}
+																			fieldKey={[field.fieldKey, 'email']}
+																			rules={[
+																				{
+																					required: true,
+																					type: 'email',
+																					message: 'Please enter an email address',
+																				},
+																			]}
+																		>
+																			<Input placeholder="Email" />
+																		</Form.Item>
+																	</Col>
+																	<Col span={1}>
+																		<div
+																			style={{
+																				display: 'flex',
+																				justifyContent: 'center',
+																				marginTop: 8,
 																			}}
-																		/>
-																	</Form.Item>
-																))}
-																<Form.Item>
-																	<Button
-																		type="dashed"
-																		onClick={() => {
-																			add();
-																		}}
-																		style={{ width: '100%' }}
-																	>
-																		<PlusOutlined /> Add Deliverer
-																	</Button>
-																</Form.Item>
-															</div>
-														);
-													}}
-												</Form.List>
+																		>
+																			<MinusCircleOutlined
+																				className="dynamic-delete-button"
+																				onClick={() => {
+																					remove(field.name);
+																				}}
+																			/>
+																		</div>
+																	</Col>
+																</Row>
+															))}
+															<Form.Item>
+																<Button
+																	type="dashed"
+																	onClick={() => {
+																		add();
+																	}}
+																	style={{ width: '100%' }}
+																>
+																	<PlusOutlined /> Add Deliverers
+																</Button>
+															</Form.Item>
+														</div>
+													);
+												}}
+											</Form.List>
 											</Form>
 										</Drawer>
 									)}
@@ -650,15 +676,15 @@ class CalendarView extends React.Component {
 														this.props.agency.name && (
 														<>
 															<br />
-															<a
-																role="button"
+															<Button
+																type="link"
 																onClick={() => {
 																	this.setState({ editDeliverers: true });
 																	this.openClaimDrawer();
 																}}
 															>
 																Edit Deliverers
-															</a>
+															</Button>
 														</>
 													)}
 												</Descriptions.Item>

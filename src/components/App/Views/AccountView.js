@@ -47,6 +47,15 @@ function AccountView({ user, umbrella, agency }) {
 					<Descriptions.Item label="Agency type">
 						{agencyTypes[agency.type]}
 					</Descriptions.Item>
+					{agency.users && (
+						<Descriptions.Item label="Agency Deliverers">
+							{agency.users.map((person) => (
+								<div key={person.name}>
+									{person.name}, {person.email}
+								</div>
+							))}
+						</Descriptions.Item>
+					)}
 					<Descriptions.Item label="Agency address">
 						{agency.address.line1}
 						<br />
