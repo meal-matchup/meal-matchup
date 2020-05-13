@@ -39,7 +39,6 @@ class CalendarView extends React.Component {
 		this.state = {
 			currentRequest: null,
 			claimDeliverers: [],
-			manualDeliverers: [],
 			mounted: null,
 			requests: null,
 			claimDrawerVisible: false,
@@ -55,6 +54,7 @@ class CalendarView extends React.Component {
 		this.deleteRequest = this.deleteRequest.bind(this);
 		this.dateCellRender = this.dateCellRender.bind(this);
 		this.closeRequestModal = this.closeRequestModal.bind(this);
+		this.addNewUsers = this.addNewUsers.bind(this);
 
 		this.requestModalFooters = {
 			[AgencyTypes.DONATOR]: [
@@ -193,9 +193,6 @@ class CalendarView extends React.Component {
 
 	componentDidMount() {
 		this.setState({ mounted: true });
-		if (this.state.manualDeliverers.length > 0) {
-			this.setState({ manualDeliverers: [] });
-		}
 	}
 
 	componentDidUpdate() {
@@ -295,6 +292,21 @@ class CalendarView extends React.Component {
 		return deliverers_list;
 	}
 
+	addNewUsers(users) {
+		const updated_users = (this.props.agency.users).concat(users);
+		return firebase
+			.firestore()
+			.collection('agencies')
+			.doc(this.props.agency.id)
+			.update({
+				users: updated_users,
+			})
+			.catch((e) => {
+				debug("unable to add new users to agency", e);
+				message.error('Could not edit request');
+			});
+	}
+
 	handleEditDeliverers(edited_deliverers) {
 		if (this.state.currentRequest) {
 			const occ_copy = [];
@@ -319,11 +331,11 @@ class CalendarView extends React.Component {
 				.then(() => {
 					this.getRequests();
 					this.closeRequestModal();
-					message.success('Successfully editted request');
+					message.success('Successfully edited claim');
 				})
 				.catch((e) => {
-					debug('Unable to edit request', e);
-					message.error('Could not edit request');
+					debug('Unable to edit claim', e);
+					message.error('Could not edit claim');
 					this.closeRequestModal();
 				});
 		}
@@ -332,12 +344,6 @@ class CalendarView extends React.Component {
 	claimRequest(assigned_deliverers) {
 		if (this.state.currentRequest) {
 			// Only try to claim if there's a request to be claimed
-			this.props.agency.users.map((person) => {
-				if (this.state.claimDeliverers.some((item) => person.name === item)) {
-					console.log(person.email);
-					// send the emails here
-				}
-			});
 			const occ_copy = [];
 			this.state.currentRequest.occurrences.map((occurrence, idx) => {
 				occ_copy[idx] = occurrence;
@@ -379,7 +385,6 @@ class CalendarView extends React.Component {
 			claimDrawerOpen,
 			claimDrawerVisible,
 			claimDeliverers,
-			manualDeliverers,
 			editDeliverers,
 			requestModalOpen,
 			requestModalFooter,
@@ -391,11 +396,15 @@ class CalendarView extends React.Component {
 		const { Option } = Select;
 
 		const onFinish = (values) => {
-			let emails = [];
+			// get just names names to display in calendar card
+			let new_manual_users_names = [];
 			if (values !== undefined && values.names !== undefined) {
-				emails = values.names;
+				new_manual_users_names = values.names.map((user) => user.name);
+				this.addNewUsers(values.names);
 			}
-			let assigned_deliverers = this.getAssignedDeliverers(emails);
+			let assigned_deliverers = this.getAssignedDeliverers(
+				new_manual_users_names
+			);
 			this.closeClaimDrawer();
 			if (this.state.editDeliverers) {
 				this.handleEditDeliverers(assigned_deliverers);
