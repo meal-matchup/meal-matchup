@@ -14,8 +14,18 @@ import {
 	message,
 	Popconfirm,
 	Tooltip,
+	Select,
+	Drawer,
+	Form,
+	Input,
+	Row,
+	Col,
 } from 'antd';
-import { LoadingOutlined } from '@ant-design/icons';
+import {
+	LoadingOutlined,
+	MinusCircleOutlined,
+	PlusOutlined,
+} from '@ant-design/icons';
 
 import Request from './Request';
 import Log from './Log';
@@ -23,36 +33,28 @@ import Log from './Log';
 import { AgencyTypes, RequestTitles, RequestTypes } from '../../Enums';
 
 class CalendarView extends React.Component {
-	static propTypes = {
-		umbrella: PropTypes.shape({
-			id: PropTypes.string.isRequired,
-		}),
-		agency: PropTypes.shape({
-			id: PropTypes.string.isRequired,
-			type: PropTypes.string.isRequired,
-			name: PropTypes.string.isRequired,
-			approved: PropTypes.bool.isRequired,
-		}),
-		agencies: PropTypes.array,
-	};
-
 	constructor(props) {
 		super(props);
 
 		this.state = {
 			currentRequest: null,
+			claimDeliverers: [],
 			mounted: null,
 			requests: null,
+			claimDrawerVisible: false,
+			claimDrawerOpen: false,
+			editDeliverers: false,
 			requestDrawerOpen: false,
 			logDrawerOpen: false,
 			selectedDate: moment(),
 		};
-
 		this.getRequests = this.getRequests.bind(this);
 		this.claimRequest = this.claimRequest.bind(this);
+		this.handlEditDeliverers = this.handleEditDeliverers.bind(this);
 		this.deleteRequest = this.deleteRequest.bind(this);
 		this.dateCellRender = this.dateCellRender.bind(this);
 		this.closeRequestModal = this.closeRequestModal.bind(this);
+		this.addNewUsers = this.addNewUsers.bind(this);
 
 		this.requestModalFooters = {
 			[AgencyTypes.DONATOR]: [
@@ -78,14 +80,15 @@ class CalendarView extends React.Component {
 					<Button key="cancel" onClick={this.closeRequestModal}>
 						Cancel
 					</Button>,
-					<Popconfirm
+					<Button
 						key="claim"
-						title="Claim this request series?"
-						okText="Yes"
-						onConfirm={this.claimRequest}
+						type="primary"
+						onClick={() => {
+							this.openClaimDrawer();
+						}}
 					>
-						<Button type="primary">Claim</Button>
-					</Popconfirm>,
+						Claim
+					</Button>,
 				],
 				claimed: [
 					<Button key="cancel" onClick={this.closeRequestModal}>
@@ -205,11 +208,37 @@ class CalendarView extends React.Component {
 	}
 
 	componentWillUnmount() {
-		this.setState({ mounted: false });
+		this.setState({
+			mounted: false,
+			claimDeliverers: [],
+		});
 	}
+
+	openClaimDrawer = () => {
+		this.setState({
+			claimDrawerVisible: true,
+			claimDrawerOpen: true,
+		});
+	};
+
+	closeClaimDrawer = () => {
+		this.setState({
+			claimDrawerOpen: false,
+		});
+		setTimeout(
+			function () {
+				this.setState({
+					claimDrawerVisible: false,
+				});
+			}.bind(this),
+			230
+		);
+	};
 
 	closeRequestModal() {
 		this.setState({
+			editDeliverers:false,
+			claimDrawerOpen:false,
 			currentRequest: null,
 			requestModalOpen: false,
 		});
@@ -255,15 +284,78 @@ class CalendarView extends React.Component {
 		}
 	}
 
-	claimRequest() {
+	getAssignedDeliverers(entered_emails) {
+		let deliverers_list = this.state.claimDeliverers.concat(entered_emails);
+		if (deliverers_list.length == 0) {
+			deliverers_list = [this.props.agency.contact.name];
+		}
+		return deliverers_list;
+	}
+
+	addNewUsers(users) {
+		const updated_users = (this.props.agency.users).concat(users);
+		return firebase
+			.firestore()
+			.collection('agencies')
+			.doc(this.props.agency.id)
+			.update({
+				users: updated_users,
+			})
+			.catch((e) => {
+				debug("unable to add new users to agency", e);
+				message.error('Could not edit request');
+			});
+	}
+
+	handleEditDeliverers(edited_deliverers) {
+		if (this.state.currentRequest) {
+			const occ_copy = [];
+			this.state.currentRequest.occurrences.map((occurrence, idx) => {
+				occ_copy[idx] = occurrence;
+				if (
+					this.isSameDate(
+						occurrence.date.toDate(),
+						this.state.selectedDate.toDate()
+					)
+				) {
+					occ_copy[idx]['deliverers'] = edited_deliverers;
+				}
+			});
+			return firebase
+				.firestore()
+				.collection('requests')
+				.doc(this.state.currentRequest.id)
+				.update({
+					occurrences: occ_copy,
+				})
+				.then(() => {
+					this.getRequests();
+					this.closeRequestModal();
+					message.success('Successfully edited claim');
+				})
+				.catch((e) => {
+					debug('Unable to edit claim', e);
+					message.error('Could not edit claim');
+					this.closeRequestModal();
+				});
+		}
+	}
+
+	claimRequest(assigned_deliverers) {
 		if (this.state.currentRequest) {
 			// Only try to claim if there's a request to be claimed
+			const occ_copy = [];
+			this.state.currentRequest.occurrences.map((occurrence, idx) => {
+				occ_copy[idx] = occurrence;
+				occ_copy[idx]['deliverers'] = assigned_deliverers;
+			});
 			return firebase
 				.firestore()
 				.collection('requests')
 				.doc(this.state.currentRequest.id)
 				.update({
 					[this.props.agency.type.toLowerCase()]: this.props.agency.id,
+					occurrences: occ_copy,
 				})
 				.then(() => {
 					this.getRequests();
@@ -290,12 +382,36 @@ class CalendarView extends React.Component {
 		const {
 			currentRequest,
 			requests,
+			claimDrawerOpen,
+			claimDrawerVisible,
+			claimDeliverers,
+			editDeliverers,
 			requestModalOpen,
 			requestModalFooter,
 			requestDrawerOpen,
 			logDrawerOpen,
 			selectedDate,
 		} = this.state;
+
+		const { Option } = Select;
+
+		const onFinish = (values) => {
+			// get just names names to display in calendar card
+			let new_manual_users_names = [];
+			if (values !== undefined && values.names !== undefined) {
+				new_manual_users_names = values.names.map((user) => user.name);
+				this.addNewUsers(values.names);
+			}
+			let assigned_deliverers = this.getAssignedDeliverers(
+				new_manual_users_names
+			);
+			this.closeClaimDrawer();
+			if (this.state.editDeliverers) {
+				this.handleEditDeliverers(assigned_deliverers);
+			} else {
+				this.claimRequest(assigned_deliverers);
+			}
+		};
 
 		const occurrence =
 			currentRequest &&
@@ -306,6 +422,13 @@ class CalendarView extends React.Component {
 
 		const today = new Date();
 
+		let assigned_deliverers =
+			currentRequest && occurrence.deliverers && occurrence.deliverers[0];
+		if (occurrence && occurrence.deliverers) {
+			for (let i = 1; i < occurrence.deliverers.length; i++) {
+				assigned_deliverers += ', ' + occurrence.deliverers[i];
+			}
+		}
 		const currentRequestInfo = currentRequest && {
 			when: `
 				${moment(currentRequest.dates.from.toDate()).format('MMMM D, YYYY')}
@@ -326,11 +449,18 @@ class CalendarView extends React.Component {
 			deliverer:
 				currentRequest.deliverer === AgencyTypes.ANY
 					? { name: 'Any (Unclaimed)' }
-					: this.props.agencies.filter((x) => x.id === currentRequest.deliverer)[0],
+					: this.props.agencies.filter(
+							(x) => x.id === currentRequest.deliverer
+					  )[0],
 			receiver:
 				currentRequest.receiver === AgencyTypes.ANY
 					? { name: 'Any (Unclaimed)' }
-					: this.props.agencies.filter((x) => x.id === currentRequest.receiver)[0],
+					: this.props.agencies.filter(
+							(x) => x.id === currentRequest.receiver
+					  )[0],
+			deliverers: occurrence.deliverers
+				? { name: assigned_deliverers }
+				: { name: 'Unassigned' },
 		};
 
 		return (
@@ -361,8 +491,8 @@ class CalendarView extends React.Component {
 									dateCellRender={this.dateCellRender}
 									onChange={(value) => this.setState({ selectedDate: value })}
 								/>
-
 								<Modal
+									style={{ overflow: 'hidden' }}
 									visible={requestModalOpen}
 									title={`Request on ${selectedDate.format('MMMM D, YYYY')} (${
 										currentRequest &&
@@ -376,6 +506,159 @@ class CalendarView extends React.Component {
 									onCancel={this.closeRequestModal}
 									centered
 								>
+									{claimDrawerVisible && (
+										<Drawer
+											key="claimDrawer"
+											title={
+												editDeliverers ? 'Edit Deliverers' : 'Confirm Claim'
+											}
+											placement="bottom"
+											height="top"
+											closable={true}
+											onClose={this.closeClaimDrawer}
+											visible={claimDrawerOpen}
+											footer={
+												<div
+													style={{
+														display: 'flex',
+														flexDirection: 'row-reverse',
+													}}
+												>
+													<Button
+														form="dynamic_form_item"
+														type="primary"
+														style={{ marginLeft: 7 }}
+														htmlType="submit"
+													>
+														Confirm
+													</Button>
+													<Button onClick={this.closeClaimDrawer}>
+														Cancel
+													</Button>
+												</div>
+											}
+											getContainer={false}
+											destroyOnClose={true}
+											style={{ position: 'absolute' }}
+										>
+											{editDeliverers && (
+												<div>
+													Input the deliverers for this specific request. If
+													nothing is input the primary contact will be used the
+													deliverer for this date.
+												</div>
+											)}
+											{!editDeliverers && (
+												<div>
+													Input the default deliverers for this delivery. If
+													nothing is input the primary contact will be used as
+													the default deliverer.
+												</div>
+											)}
+											<br />
+											{this.props.agency && this.props.agency.users && (
+												<>
+													<Select
+														mode="multiple"
+														style={{ width: '100%' }}
+														placeholder="Please select default deliverers"
+														defaultValue={[]}
+														onChange={(value) => {
+															this.setState({ claimDeliverers: value });
+														}}
+													>
+														{this.props.agency.users.map((person) => (
+															<Option key={person.name}>{person.name}</Option>
+														))}
+													</Select>
+													<div>
+														<br />
+													</div>
+													<div>
+														If you do not have any deliverers saved, you can
+														manually add new ones here and they will be added to
+														your account and attached to this request.
+													</div>
+													<br />
+												</>
+											)}
+											<Form
+												id="dynamic_form_item"
+												name="dynamic_form_item"
+												onFinish={onFinish}
+											>
+												<Form.List name="names">
+													{(fields, { add, remove }) => {
+														return (
+															<div>
+																{fields.map((field) => (
+																	<Row key={field.key}>
+																	<Col span={11}>
+																		<Form.Item
+																			name={[field.name, 'name']}
+																			fieldKey={[field.fieldKey, 'name']}
+																			rules={[
+																				{
+																					required: true,
+																					message: 'Please enter a name',
+																				},
+																			]}
+																		>
+																			<Input placeholder="Name" />
+																		</Form.Item>
+																	</Col>
+																	<Col span={1}></Col>
+																	<Col span={11}>
+																		<Form.Item
+																			name={[field.name, 'email']}
+																			fieldKey={[field.fieldKey, 'email']}
+																			rules={[
+																				{
+																					required: true,
+																					type: 'email',
+																					message: 'Please enter an email address',
+																				},
+																			]}
+																		>
+																			<Input placeholder="Email" />
+																		</Form.Item>
+																	</Col>
+																	<Col span={1}>
+																		<div
+																			style={{
+																				display: 'flex',
+																				justifyContent: 'center',
+																				marginTop: 8,
+																			}}
+																		>
+																			<MinusCircleOutlined
+																				className="dynamic-delete-button"
+																				onClick={() => {
+																					remove(field.name);
+																				}}
+																			/>
+																		</div>
+																	</Col>
+																</Row>
+															))}
+															<Form.Item>
+																<Button
+																	type="dashed"
+																	onClick={() => {
+																		add();
+																	}}
+																	style={{ width: '100%' }}
+																>
+																	<PlusOutlined /> Add Deliverers
+																</Button>
+															</Form.Item>
+														</div>
+													);
+												}}
+											</Form.List>
+											</Form>
+										</Drawer>
+									)}
 									{currentRequest && (
 										<Descriptions column={1} bordered>
 											<Descriptions.Item label="When">
@@ -395,6 +678,26 @@ class CalendarView extends React.Component {
 													Directions
 												</a>
 											</Descriptions.Item>
+											{this.props.agency.type === AgencyTypes.DELIVERER && (
+												<Descriptions.Item label="Assigned 	Deliverers">
+													{currentRequestInfo.deliverers.name}
+													{currentRequestInfo.deliverer.name ===
+														this.props.agency.name && (
+														<>
+															<br />
+															<Button
+																type="link"
+																onClick={() => {
+																	this.setState({ editDeliverers: true });
+																	this.openClaimDrawer();
+																}}
+															>
+																Edit Deliverers
+															</Button>
+														</>
+													)}
+												</Descriptions.Item>
+											)}
 
 											<Descriptions.Item label="Delivering Agency">
 												{currentRequestInfo.deliverer.name}
@@ -518,7 +821,12 @@ class CalendarView extends React.Component {
 							open={logDrawerOpen}
 							onClose={() => this.setState({ logDrawerOpen: false })}
 							request={null}
-							occurrence={currentRequest.occurrences && currentRequest.occurrences.filter((x) => this.isSameDate(x.date.toDate(), selectedDate.toDate()))[0]}
+							occurrence={
+								currentRequest.occurrences &&
+								currentRequest.occurrences.filter((x) =>
+									this.isSameDate(x.date.toDate(), selectedDate.toDate())
+								)[0]
+							}
 						/>
 					)}
 			</>
@@ -526,4 +834,21 @@ class CalendarView extends React.Component {
 	}
 }
 
+CalendarView.propTypes = {
+	umbrella: PropTypes.shape({
+		id: PropTypes.string.isRequired,
+	}),
+	agency: PropTypes.shape({
+		id: PropTypes.string.isRequired,
+		type: PropTypes.string.isRequired,
+		name: PropTypes.string.isRequired,
+		approved: PropTypes.bool.isRequired,
+		contact: PropTypes.shape({
+			name: PropTypes.string.isRequired,
+			email: PropTypes.string.isRequired,
+			phone: PropTypes.string.isRequired,
+		}).isRequired,
+	}),
+	agencies: PropTypes.array,
+};
 export default CalendarView;
