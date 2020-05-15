@@ -4,29 +4,26 @@ import firebase from 'gatsby-plugin-firebase';
 import { navigate } from 'gatsby';
 import { motion } from 'framer-motion';
 import moment from 'moment';
-import {
-	Layout,
-	Row,
-	Col,
-	Divider,
-} from 'antd';
+import { Layout, Row, Col, Divider, Steps, Button, message } from 'antd';
 import debug from 'debug';
+import Delivery from './delivery';
 
 function EntryPage({ location }) {
 	// Only allow entry page if there is a key
-	if (!location.search) navigate('/');
+	if (!location.search) return navigate('/');
 
 	const params = new URLSearchParams(location.search);
 	const key = params.get('key');
 
 	// Only allow entry page if there is a key
-	if (!key || key === '') navigate('/');
+	if (!key || key === '') return navigate('/');
 
 	const [loading, setLoading] = useState(true);
+
 	const [deliveryDate, setDeliveryDate] = useState(new Date());
 
 	useEffect(() => {
-		if (!firebase || !loading) return;
+		if (!firebase || !loading || !key) return;
 
 		let mounted = true;
 
@@ -64,30 +61,21 @@ function EntryPage({ location }) {
 				}}
 				initial="initial"
 				animate="visible"
-				style={{ height: "100%" }}
+				style={{ height: '100%' }}
 			>
-				<Layout style={{ height: "100%" }}>
-					<Layout.Header theme="dark">
-						<h1>Meal Matchup</h1>
-					</Layout.Header>
-					<Layout.Content style={{ background: "white", padding: '1em' }}>
-						<Row gutter={16}>
-							<Col span={24}>
-								<p>
-									Please use this form to fill out the food log for your recent delivery.
-								</p>
-							</Col>
-						</Row>
-
-						<Divider />
-
-						<Row gutter={16}>
-							<Col span={24}>
-								<h1>Delivery on {moment(deliveryDate).format('MMMM D, YYYY')}</h1>
-							</Col>
-						</Row>
-					</Layout.Content>
-				</Layout>
+				<Delivery /*SUZ FILL IN HERE think the strat is to pass the request then get the donating and recieving agencies within the delivery component? Not sure tho*/
+					request={{
+						dname: 'Local Point',
+						daddress: '1245 NE Campus Pkwy, Seattle, WA 98105',
+						dcontact: 'Steven',
+						dnumber: '555-555-5555',
+						rname: 'University Distrcit Food Bank',
+						raddress: '5017 Roosevelt Way NE, Seattle, WA 98105',
+						rcontact: 'Steven',
+						rnumber: '555-555-5555',
+					}}
+					date={deliveryDate}
+				/>
 			</motion.div>
 		)
 	);
