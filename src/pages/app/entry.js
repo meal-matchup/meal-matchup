@@ -26,7 +26,7 @@ function EntryPage({ location }) {
 	const [deliveryDate, setDeliveryDate] = useState(new Date());
 
 	useEffect(() => {
-		if (!firebase || !loading) return;
+		if (!firebase || !loading || !key) return;
 
 		let mounted = true;
 
