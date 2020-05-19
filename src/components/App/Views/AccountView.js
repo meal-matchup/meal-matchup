@@ -21,7 +21,6 @@ import {
 
 import debug from 'debug';
 
-
 import { AgencyTypes } from '../Enums';
 
 function AccountView({ user, umbrella, agency }) {
@@ -37,18 +36,26 @@ function AccountView({ user, umbrella, agency }) {
 
 	const [deliverersForm] = Form.useForm();
 
-	const [users, setUsers] = useState(...[agency.users]);
+	const initialUsers = (agency && agency.users) || [];
+	const [users, setUsers] = useState([...initialUsers]);
 
 	const [initialValues, setInitialValues] = useState({});
+
+	useEffect(() => {
+		const initialUsers = (agency && agency.users) || [];
+		setUsers([...initialUsers]);
+	}, [agency]);
 
 	useEffect(() => {
 		function getFieldValues() {
 			const theValues = {};
 			users.forEach((user, index) => {
-				theValues[`user${index}`] = {
-					name: user.name,
-					email: user.email,
-				};
+				if (user) {
+					theValues[`user${index}`] = {
+						name: user.name,
+						email: user.email,
+					};
+				}
 			});
 			return theValues;
 		}
@@ -57,22 +64,30 @@ function AccountView({ user, umbrella, agency }) {
 	}, [users]);
 
 	useEffect(() => {
-		console.log('setting values', initialValues);
 		deliverersForm.setFieldsValue(initialValues);
 	}, [deliverersForm, initialValues]);
 
 	const submitForm = (values) => {
-		console.log('got values', values);
+		setLoading(true);
+		let newUsers = {}
+		if(values['deliverers']){
+			newUsers = users.concat(values['deliverers']);
+		} else {
+			newUsers = users;
+		}
+		setUsers(newUsers);
+		addNewUsers(newUsers);
+		setLoading(false);
+		setEdit(false);
 	};
 
-	function addNewUsers(users) {
-		const updated_users = this.props.agency.users.concat(users);
+	function addNewUsers(newUsers) {
 		return firebase
 			.firestore()
 			.collection('agencies')
-			.doc(this.props.agency.id)
+			.doc(agency.id)
 			.update({
-				users: updated_users,
+				users: newUsers,
 			})
 			.catch((e) => {
 				debug('unable to add new users to agency', e);
@@ -252,7 +267,6 @@ function AccountView({ user, umbrella, agency }) {
 									type="link"
 									onClick={() => {
 										setEdit(true);
-										console.log(edit);
 									}}
 								>
 									Edit Deliverers
