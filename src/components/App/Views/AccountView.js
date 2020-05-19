@@ -19,6 +19,9 @@ import {
 	MinusCircleOutlined,
 } from '@ant-design/icons';
 
+import debug from 'debug';
+
+
 import { AgencyTypes } from '../Enums';
 
 function AccountView({ user, umbrella, agency }) {
@@ -30,14 +33,37 @@ function AccountView({ user, umbrella, agency }) {
 
 	const [edit, setEdit] = useState(false);
 	const [loading, setLoading] = useState(false);
+	const rules = [{ required: true }];
 
-	function onFinish() {
-		setLoading(true);
-		setTimeout(() => {
-			setLoading(false);
-			setEdit(false);
-		}, 3000);
-	}
+	const [deliverersForm] = Form.useForm();
+
+	const [users, setUsers] = useState(...[agency.users]);
+
+	const [initialValues, setInitialValues] = useState({});
+
+	useEffect(() => {
+		function getFieldValues() {
+			const theValues = {};
+			users.forEach((user, index) => {
+				theValues[`user${index}`] = {
+					name: user.name,
+					email: user.email,
+				};
+			});
+			return theValues;
+		}
+
+		setInitialValues(getFieldValues());
+	}, [users]);
+
+	useEffect(() => {
+		console.log('setting values', initialValues);
+		deliverersForm.setFieldsValue(initialValues);
+	}, [deliverersForm, initialValues]);
+
+	const submitForm = (values) => {
+		console.log('got values', values);
+	};
 
 	function addNewUsers(users) {
 		const updated_users = this.props.agency.users.concat(users);
@@ -49,7 +75,7 @@ function AccountView({ user, umbrella, agency }) {
 				users: updated_users,
 			})
 			.catch((e) => {
-				debug("unable to add new users to agency", e);
+				debug('unable to add new users to agency', e);
 				message.error('Could not edit request');
 			});
 	}
@@ -85,82 +111,97 @@ function AccountView({ user, umbrella, agency }) {
 						]}
 					>
 						<Form
+							form={deliverersForm}
 							id="dynamic_form_item"
-							name="dynamic_form_item"
-							onFinish={onFinish}
+							onFinish={submitForm}
+							initialValues={{
+								user0: {
+									name: 'hi',
+								},
+							}}
 						>
-							<Form.List name="names">
+							{users.map((user, index) => (
+								<Row key={`user${index}`} gutter={6}>
+									<Col span={11}>
+										<Form.Item name={[`user${index}`, 'name']} rules={rules}>
+											<Input placeholder="Name" />
+										</Form.Item>
+									</Col>
+									<Col span={11}>
+										<Form.Item name={[`user${index}`, 'email']} rules={rules}>
+											<Input placeholder="Email" />
+										</Form.Item>
+									</Col>
+									<Col span={2}>
+										<Form.Item>
+											<Button
+												type="link"
+												onClick={() => {
+													const newUsers = [...users];
+													newUsers.splice(index, 1);
+													setUsers([...newUsers]);
+												}}
+												style={{ width: '100%' }}
+											>
+												<MinusCircleOutlined />
+											</Button>
+										</Form.Item>
+									</Col>
+								</Row>
+							))}
+
+							<Form.List name="deliverers">
 								{(fields, { add, remove }) => {
 									return (
-										<div>
-											{agency.users.map((field) => (
-												<Row key={field.key}>
+										<>
+											{fields.map((field, index) => (
+												<Row key={field.key} gutter={6}>
 													<Col span={11}>
 														<Form.Item
 															name={[field.name, 'name']}
 															fieldKey={[field.fieldKey, 'name']}
-															rules={[
-																{
-																	required: true,
-																	message: 'Please enter a name',
-																},
-															]}
+															rules={rules}
 														>
-															<Input
-																defaultValue={field.name}
-																placeholder="Name"
-															/>
+															<Input placeholder="Name" />
 														</Form.Item>
 													</Col>
-													<Col span={1}></Col>
 													<Col span={11}>
 														<Form.Item
 															name={[field.name, 'email']}
 															fieldKey={[field.fieldKey, 'email']}
-															rules={[
-																{
-																	required: true,
-																	type: 'email',
-																	message: 'Please enter an email address',
-																},
-															]}
+															rules={rules}
 														>
-															<Input
-																defaultValue={field.email}
-																placeholder="Email"
-															/>
+															<Input placeholder="Email" />
 														</Form.Item>
 													</Col>
-													<Col span={1}>
-														<div
-															style={{
-																display: 'flex',
-																justifyContent: 'center',
-																marginTop: 8,
-															}}
-														>
-															<MinusCircleOutlined
-																className="dynamic-delete-button"
+													<Col span={2}>
+														<Form.Item>
+															<Button
+																type="link"
 																onClick={() => {
 																	remove(field.name);
 																}}
-															/>
-														</div>
+																style={{ width: '100%' }}
+															>
+																<MinusCircleOutlined />
+															</Button>
+														</Form.Item>
 													</Col>
 												</Row>
 											))}
+
 											<Form.Item>
 												<Button
 													type="dashed"
+													style={{ width: '100%' }}
 													onClick={() => {
 														add();
 													}}
-													style={{ width: '100%' }}
 												>
-													<PlusOutlined /> Add Deliverers
+													<PlusOutlined /> Add Deliverer
 												</Button>
 											</Form.Item>
-										</div>
+										</>
 									);
 								}}
 							</Form.List>
