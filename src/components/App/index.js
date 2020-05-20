@@ -6,6 +6,9 @@ import firebase from 'gatsby-plugin-firebase';
 import { Avatar, Layout, Menu } from 'antd';
 import { CalendarOutlined, ContactsOutlined } from '@ant-design/icons';
 
+import 'antd/dist/antd.less';
+import '../../styles/design.scss';
+
 import * as AppPages from './AppPages';
 import Auth from '../Auth';
 import { Logo } from '../../graphics/graphics';
