@@ -18,7 +18,7 @@ import {
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import debug from 'debug';
 
-function Delivery({ date, requestID, receiverInfo, donatorInfo }) {
+function Delivery({ date, receiverInfo, donatorInfo }) {
 	function formGoogleMapsURL(address) {
 		// Uncomment if you want to give this an agency object and change address to agency above
 		//let address = agency.address.line1;
@@ -292,7 +292,6 @@ Delivery.propTypes = {
 		contact_person: PropTypes.string.isRequired,
 		phone_number: PropTypes.string.isRequired,
 	}),
-	requestID: PropTypes.string.isRequired,
 };
 
 export default Delivery;

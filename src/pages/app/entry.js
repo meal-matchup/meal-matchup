@@ -21,8 +21,6 @@ function EntryPage({ location }) {
 
 	const [deliveryDate, setDeliveryDate] = useState(new Date());
 
-	const [requestID, setRequestID] = useState(null);
-
 	const [donatorInfo, setDonatorInfo] = useState(null);
 
 	const [receiverInfo, setReceiverInfo] = useState(null);
@@ -70,20 +68,9 @@ function EntryPage({ location }) {
 				animate="visible"
 				style={{ height: '100%' }}
 			>
-				<Delivery /*SUZ FILL IN HERE think the strat is to pass the request then get the donating and recieving agencies within the delivery component? Not sure tho*/
-				donatorInfo={donatorInfo}
-				receiverInfo={receiverInfo}
-				requestID={requestID}
-					// request={{
-					// 	dname: 'Local Point',
-					// 	daddress: '1245 NE Campus Pkwy, Seattle, WA 98105',
-					// 	dcontact: 'Steven',
-					// 	dnumber: '555-555-5555',
-					// 	rname: 'University Distrcit Food Bank',
-					// 	raddress: '5017 Roosevelt Way NE, Seattle, WA 98105',
-					// 	rcontact: 'Steven',
-					// 	rnumber: '555-555-5555',
-					// }}
+				<Delivery
+					donatorInfo={donatorInfo}
+					receiverInfo={receiverInfo}
 					date={deliveryDate}
 				/>
 			</motion.div>
