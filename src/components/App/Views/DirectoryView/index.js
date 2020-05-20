@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import { List, Select } from 'antd';
+import React, { useState } from "react";
+import PropTypes from "prop-types";
+import { List, Select } from "antd";
 
-import DirectoryCard from './DirectoryCard';
+import DirectoryCard from "./DirectoryCard";
 
-import { AgencyTypes } from '../../Enums';
+import { AgencyTypes } from "../../Enums";
 
 function DirectoryView({ agencies }) {
-	const [filter, setFilter] = useState('ALL');
+	const [filter, setFilter] = useState("ALL");
 	agencies = agencies.sort((a, b) => a.name.localeCompare(b.name));
 
 	return (
@@ -31,8 +31,8 @@ function DirectoryView({ agencies }) {
 
 			{agencies && (
 				<List grid={{ gutter: 16, column: 1 }}>
-					{agencies.map((agency) => {
-						if (filter === 'ALL' || agency.type === filter) {
+					{agencies.map(agency => {
+						if (filter === "ALL" || agency.type === filter) {
 							return (
 								<List.Item key={agency.name}>
 									<DirectoryCard

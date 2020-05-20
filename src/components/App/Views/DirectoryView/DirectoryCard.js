@@ -1,30 +1,30 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { AgencyTypes } from '../../Enums';
-import { Card, Descriptions } from 'antd';
+import React from "react";
+import PropTypes from "prop-types";
+import { AgencyTypes } from "../../Enums";
+import { Card, Descriptions } from "antd";
 import {
 	ShopOutlined,
 	ShoppingCartOutlined,
 	CarOutlined,
-} from '@ant-design/icons';
+} from "@ant-design/icons";
 
 function DirectoryCard({ name, type, contact, address }) {
-	const iconSize = '1.5em';
-	const findType = (type) => {
+	const iconSize = "1.5em";
+	const findType = type => {
 		switch (type) {
 			case AgencyTypes.DONATOR:
 				return {
-					type: 'Donating Agency',
+					type: "Donating Agency",
 					icon: <ShopOutlined style={{ fontSize: iconSize }} />,
 				};
 			case AgencyTypes.DELIVERER:
 				return {
-					type: 'Delivering Agency',
+					type: "Delivering Agency",
 					icon: <CarOutlined style={{ fontSize: iconSize }} />,
 				};
 			case AgencyTypes.RECEIVER:
 				return {
-					type: 'Receiving Agency',
+					type: "Receiving Agency",
 					icon: <ShoppingCartOutlined style={{ fontSize: iconSize }} />,
 				};
 			default:
@@ -34,21 +34,21 @@ function DirectoryCard({ name, type, contact, address }) {
 	let displayType = findType(type);
 
 	const gridStyle = {
-		height: '100%',
-		width: '50%',
+		height: "100%",
+		width: "50%",
 	};
 
 	return (
 		<Card
 			key={`card-${name}`}
 			title={name}
-			size = "small"
+			size="small"
 			extra={[
 				<div
 					key={`${name}-icon-container`}
-					style={{ alignItems: 'center', display: 'flex' }}
+					style={{ alignItems: "center", display: "flex" }}
 				>
-					<span key={`${name}-type`} style={{ marginRight: '.5em' }}>
+					<span key={`${name}-type`} style={{ marginRight: ".5em" }}>
 						{displayType.type}
 					</span>
 					{displayType.icon}

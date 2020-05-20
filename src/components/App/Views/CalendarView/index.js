@@ -1,9 +1,9 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import firebase from 'gatsby-plugin-firebase';
-import moment from 'moment';
-import { AnimatePresence, motion } from 'framer-motion';
-import debug from 'debug';
+import React from "react";
+import PropTypes from "prop-types";
+import firebase from "gatsby-plugin-firebase";
+import moment from "moment";
+import { AnimatePresence, motion } from "framer-motion";
+import debug from "debug";
 
 import {
 	Badge,
@@ -14,13 +14,13 @@ import {
 	message,
 	Popconfirm,
 	Tooltip,
-} from 'antd';
-import { LoadingOutlined } from '@ant-design/icons';
+} from "antd";
+import { LoadingOutlined } from "@ant-design/icons";
 
-import Request from './Request';
-import Log from './Log';
+import Request from "./Request";
+import Log from "./Log";
 
-import { AgencyTypes, RequestTitles, RequestTypes } from '../../Enums';
+import { AgencyTypes, RequestTitles, RequestTypes } from "../../Enums";
 
 class CalendarView extends React.Component {
 	static propTypes = {
@@ -97,7 +97,7 @@ class CalendarView extends React.Component {
 	}
 
 	dateCellRender(value) {
-		const requestsOnDate = this.state.requests.filter((x) =>
+		const requestsOnDate = this.state.requests.filter(x =>
 			this.isSameWeekdayInPeriod(
 				x.dates.from.toDate(),
 				x.dates.to.toDate(),
@@ -107,15 +107,15 @@ class CalendarView extends React.Component {
 
 		return requestsOnDate.length > 0 ? (
 			<ul className="events">
-				{requestsOnDate.map((request) => {
+				{requestsOnDate.map(request => {
 					let occurrence;
 					if (request.type === RequestTypes.PICKUP) {
-						occurrence = request.occurrences.filter((x) =>
+						occurrence = request.occurrences.filter(x =>
 							this.isSameDate(x.date.toDate(), value.toDate())
 						)[0];
 					}
 
-					let status = 'default';
+					let status = "default";
 					if (request.type === RequestTypes.PICKUP) {
 						if (
 							(this.props.agency.type === AgencyTypes.DONATOR &&
@@ -125,10 +125,10 @@ class CalendarView extends React.Component {
 								occurrence &&
 								!occurrence.complete)
 						) {
-							status = 'warning';
+							status = "warning";
 						}
 						if (occurrence && occurrence.complete) {
-							status = 'success';
+							status = "success";
 						}
 					}
 
@@ -166,12 +166,12 @@ class CalendarView extends React.Component {
 	async getRequests() {
 		return firebase
 			.firestore()
-			.collection('requests')
-			.where('umbrella', '==', this.props.umbrella.id)
+			.collection("requests")
+			.where("umbrella", "==", this.props.umbrella.id)
 			.get()
-			.then((querySnapshot) => {
+			.then(querySnapshot => {
 				const allRequests = [];
-				querySnapshot.forEach((requestDoc) => {
+				querySnapshot.forEach(requestDoc => {
 					if (
 						requestDoc.data()[this.props.agency.type.toLowerCase()] ===
 							this.props.agency.id ||
@@ -216,7 +216,7 @@ class CalendarView extends React.Component {
 	}
 
 	openRequestModal(requestId) {
-		const theRequest = this.state.requests.filter((x) => x.id === requestId)[0];
+		const theRequest = this.state.requests.filter(x => x.id === requestId)[0];
 
 		const { agency } = this.props;
 
@@ -225,7 +225,7 @@ class CalendarView extends React.Component {
 		if (agency.type !== AgencyTypes.DONATOR) {
 			const claimed = theRequest[agency.type.toLowerCase()] !== AgencyTypes.ANY;
 			footer = this.requestModalFooters[agency.type][
-				claimed ? 'claimed' : 'unclaimed'
+				claimed ? "claimed" : "unclaimed"
 			];
 		}
 
@@ -241,16 +241,16 @@ class CalendarView extends React.Component {
 			// Only delete if a request is selected
 			return firebase
 				.firestore()
-				.collection('requests')
+				.collection("requests")
 				.doc(this.state.currentRequest.id)
 				.delete()
 				.then(() => {
-					message.success('Successfully deleted request');
+					message.success("Successfully deleted request");
 					this.closeRequestModal();
 				})
-				.catch((e) => {
-					debug('Unable to delete request', e);
-					message.error('Could not delete request');
+				.catch(e => {
+					debug("Unable to delete request", e);
+					message.error("Could not delete request");
 				});
 		}
 	}
@@ -260,7 +260,7 @@ class CalendarView extends React.Component {
 			// Only try to claim if there's a request to be claimed
 			return firebase
 				.firestore()
-				.collection('requests')
+				.collection("requests")
 				.doc(this.state.currentRequest.id)
 				.update({
 					[this.props.agency.type.toLowerCase()]: this.props.agency.id,
@@ -269,9 +269,9 @@ class CalendarView extends React.Component {
 					this.getRequests();
 					this.closeRequestModal();
 				})
-				.catch((e) => {
-					debug('Unable to claim request', e);
-					message.error('Could not claim request');
+				.catch(e => {
+					debug("Unable to claim request", e);
+					message.error("Could not claim request");
 					this.closeRequestModal();
 				});
 		}
@@ -300,7 +300,7 @@ class CalendarView extends React.Component {
 		const occurrence =
 			currentRequest &&
 			currentRequest.occurrences &&
-			currentRequest.occurrences.filter((x) =>
+			currentRequest.occurrences.filter(x =>
 				this.isSameDate(x.date.toDate(), selectedDate.toDate())
 			)[0];
 
@@ -308,36 +308,40 @@ class CalendarView extends React.Component {
 
 		const currentRequestInfo = currentRequest && {
 			when: `
-				${moment(currentRequest.dates.from.toDate()).format('MMMM D, YYYY')}
+				${moment(currentRequest.dates.from.toDate()).format("MMMM D, YYYY")}
 				–
-				${moment(currentRequest.dates.to.toDate()).format('MMMM D, YYYY')},
+				${moment(currentRequest.dates.to.toDate()).format("MMMM D, YYYY")},
 				on every
-				${new Intl.DateTimeFormat('en-US', {
-					weekday: 'long',
+				${new Intl.DateTimeFormat("en-US", {
+					weekday: "long",
 				}).format(currentRequest.dates.from.toDate().getDay())}
 				between
-				${moment(currentRequest.time.start.toDate()).format('h:mm a')}
+				${moment(currentRequest.time.start.toDate()).format("h:mm a")}
 				and
-				${moment(currentRequest.time.to.toDate()).format('h:mm a')}
+				${moment(currentRequest.time.to.toDate()).format("h:mm a")}
 			`,
 			donator: this.props.agencies.filter(
-				(x) => x.id === currentRequest.donator
+				x => x.id === currentRequest.donator
 			)[0],
 			deliverer:
 				currentRequest.deliverer === AgencyTypes.ANY
-					? { name: 'Any (Unclaimed)' }
-					: this.props.agencies.filter((x) => x.id === currentRequest.deliverer)[0],
+					? { name: "Any (Unclaimed)" }
+					: this.props.agencies.filter(
+							x => x.id === currentRequest.deliverer
+					  )[0],
 			receiver:
 				currentRequest.receiver === AgencyTypes.ANY
-					? { name: 'Any (Unclaimed)' }
-					: this.props.agencies.filter((x) => x.id === currentRequest.receiver)[0],
+					? { name: "Any (Unclaimed)" }
+					: this.props.agencies.filter(
+							x => x.id === currentRequest.receiver
+					  )[0],
 		};
 
 		return (
 			<>
 				<div
 					className="events-calendar"
-					style={{ height: '100%', position: 'relative', width: '100%' }}
+					style={{ height: "100%", position: "relative", width: "100%" }}
 				>
 					<AnimatePresence exitBeforeEnter>
 						{requests && (
@@ -355,22 +359,22 @@ class CalendarView extends React.Component {
 								animate="visible"
 								exit="hidden"
 							>
-								<h1>{selectedDate.format('MMMM YYYY')}</h1>
+								<h1>{selectedDate.format("MMMM YYYY")}</h1>
 
 								<Calendar
 									dateCellRender={this.dateCellRender}
-									onChange={(value) => this.setState({ selectedDate: value })}
+									onChange={value => this.setState({ selectedDate: value })}
 								/>
 
 								<Modal
 									visible={requestModalOpen}
-									title={`Request on ${selectedDate.format('MMMM D, YYYY')} (${
+									title={`Request on ${selectedDate.format("MMMM D, YYYY")} (${
 										currentRequest &&
-										currentRequest.occurrences.filter((x) =>
+										currentRequest.occurrences.filter(x =>
 											this.isSameDate(x.date.toDate(), selectedDate.toDate())
 										)[0].complete
-											? 'Completed'
-											: 'Not done yet'
+											? "Completed"
+											: "Not done yet"
 									})`}
 									footer={requestModalFooter}
 									onCancel={this.closeRequestModal}
@@ -424,8 +428,8 @@ class CalendarView extends React.Component {
 																	style={{
 																		display:
 																			occurrence.date.toDate() <= today
-																				? 'inline-block'
-																				: 'none',
+																				? "inline-block"
+																				: "none",
 																	}}
 																	onClick={() => {
 																		this.setState({ logDrawerOpen: true });
@@ -436,7 +440,7 @@ class CalendarView extends React.Component {
 																	Fill out food log
 																</Button>
 															) : (
-																'Did the delivering agency pick up this donation? If so, they need to confirm this.'
+																"Did the delivering agency pick up this donation? If so, they need to confirm this."
 															)}
 														</>
 													)}
@@ -462,13 +466,13 @@ class CalendarView extends React.Component {
 								animate="visible"
 								exit="hidden"
 								style={{
-									left: '50%',
-									position: 'absolute',
-									top: '50%',
-									transform: 'translate3d(-50%, -50%, 0)',
+									left: "50%",
+									position: "absolute",
+									top: "50%",
+									transform: "translate3d(-50%, -50%, 0)",
 								}}
 							>
-								<LoadingOutlined style={{ fontSize: '3em' }} />
+								<LoadingOutlined style={{ fontSize: "3em" }} />
 							</motion.div>
 						)}
 					</AnimatePresence>
@@ -481,7 +485,7 @@ class CalendarView extends React.Component {
 							<Tooltip
 								title={
 									!this.props.agency.approved &&
-									'Your account has not been approved yet'
+									"Your account has not been approved yet"
 								}
 								placement="topRight"
 							>
@@ -518,7 +522,12 @@ class CalendarView extends React.Component {
 							open={logDrawerOpen}
 							onClose={() => this.setState({ logDrawerOpen: false })}
 							request={null}
-							occurrence={currentRequest.occurrences && currentRequest.occurrences.filter((x) => this.isSameDate(x.date.toDate(), selectedDate.toDate()))[0]}
+							occurrence={
+								currentRequest.occurrences &&
+								currentRequest.occurrences.filter(x =>
+									this.isSameDate(x.date.toDate(), selectedDate.toDate())
+								)[0]
+							}
 						/>
 					)}
 			</>

@@ -1,15 +1,15 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { Descriptions, Tooltip } from 'antd';
-import { CheckCircleTwoTone, ClockCircleTwoTone } from '@ant-design/icons';
+import React from "react";
+import PropTypes from "prop-types";
+import { Descriptions, Tooltip } from "antd";
+import { CheckCircleTwoTone, ClockCircleTwoTone } from "@ant-design/icons";
 
-import { AgencyTypes } from '../Enums';
+import { AgencyTypes } from "../Enums";
 
 function AccountView({ user, umbrella, agency }) {
 	const agencyTypes = {
-		[AgencyTypes.DONATOR]: 'Donating Agency',
-		[AgencyTypes.RECEIVER]: 'Receiving Agency',
-		[AgencyTypes.DELIVERER]: 'Delivering Agency',
+		[AgencyTypes.DONATOR]: "Donating Agency",
+		[AgencyTypes.RECEIVER]: "Receiving Agency",
+		[AgencyTypes.DELIVERER]: "Delivering Agency",
 	};
 
 	return (
@@ -22,7 +22,7 @@ function AccountView({ user, umbrella, agency }) {
 						{!!user.emailVerified && (
 							<CheckCircleTwoTone
 								twoToneColor="#52c41a"
-								style={{ marginLeft: '.5em' }}
+								style={{ marginLeft: ".5em" }}
 							/>
 						)}
 					</Descriptions.Item>
@@ -35,12 +35,12 @@ function AccountView({ user, umbrella, agency }) {
 							<Tooltip title="Your agency has been approved">
 								<CheckCircleTwoTone
 									twoToneColor="#52c41a"
-									style={{ marginLeft: '.5em' }}
+									style={{ marginLeft: ".5em" }}
 								/>
 							</Tooltip>
 						) : (
 							<Tooltip title="Your agency is pending approval">
-								<ClockCircleTwoTone style={{ marginLeft: '.5em' }} />
+								<ClockCircleTwoTone style={{ marginLeft: ".5em" }} />
 							</Tooltip>
 						)}
 					</Descriptions.Item>

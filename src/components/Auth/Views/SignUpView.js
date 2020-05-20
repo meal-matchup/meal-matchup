@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
-import firebase from 'gatsby-plugin-firebase';
-import debug from 'debug';
+import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
+import firebase from "gatsby-plugin-firebase";
+import debug from "debug";
 import {
 	Button,
 	Cascader,
@@ -11,10 +11,10 @@ import {
 	Layout,
 	PageHeader,
 	Select,
-} from 'antd';
+} from "antd";
 
-import { AuthPages } from '../Enums';
-import { AgencyTypes } from '../../App';
+import { AuthPages } from "../Enums";
+import { AgencyTypes } from "../../App";
 
 function SignUpView({ changeView }) {
 	const [umbrellas, setUmbrellas] = useState(null);
@@ -27,9 +27,9 @@ function SignUpView({ changeView }) {
 	const [receivingAgencies, setReceivingAgencies] = useState([]);
 	const [deliveringAgencies, setDeliveringAgencies] = useState([]);
 
-	const newAgencyItem = { value: 'new', label: 'New agency' };
+	const newAgencyItem = { value: "new", label: "New agency" };
 
-	const updateAgency = (values) => {
+	const updateAgency = values => {
 		if (values.length == 2) {
 			setAgencyType(values[0]);
 			setAgencyId(values[1]);
@@ -43,7 +43,7 @@ function SignUpView({ changeView }) {
 		if (umbrella && agencies) {
 			const filterAgencies = (type, callback) => {
 				const filteredAgencies = [];
-				agencies.forEach((anAgency) => {
+				agencies.forEach(anAgency => {
 					if (
 						anAgency.umbrella === umbrella.id &&
 						anAgency.type === AgencyTypes[type]
@@ -73,34 +73,34 @@ function SignUpView({ changeView }) {
 				.firestore()
 				.collection(type)
 				.get()
-				.then((querySnapshot) => {
+				.then(querySnapshot => {
 					const allDocs = [];
-					querySnapshot.forEach((doc) => {
+					querySnapshot.forEach(doc => {
 						const docData = {
 							id: doc.id,
 							name: doc.data().name,
 						};
 
-						if (type === 'agencies') {
-							docData['type'] = doc.data().type;
-							docData['umbrella'] = doc.data().umbrella;
+						if (type === "agencies") {
+							docData["type"] = doc.data().type;
+							docData["umbrella"] = doc.data().umbrella;
 						}
 
 						allDocs.push(docData);
 					});
 					if (mounted) callback(allDocs);
 				})
-				.catch((error) => {
-					debug('Could not get data', type, error);
+				.catch(error => {
+					debug("Could not get data", type, error);
 				});
 		};
 
 		if (!umbrellas) {
-			getData('umbrellas', setUmbrellas);
+			getData("umbrellas", setUmbrellas);
 		}
 
 		if (!agencies) {
-			getData('agencies', setAgencies);
+			getData("agencies", setAgencies);
 		}
 	}, [umbrellas, agencies]);
 
@@ -109,48 +109,48 @@ function SignUpView({ changeView }) {
 	const [signingUpGenericStatus, setSigningUpGenericStatus] = useState(null);
 	const [signingUpEmailStatus, setSigningUpEmailStatus] = useState(null);
 	const [signingUpConfirmStatus, setSigningUpConfirmStatus] = useState(null);
-	const [signingUpPassword, setSigningUpPassword] = useState('');
+	const [signingUpPassword, setSigningUpPassword] = useState("");
 	const [signingUpAgencyStatus, setSigningUpAgencyStatus] = useState(null);
 
-	const signUp = (values) => {
+	const signUp = values => {
 		setSigningUp(true);
-		setSigningUpGenericStatus('validating');
-		setSigningUpEmailStatus('validating');
-		setSigningUpConfirmStatus('validating');
+		setSigningUpGenericStatus("validating");
+		setSigningUpEmailStatus("validating");
+		setSigningUpConfirmStatus("validating");
 
 		const { name, email, password, confirm } = values.signup;
 
 		// Only continue if agency is set
 		if (!agencyType || !agencyId) {
-			setSigningUpAgencyStatus('error');
+			setSigningUpAgencyStatus("error");
 			return;
 		}
 
 		// Only continue if, when creating a new agency, it has a name
-		if (agencyId === 'new' && !values.signup.agencyName) {
+		if (agencyId === "new" && !values.signup.agencyName) {
 			return;
 		}
 
 		if (password !== confirm) {
 			setSigningUpGenericStatus(null);
 			setSigningUpEmailStatus(null);
-			setSigningUpConfirmStatus('error');
+			setSigningUpConfirmStatus("error");
 			return;
 		}
 
 		return firebase
 			.auth()
 			.createUserWithEmailAndPassword(email, password)
-			.then((result) => {
+			.then(result => {
 				return result.user
 					.updateProfile({
 						displayName: name,
 					})
 					.then(() => {
-						if (agencyId === 'new') {
+						if (agencyId === "new") {
 							return firebase
 								.firestore()
-								.collection('agencies')
+								.collection("agencies")
 								.add({
 									name: values.signup.agencyName,
 									type: agencyType,
@@ -164,7 +164,7 @@ function SignUpView({ changeView }) {
 									approved: false,
 									address: {
 										line1: values.signup.agencyAddressLine1,
-										line2: values.signup.agencyAddressLine2 || '',
+										line2: values.signup.agencyAddressLine2 || "",
 										city: values.signup.agencyAddressCity,
 										state: values.signup.agencyAddressState,
 										zip: values.signup.agencyAddressZip,
@@ -175,26 +175,26 @@ function SignUpView({ changeView }) {
 										phone: values.signup.agencyContactPhone,
 									},
 								})
-								.then((newAgencyDoc) => {
+								.then(newAgencyDoc => {
 									return firebase
 										.firestore()
-										.collection('users')
+										.collection("users")
 										.doc(result.user.uid)
 										.set({
 											umbrella: umbrella.id,
 											agency: newAgencyDoc.id,
 										})
-										.catch((error) => {
-											debug('Could not add umbrella and agency to user', error);
+										.catch(error => {
+											debug("Could not add umbrella and agency to user", error);
 										});
 								})
-								.catch((error) => {
-									debug('Could not create agency', error);
+								.catch(error => {
+									debug("Could not create agency", error);
 								});
 						} else {
 							return firebase
 								.firestore()
-								.collection('agencies')
+								.collection("agencies")
 								.doc(agencyId)
 								.update({
 									[`members.${result.user.uid}`]: true,
@@ -202,46 +202,46 @@ function SignUpView({ changeView }) {
 								.then(() => {
 									return firebase
 										.firestore()
-										.collection('users')
+										.collection("users")
 										.doc(result.user.uid)
 										.set({
 											umbrella: umbrella.id,
 											agency: agencyId,
 										})
-										.catch((error) => {
-											debug('Could not add umbrella and agency to user', error);
+										.catch(error => {
+											debug("Could not add umbrella and agency to user", error);
 										});
 								})
-								.catch((error) => {
-									debug('Could not join agency', error);
+								.catch(error => {
+									debug("Could not join agency", error);
 								});
 						}
 					})
-					.catch((error) => {
-						debug('Could not update user display name', error);
+					.catch(error => {
+						debug("Could not update user display name", error);
 					});
 			})
-			.catch((error) => {
-				debug('Could not create user', error);
+			.catch(error => {
+				debug("Could not create user", error);
 			});
 	};
 
 	return (
-		<Layout style={{ backgroundColor: 'transparent' }}>
+		<Layout style={{ backgroundColor: "transparent" }}>
 			<PageHeader
 				title={AuthPages.SIGNUP.title}
-				style={{ marginBottom: '1em', padding: 0 }}
+				style={{ marginBottom: "1em", padding: 0 }}
 			/>
 
 			<Layout.Content>
 				<Form form={signUpForm} layout="vertical" onFinish={signUp}>
 					<Form.Item
-						name={['signup', 'name']}
+						name={["signup", "name"]}
 						label="Name"
 						rules={[
 							{
 								required: true,
-								message: 'Please enter your name',
+								message: "Please enter your name",
 							},
 						]}
 						hasFeedback
@@ -251,13 +251,13 @@ function SignUpView({ changeView }) {
 					</Form.Item>
 
 					<Form.Item
-						name={['signup', 'email']}
+						name={["signup", "email"]}
 						label="Email address"
 						rules={[
 							{
 								required: true,
-								type: 'email',
-								message: 'Please enter your email address',
+								type: "email",
+								message: "Please enter your email address",
 							},
 						]}
 						hasFeedback
@@ -267,12 +267,12 @@ function SignUpView({ changeView }) {
 					</Form.Item>
 
 					<Form.Item
-						name={['signup', 'password']}
+						name={["signup", "password"]}
 						label="Password"
 						rules={[
 							{
 								required: true,
-								message: 'Please enter a password',
+								message: "Please enter a password",
 							},
 						]}
 						hasFeedback
@@ -281,23 +281,23 @@ function SignUpView({ changeView }) {
 						<Input
 							disabled={signingUp}
 							type="password"
-							onChange={(e) => setSigningUpPassword(e.target.value)}
+							onChange={e => setSigningUpPassword(e.target.value)}
 						/>
 					</Form.Item>
 
 					<Form.Item
-						name={['signup', 'confirm']}
+						name={["signup", "confirm"]}
 						label="Confirm password"
 						rules={[
 							{
 								required: true,
-								message: 'Please confirm your password',
+								message: "Please confirm your password",
 							},
 							{
 								validator: (_, value) =>
 									value && signingUpPassword === value
 										? Promise.resolve()
-										: Promise.reject('Your passwords do not match'),
+										: Promise.reject("Your passwords do not match"),
 							},
 						]}
 						hasFeedback
@@ -307,24 +307,24 @@ function SignUpView({ changeView }) {
 					</Form.Item>
 
 					<Form.Item
-						name={['signup', 'umbrella']}
+						name={["signup", "umbrella"]}
 						label="Umbrella organization"
 						extra="Dont see your organization? Email us!"
 						rules={[
 							{
 								required: true,
-								message: 'Please select an Umbrella organization',
+								message: "Please select an Umbrella organization",
 							},
 						]}
 					>
 						<Select
 							disabled={signingUp}
-							onChange={(id) =>
-								setUmbrella(umbrellas.filter((x) => x.id === id)[0])
+							onChange={id =>
+								setUmbrella(umbrellas.filter(x => x.id === id)[0])
 							}
 						>
 							{umbrellas &&
-								umbrellas.map((umbrella) => (
+								umbrellas.map(umbrella => (
 									<Select.Option key={umbrella.id}>
 										{umbrella.name}
 									</Select.Option>
@@ -333,11 +333,11 @@ function SignUpView({ changeView }) {
 					</Form.Item>
 
 					<Form.Item
-						name={['signup', 'agency']}
+						name={["signup", "agency"]}
 						rules={[
 							{
 								required: true,
-								message: 'Please select an agency',
+								message: "Please select an agency",
 							},
 						]}
 						hasFeedback
@@ -349,33 +349,33 @@ function SignUpView({ changeView }) {
 							options={[
 								{
 									value: AgencyTypes.DONATOR,
-									label: 'Donating Agency',
+									label: "Donating Agency",
 									children: [...donatingAgencies, newAgencyItem],
 								},
 								{
 									value: AgencyTypes.RECEIVER,
-									label: 'Receiving Agency',
+									label: "Receiving Agency",
 									children: [...receivingAgencies, newAgencyItem],
 								},
 
 								{
 									value: AgencyTypes.DELIVERER,
-									label: 'Delivering Agency',
+									label: "Delivering Agency",
 									children: [...deliveringAgencies, newAgencyItem],
 								},
 							]}
 						/>
 					</Form.Item>
 
-					{umbrella && agencyType && agencyId === 'new' && (
+					{umbrella && agencyType && agencyId === "new" && (
 						<>
 							<Form.Item
-								name={['signup', 'agencyName']}
+								name={["signup", "agencyName"]}
 								label="Agency Name"
 								rules={[
 									{
 										required: true,
-										message: 'Please enter the name of your agency',
+										message: "Please enter the name of your agency",
 									},
 								]}
 								hasFeedback
@@ -384,13 +384,13 @@ function SignUpView({ changeView }) {
 							</Form.Item>
 
 							<Form.Item
-								name={['signup', 'agencyContactName']}
+								name={["signup", "agencyContactName"]}
 								label="Point of Contact name"
 								extra={`This will be visible to all ${umbrella.name} users.`}
 								rules={[
 									{
 										required: true,
-										message: 'Please enter the contact name for your agency',
+										message: "Please enter the contact name for your agency",
 									},
 								]}
 							>
@@ -398,14 +398,14 @@ function SignUpView({ changeView }) {
 							</Form.Item>
 
 							<Form.Item
-								name={['signup', 'agencyContactEmail']}
+								name={["signup", "agencyContactEmail"]}
 								label="Point of Contact email address"
 								extra={`This will be visible to all ${umbrella.name} users.`}
 								rules={[
 									{
 										required: true,
-										type: 'email',
-										message: 'Please enter the contact email for your agency',
+										type: "email",
+										message: "Please enter the contact email for your agency",
 									},
 								]}
 							>
@@ -413,13 +413,13 @@ function SignUpView({ changeView }) {
 							</Form.Item>
 
 							<Form.Item
-								name={['signup', 'agencyContactPhone']}
+								name={["signup", "agencyContactPhone"]}
 								label="Point of Contact phone number"
 								extra={`This will be visible to all ${umbrella.name} users.`}
 								rules={[
 									{
 										required: true,
-										message: 'Please enter the contact phone for your agency',
+										message: "Please enter the contact phone for your agency",
 									},
 								]}
 							>
@@ -430,15 +430,15 @@ function SignUpView({ changeView }) {
 								extra={`This will be visible to all ${umbrella.name} users.`}
 							>
 								<Form.Item
-									name={['signup', 'agencyAddressLine1']}
+									name={["signup", "agencyAddressLine1"]}
 									label="Street Address"
 									rules={[
 										{
 											required: true,
-											message: 'Please enter the address of your agency',
+											message: "Please enter the address of your agency",
 										},
 									]}
-									style={{ display: 'inline-block', width: 'calc(50% - 6px)' }}
+									style={{ display: "inline-block", width: "calc(50% - 6px)" }}
 								>
 									<Input
 										disabled={signingUp}
@@ -448,12 +448,12 @@ function SignUpView({ changeView }) {
 								</Form.Item>
 
 								<Form.Item
-									name={['signup', 'agencyAddressLine2']}
+									name={["signup", "agencyAddressLine2"]}
 									label="Line 2"
 									style={{
-										display: 'inline-block',
-										width: 'calc(50% - 6px)',
-										margin: '0 0 0 12px',
+										display: "inline-block",
+										width: "calc(50% - 6px)",
+										margin: "0 0 0 12px",
 									}}
 								>
 									<Input disabled={signingUp} placeholder="#123" type="text" />
@@ -464,17 +464,17 @@ function SignUpView({ changeView }) {
 								extra={`This will be visible to all ${umbrella.name} users.`}
 							>
 								<Form.Item
-									name={['signup', 'agencyAddressCity']}
+									name={["signup", "agencyAddressCity"]}
 									label="City"
 									rules={[
 										{
 											required: true,
-											message: 'Please enter the city your agency is in',
+											message: "Please enter the city your agency is in",
 										},
 									]}
 									style={{
-										display: 'inline-block',
-										width: 'calc((100% / 3) - 8px)',
+										display: "inline-block",
+										width: "calc((100% / 3) - 8px)",
 									}}
 								>
 									<Input
@@ -485,35 +485,35 @@ function SignUpView({ changeView }) {
 								</Form.Item>
 
 								<Form.Item
-									name={['signup', 'agencyAddressState']}
+									name={["signup", "agencyAddressState"]}
 									label="State"
 									rules={[
 										{
 											required: true,
-											message: 'Please enter the state your agency is in',
+											message: "Please enter the state your agency is in",
 										},
 									]}
 									style={{
-										display: 'inline-block',
-										width: 'calc((100% / 3) - 8px)',
-										margin: '0 12px',
+										display: "inline-block",
+										width: "calc((100% / 3) - 8px)",
+										margin: "0 12px",
 									}}
 								>
 									<Input disabled={signingUp} placeholder="WA" type="text" />
 								</Form.Item>
 
 								<Form.Item
-									name={['signup', 'agencyAddressZip']}
+									name={["signup", "agencyAddressZip"]}
 									label="Zip"
 									rules={[
 										{
 											required: true,
-											message: 'Please enter the zip code your agency is in',
+											message: "Please enter the zip code your agency is in",
 										},
 									]}
 									style={{
-										display: 'inline-block',
-										width: 'calc((100% / 3) - 8px)',
+										display: "inline-block",
+										width: "calc((100% / 3) - 8px)",
 									}}
 								>
 									<Input disabled={signingUp} placeholder="98102" type="text" />

@@ -1,35 +1,35 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import firebase from 'gatsby-plugin-firebase';
-import debug from 'debug';
-import { Button, Divider, Form, Input, Layout, PageHeader } from 'antd';
+import React, { useState } from "react";
+import PropTypes from "prop-types";
+import firebase from "gatsby-plugin-firebase";
+import debug from "debug";
+import { Button, Divider, Form, Input, Layout, PageHeader } from "antd";
 
-import { AuthPages } from '../Enums';
+import { AuthPages } from "../Enums";
 
 function LogInView({ changeView }) {
 	const [logInForm] = Form.useForm();
 	const [loggingIn, setLoggingIn] = useState(false);
 	const [logInStatus, setLogInStatus] = useState(null);
 
-	const logIn = (values) => {
+	const logIn = values => {
 		setLoggingIn(true);
-		setLogInStatus('validating');
+		setLogInStatus("validating");
 		const { email, password } = values.login;
 		firebase
 			.auth()
 			.signInWithEmailAndPassword(email, password)
-			.catch((error) => {
+			.catch(error => {
 				setLoggingIn(false);
-				setLogInStatus('error');
-				debug('Could not sign in', error);
+				setLogInStatus("error");
+				debug("Could not sign in", error);
 			});
 	};
 
 	return (
-		<Layout style={{ backgroundColor: 'transparent' }}>
+		<Layout style={{ backgroundColor: "transparent" }}>
 			<PageHeader
 				title={AuthPages.LOGIN.title}
-				style={{ marginBottom: '1em', padding: 0 }}
+				style={{ marginBottom: "1em", padding: 0 }}
 			/>
 
 			<Layout.Content>
@@ -40,13 +40,13 @@ function LogInView({ changeView }) {
 					onFinish={logIn}
 				>
 					<Form.Item
-						name={['login', 'email']}
+						name={["login", "email"]}
 						label="Email address"
 						rules={[
 							{
 								required: true,
-								type: 'email',
-								message: 'Please enter your email address',
+								type: "email",
+								message: "Please enter your email address",
 							},
 						]}
 						hasFeedback
@@ -56,12 +56,12 @@ function LogInView({ changeView }) {
 					</Form.Item>
 
 					<Form.Item
-						name={['login', 'password']}
+						name={["login", "password"]}
 						label="Password"
 						rules={[
 							{
 								required: true,
-								message: 'Please enter your password',
+								message: "Please enter your password",
 							},
 						]}
 						hasFeedback

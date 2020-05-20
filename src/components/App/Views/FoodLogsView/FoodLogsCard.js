@@ -1,17 +1,16 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { AgencyTypes } from '../../Enums';
-import { Card, Descriptions } from 'antd';
+import React from "react";
+import PropTypes from "prop-types";
+import { AgencyTypes } from "../../Enums";
+import { Card, Descriptions } from "antd";
 
-function FoodLogsCard({date}) {
-
+function FoodLogsCard({ date }) {
 	const gridStyle = {
-		height: '100%',
-		width: '50%',
+		height: "100%",
+		width: "50%",
 	};
 
 	return (
-		<Card size = "small" title= {"Delivery Completed " + date}>
+		<Card size="small" title={"Delivery Completed " + date}>
 			<Card.Grid style={gridStyle} hoverable={false}>
 				<div>some stuff</div>
 			</Card.Grid>
@@ -30,16 +29,10 @@ function FoodLogsCard({date}) {
 			<Card.Grid style={gridStyle} hoverable={false}>
 				<div>some stuff</div>
 			</Card.Grid>
-
 		</Card>
 	);
 }
 
-
-
-
-FoodLogsCard.propTypes = {
-
-};
+FoodLogsCard.propTypes = {};
 
 export default FoodLogsCard;

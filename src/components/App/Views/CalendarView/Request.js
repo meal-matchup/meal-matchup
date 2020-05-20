@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import firebase from 'gatsby-plugin-firebase';
-import moment from 'moment';
+import React, { useState } from "react";
+import PropTypes from "prop-types";
+import firebase from "gatsby-plugin-firebase";
+import moment from "moment";
 import {
 	Button,
 	Col,
@@ -14,9 +14,9 @@ import {
 	Row,
 	Select,
 	TimePicker,
-} from 'antd';
+} from "antd";
 
-import { AgencyTypes, RequestTypes } from '../../Enums';
+import { AgencyTypes, RequestTypes } from "../../Enums";
 
 function Request({ open = false, onClose, umbrella, agency }) {
 	const [requestForm] = Form.useForm();
@@ -24,22 +24,22 @@ function Request({ open = false, onClose, umbrella, agency }) {
 	const [requestDateRangeStatus, setRequestDateRangeStatus] = useState(null);
 	const [requestTimeRangeStatus, setRequestTimeRangeStatus] = useState(false);
 
-	const createPickupRequest = (values) => {
+	const createPickupRequest = values => {
 		setCreatingRequest(true);
-		setRequestDateRangeStatus('validating');
-		setRequestTimeRangeStatus('validating');
+		setRequestDateRangeStatus("validating");
+		setRequestTimeRangeStatus("validating");
 
 		let errors = false;
 
 		const { dates, time, frequency, notes, type } = values.request;
 
 		if (!dates) {
-			setRequestDateRangeStatus('error');
+			setRequestDateRangeStatus("error");
 			errors = true;
 		}
 
 		if (!time) {
-			setRequestTimeRangeStatus('error');
+			setRequestTimeRangeStatus("error");
 			errors = true;
 		}
 
@@ -65,7 +65,7 @@ function Request({ open = false, onClose, umbrella, agency }) {
 			type,
 		};
 		if (type === RequestTypes.PICKUP) {
-			requestData['receiver'] = AgencyTypes.ANY;
+			requestData["receiver"] = AgencyTypes.ANY;
 			const occurrences = [];
 			for (
 				let date = dates[0].toDate();
@@ -77,13 +77,13 @@ function Request({ open = false, onClose, umbrella, agency }) {
 					complete: false,
 				});
 			}
-			requestData['occurrences'] = occurrences;
+			requestData["occurrences"] = occurrences;
 		}
-		if (notes) requestData['notes'] = notes;
+		if (notes) requestData["notes"] = notes;
 
 		firebase
 			.firestore()
-			.collection('requests')
+			.collection("requests")
 			.add(requestData)
 			.then(() => {
 				setCreatingRequest(false);
@@ -95,7 +95,7 @@ function Request({ open = false, onClose, umbrella, agency }) {
 		if (!creatingRequest) onClose();
 	};
 
-	const invalidDates = (now) => now && now < moment().endOf('day');
+	const invalidDates = now => now && now < moment().endOf("day");
 
 	return (
 		<Drawer
@@ -104,7 +104,7 @@ function Request({ open = false, onClose, umbrella, agency }) {
 			visible={open}
 			onClose={closeDrawer}
 			footer={
-				<div style={{ textAlign: 'right' }}>
+				<div style={{ textAlign: "right" }}>
 					<Button
 						disabled={creatingRequest}
 						onClick={onClose}
@@ -129,7 +129,7 @@ function Request({ open = false, onClose, umbrella, agency }) {
 					onFinish={createPickupRequest}
 					initialValues={{
 						request: {
-							frequency: 'weekly',
+							frequency: "weekly",
 						},
 					}}
 					layout="vertical"
@@ -139,7 +139,7 @@ function Request({ open = false, onClose, umbrella, agency }) {
 						<Col span={24}>
 							<p>
 								Use this form to schedule a new request. If accepted, a
-								Delivering Agency will either <strong>Bag &amp; Tag</strong> or{' '}
+								Delivering Agency will either <strong>Bag &amp; Tag</strong> or{" "}
 								<strong>Pickup</strong> your donations in the timeframe you
 								specify.
 							</p>
@@ -163,12 +163,12 @@ function Request({ open = false, onClose, umbrella, agency }) {
 					<Row gutter={16}>
 						<Col span={24}>
 							<Form.Item
-								name={['request', 'type']}
+								name={["request", "type"]}
 								label="Request Type"
 								rules={[
 									{
 										required: true,
-										message: 'You must select a request type',
+										message: "You must select a request type",
 									},
 								]}
 							>
@@ -187,7 +187,7 @@ function Request({ open = false, onClose, umbrella, agency }) {
 						<Col span={12}>
 							<Form.Item
 								label="Date range"
-								name={['request', 'dates']}
+								name={["request", "dates"]}
 								validateStatus={requestDateRangeStatus}
 							>
 								<DatePicker.RangePicker
@@ -195,7 +195,7 @@ function Request({ open = false, onClose, umbrella, agency }) {
 									format="MMMM D, YYYY"
 									disabledDate={invalidDates}
 									style={{
-										width: '100%',
+										width: "100%",
 									}}
 								/>
 							</Form.Item>
@@ -204,7 +204,7 @@ function Request({ open = false, onClose, umbrella, agency }) {
 						<Col span={12}>
 							<Form.Item
 								label="Choose pickup time"
-								name={['request', 'time']}
+								name={["request", "time"]}
 								validateStatus={requestTimeRangeStatus}
 							>
 								<TimePicker.RangePicker
@@ -213,7 +213,7 @@ function Request({ open = false, onClose, umbrella, agency }) {
 									use12Hours={true}
 									minuteStep={10}
 									style={{
-										width: '100%',
+										width: "100%",
 									}}
 								/>
 							</Form.Item>
@@ -222,14 +222,14 @@ function Request({ open = false, onClose, umbrella, agency }) {
 
 					<Row gutter={16}>
 						<Col span={24}>
-							<Form.Item label="Frequency" name={['request', 'frequency']}>
+							<Form.Item label="Frequency" name={["request", "frequency"]}>
 								<Select disabled={creatingRequest}>
 									<Select.Option value="weekly">Weekly</Select.Option>
 									<Select.Option value="biweekly">Biweekly</Select.Option>
 								</Select>
 							</Form.Item>
 
-							<Form.Item label="Notes" name={['request', 'notes']}>
+							<Form.Item label="Notes" name={["request", "notes"]}>
 								<Input.TextArea disabled={creatingRequest} rows={4} />
 							</Form.Item>
 						</Col>

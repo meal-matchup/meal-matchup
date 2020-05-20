@@ -1,17 +1,22 @@
-import React, { useEffect, useState } from 'react';
-import { Helmet } from 'react-helmet';
-import firebase from 'gatsby-plugin-firebase';
-import debug from 'debug';
+import React, { useEffect, useState } from "react";
+import { Helmet } from "react-helmet";
+import firebase from "gatsby-plugin-firebase";
+import debug from "debug";
 
-import { Layout, Menu, PageHeader } from 'antd';
+import { Layout, Menu, PageHeader } from "antd";
 
-import Loading from './Loading';
-import { AppPages, AgencyTypes, SiderPages } from './Enums';
-import { AccountView, CalendarView, DirectoryView, FoodLogsView } from './Views';
+import Loading from "./Loading";
+import { AppPages, AgencyTypes, SiderPages } from "./Enums";
+import {
+	AccountView,
+	CalendarView,
+	DirectoryView,
+	FoodLogsView,
+} from "./Views";
 
-import Auth from '../Auth';
+import Auth from "../Auth";
 
-import { Logo } from '../../graphics/graphics';
+import { Logo } from "../../graphics/graphics";
 
 function App() {
 	// true if the app is still loading
@@ -52,9 +57,7 @@ function App() {
 		[AppPages.ACCOUNT.id]: (
 			<AccountView umbrella={umbrella} user={user} agency={agency} />
 		),
-		[AppPages.FOODLOGS.id]: (
-			<FoodLogsView/>
-		),
+		[AppPages.FOODLOGS.id]: <FoodLogsView />,
 	};
 
 	useEffect(() => {
@@ -67,12 +70,12 @@ function App() {
 			const getAgencies = () =>
 				firebase
 					.firestore()
-					.collection('agencies')
-					.where('umbrella', '==', umbrella.id)
+					.collection("agencies")
+					.where("umbrella", "==", umbrella.id)
 					.get()
-					.then((querySnapshot) => {
+					.then(querySnapshot => {
 						const allAgencies = [];
-						querySnapshot.forEach((agencyDoc) => {
+						querySnapshot.forEach(agencyDoc => {
 							allAgencies.push({
 								id: agencyDoc.id,
 								name: agencyDoc.data().name,
@@ -100,7 +103,7 @@ function App() {
 	useEffect(() => {
 		if (!firebase) return;
 
-		return firebase.auth().onAuthStateChanged(async (newUser) => {
+		return firebase.auth().onAuthStateChanged(async newUser => {
 			setUser(newUser);
 			setUserLoading(false);
 
@@ -113,16 +116,16 @@ function App() {
 
 				return firebase
 					.firestore()
-					.collection('users')
+					.collection("users")
 					.doc(newUser.uid)
 					.get()
-					.then((userDoc) => {
+					.then(userDoc => {
 						firebase
 							.firestore()
-							.collection('umbrellas')
+							.collection("umbrellas")
 							.doc(userDoc.data().umbrella)
 							.get()
-							.then((umbrellaDoc) => {
+							.then(umbrellaDoc => {
 								setUmbrella({
 									id: umbrellaDoc.id,
 									name: umbrellaDoc.data().name,
@@ -132,10 +135,10 @@ function App() {
 
 						firebase
 							.firestore()
-							.collection('agencies')
+							.collection("agencies")
 							.doc(userDoc.data().agency)
 							.get()
-							.then((agencyDoc) => {
+							.then(agencyDoc => {
 								setAgency({
 									id: agencyDoc.id,
 									type: agencyDoc.data().type,
@@ -145,12 +148,12 @@ function App() {
 								});
 								setAgencyLoading(false);
 							})
-							.catch((error) => {
-								debug('Could not fetch agency document', error);
+							.catch(error => {
+								debug("Could not fetch agency document", error);
 							});
 					})
-					.catch((error) => {
-						debug('Could not fetch user document', error);
+					.catch(error => {
+						debug("Could not fetch user document", error);
 					});
 			} else {
 				// When not logged in, don't need to load anything
@@ -166,16 +169,16 @@ function App() {
 
 	const logOut = () => firebase.auth().signOut();
 
-	const changeView = (id) => setCurrentPage(AppPages[id]);
+	const changeView = id => setCurrentPage(AppPages[id]);
 
 	return (
-		<Layout className={`app-layout ${!user ? 'auth-page' : ''}`}>
+		<Layout className={`app-layout ${!user ? "auth-page" : ""}`}>
 			<Helmet>
 				<html lang="en" />
 				<title>
 					{user
 						? `${currentPage.title} | Meal Matchup`
-						: 'Welcome to Meal Matchup'}
+						: "Welcome to Meal Matchup"}
 				</title>
 			</Helmet>
 
@@ -196,7 +199,7 @@ function App() {
 
 					{/* The sider menu */}
 					<Menu className="sider-menu" selectedKeys={[currentPage.id]}>
-						{SiderPages.map((page) => (
+						{SiderPages.map(page => (
 							<Menu.Item
 								key={page.id}
 								className="sider-link"
@@ -251,7 +254,7 @@ function App() {
 					/>
 				)}
 
-				<Layout.Content className={`app-content ${user ? 'has-sider' : ''}`}>
+				<Layout.Content className={`app-content ${user ? "has-sider" : ""}`}>
 					{user ? appViews[currentPage.id] : <Auth />}
 				</Layout.Content>
 			</Layout>

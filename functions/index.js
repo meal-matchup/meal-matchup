@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 
-const functions = require('firebase-functions');
-const firestore = require('@google-cloud/firestore');
+const functions = require("firebase-functions");
+const firestore = require("@google-cloud/firestore");
 const client = new firestore.v1.FirestoreAdminClient();
 
 const bucket = functions.config().gcp.bucket;
@@ -19,10 +19,10 @@ const bucket = functions.config().gcp.bucket;
 // });
 
 exports.scheduledFirestoreExport = functions.pubsub
-	.schedule('every 24 hours')
-	.onRun((context) => {
+	.schedule("every 24 hours")
+	.onRun(context => {
 		const projectId = process.env.GCP_PROJECT || process.env.GCLOUD_PROJECT;
-		const databaseName = client.databasePath(projectId, '(default)');
+		const databaseName = client.databasePath(projectId, "(default)");
 
 		return client
 			.exportDocuments({
@@ -30,19 +30,19 @@ exports.scheduledFirestoreExport = functions.pubsub
 				outputUriPrefix: bucket,
 				collectionIds: [],
 			})
-			.then((responses) => {
+			.then(responses => {
 				const response = responses[0];
-				console.log(`Operation name: ${response['name']}`);
+				console.log(`Operation name: ${response["name"]}`);
 				return response;
 			})
-			.catch((error) => {
+			.catch(error => {
 				console.error(error);
 				throw new Error("Export operation failed");
 			});
 	});
 
 exports.userUpdated = functions.firestore
-	.document('users/{uid}')
+	.document("users/{uid}")
 	.onUpdate((change, context) => {
 		// if (change.after.data().smsNotifications === true) {
 		// 	// Turned on SMS nnotifications

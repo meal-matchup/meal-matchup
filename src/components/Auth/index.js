@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
-import { AuthPages } from './Enums';
+import { AuthPages } from "./Enums";
 
-import { LogInView, SignUpView } from './Views';
+import { LogInView, SignUpView } from "./Views";
 
 function Auth() {
 	// set current auth page
 	const [activePage, setActivePage] = useState(AuthPages.LOGIN);
 
-	const changeView = (view) => setActivePage(view);
+	const changeView = view => setActivePage(view);
 
 	return (
 		<div className="auth-screens">

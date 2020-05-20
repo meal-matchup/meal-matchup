@@ -1,6 +1,6 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { Spin } from 'antd';
+import React from "react";
+import PropTypes from "prop-types";
+import { Spin } from "antd";
 
 function Loading({ loading = false }) {
 	return (

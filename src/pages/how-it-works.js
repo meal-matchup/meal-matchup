@@ -1,48 +1,48 @@
-import React from 'react';
-import { Button, Col, Row } from 'antd';
-import map from '../graphics/donation-map.png';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React from "react";
+import { Button, Col, Row } from "antd";
+import map from "../graphics/donation-map.png";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
 	faTruck,
 	faUtensils,
 	faShoppingBasket,
 	faUserPlus,
-} from '@fortawesome/free-solid-svg-icons';
+} from "@fortawesome/free-solid-svg-icons";
 
 const img = {
 	height: 30,
-	width: 'auto',
+	width: "auto",
 };
 
 const styles = {
-	fontFamily: 'sans-serif',
-	textAlign: 'center',
+	fontFamily: "sans-serif",
+	textAlign: "center",
 	padding: 10,
 };
 
 const whole = {
-	backgroundColor: 'white',
+	backgroundColor: "white",
 };
 
 const icon = {
-	fontSize: '6em',
+	fontSize: "6em",
 };
 
 const block = {
-	margin: '3em',
+	margin: "3em",
 };
 
 const center = {
-	textAlign: 'center',
+	textAlign: "center",
 };
 
 const video = {
-	width: '90%',
-	margin: 'auto',
+	width: "90%",
+	margin: "auto",
 };
 
 const image = {
-	width: '100%',
+	width: "100%",
 };
 
 function howItWorks() {
@@ -96,7 +96,7 @@ function howItWorks() {
 						system or click “view more” to see all video tutorials. There are
 						also downloadable PDFs listed below in blue. If you have any further
 						questions about our approach or design thinking, please reach out to
-						us through the contact page.{' '}
+						us through the contact page.{" "}
 					</p>
 					<Row>
 						<Col span={7} offset={0.5}>
@@ -125,7 +125,7 @@ function howItWorks() {
 							<h1>Delivery Agency</h1>
 							<p>
 								Delivery agencies, aka campus student groups, can utilize the
-								mobile and desktop versions of Meal Matchup to:{' '}
+								mobile and desktop versions of Meal Matchup to:{" "}
 							</p>
 							<ul>
 								<li>Coordinate volunteer driver and delivery schedules</li>
@@ -139,15 +139,15 @@ function howItWorks() {
 							<h1>Receiving Agency</h1>
 							<p>
 								Receiving agencies, aka local shelters, benefit from Meal
-								Matchup&apos;s transparent system that allows them to:{' '}
+								Matchup&apos;s transparent system that allows them to:{" "}
 							</p>
 							<ul>
 								<li>
 									Communicate and receive information about upcoming deliveries
-									(time, deliverers, food logs, food descriptions etc.){' '}
+									(time, deliverers, food logs, food descriptions etc.){" "}
 								</li>
 								<li>
-									Increased consistency and ease with which to receive donations{' '}
+									Increased consistency and ease with which to receive donations{" "}
 								</li>
 							</ul>
 						</Col>
@@ -297,7 +297,7 @@ function howItWorks() {
 						how agencies use Meal Matchup to schedule, log, and deliver
 						donations. Not pictured in the diagram below are specific pages
 						and/or features within Meal Matchup. Please see above videos and PDF
-						tutorials for a detailed account.{' '}
+						tutorials for a detailed account.{" "}
 					</p>
 					<img src={map} style={image} alt="Donation Road Map" />
 				</div>
