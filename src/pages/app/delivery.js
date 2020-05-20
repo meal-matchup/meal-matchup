@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';
+import PropTypes from 'prop-types';
+import firebase from 'gatsby-plugin-firebase';
+import { AgencyTypes } from '../../components/App/Enums';
 import {
 	Layout,
 	Row,
@@ -15,7 +18,7 @@ import {
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import debug from 'debug';
 
-function Delivery({ date, request }) {
+function Delivery({ date, requestID, receiverInfo, donatorInfo }) {
 	function formGoogleMapsURL(address) {
 		// Uncomment if you want to give this an agency object and change address to agency above
 		//let address = agency.address.line1;
@@ -39,8 +42,8 @@ function Delivery({ date, request }) {
 			content: (
 				<div>
 					<h3> Please pick up the donation from:</h3>
-					<Card title={request.dname} style={{ width: '93vw' }}>
-						<p> Primary Contact: {" " + request.dcontact} </p>
+					<Card title={donatorInfo.name} style={{ width: '93vw' }}>
+						<p> Primary Contact: {" " + donatorInfo.contact_person} </p>
 
 						<div
 							style={{
@@ -50,14 +53,14 @@ function Delivery({ date, request }) {
 							}}
 						>
 							<p style={{ marginBottom: 0, marginRight: 3 }}>Phone Number:</p>
-							<a href={'tel:+' + request.dnumber}>{request.dnumber}</a>
+							<a href={'tel:+' + donatorInfo.phone_number}>{donatorInfo.phone_number}</a>
 						</div>
 						<a
-							href={formGoogleMapsURL(request.daddress)}
+							href={formGoogleMapsURL(donatorInfo.address)}
 							target="_blank"
 							rel="noopener noreferrer"
 						>
-							{request.daddress}
+							{donatorInfo.address}
 						</a>
 					</Card>
 					<br />
@@ -165,8 +168,8 @@ function Delivery({ date, request }) {
 			content: (
 				<div>
 					<h3> Please deliver the donation to:</h3>
-					<Card title={request.rname} style={{ width: '93vw' }}>
-						<p> Primary Contact: {" " + request.rcontact} </p>
+					<Card title={receiverInfo.name} style={{ width: '93vw' }}>
+						<p> Primary Contact: {" " + receiverInfo.contact_person} </p>
 
 						<div
 							style={{
@@ -176,14 +179,14 @@ function Delivery({ date, request }) {
 							}}
 						>
 							<p style={{ marginBottom: 0, marginRight: 3 }}>Phone Number:</p>
-							<a href={'tel:+' + request.rnumber}>{request.rnumber}</a>
+							<a href={'tel:+' + receiverInfo.phone_number}>{receiverInfo.phone_number}</a>
 						</div>
 						<a
-							href={formGoogleMapsURL(request.raddress)}
+							href={formGoogleMapsURL(receiverInfo.address)}
 							target="_blank"
 							rel="noopener noreferrer"
 						>
-							{request.raddress}
+							{receiverInfo.address}
 						</a>
 					</Card>
 					<br />
@@ -274,5 +277,22 @@ function Delivery({ date, request }) {
 		</Layout>
 	);
 }
+
+Delivery.propTypes = {
+	date: PropTypes.object.isRequired,
+	donatorInfo: PropTypes.shape({
+		name: PropTypes.string.isRequired,
+		address: PropTypes.string.isRequired,
+		contact_person: PropTypes.string.isRequired,
+		phone_number: PropTypes.string.isRequired,
+	}),
+	receiverInfo: PropTypes.shape({
+		name: PropTypes.string.isRequired,
+		address: PropTypes.string.isRequired,
+		contact_person: PropTypes.string.isRequired,
+		phone_number: PropTypes.string.isRequired,
+	}),
+	requestID: PropTypes.string.isRequired,
+};
 
 export default Delivery;

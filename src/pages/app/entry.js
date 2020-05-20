@@ -11,7 +11,6 @@ import Delivery from './delivery';
 function EntryPage({ location }) {
 	// Only allow entry page if there is a key
 	if (!location.search) return navigate('/');
-
 	const params = new URLSearchParams(location.search);
 	const key = params.get('key');
 
@@ -22,11 +21,16 @@ function EntryPage({ location }) {
 
 	const [deliveryDate, setDeliveryDate] = useState(new Date());
 
+	const [requestID, setRequestID] = useState(null);
+
+	const [donatorInfo, setDonatorInfo] = useState(null);
+
+	const [receiverInfo, setReceiverInfo] = useState(null);
+
 	useEffect(() => {
 		if (!firebase || !loading || !key) return;
 
 		let mounted = true;
-
 		const getRequestOccurrence = async () =>
 			await firebase
 				.firestore()
@@ -34,6 +38,9 @@ function EntryPage({ location }) {
 				.doc(key)
 				.get()
 				.then((doc) => {
+					setRequestID(doc.data().request);
+					setDonatorInfo(doc.data().donator_info);
+					setReceiverInfo(doc.data().receiver_info);
 					setDeliveryDate(doc.data().date.toDate());
 					if (mounted) setLoading(false);
 				})
@@ -64,16 +71,19 @@ function EntryPage({ location }) {
 				style={{ height: '100%' }}
 			>
 				<Delivery /*SUZ FILL IN HERE think the strat is to pass the request then get the donating and recieving agencies within the delivery component? Not sure tho*/
-					request={{
-						dname: 'Local Point',
-						daddress: '1245 NE Campus Pkwy, Seattle, WA 98105',
-						dcontact: 'Steven',
-						dnumber: '555-555-5555',
-						rname: 'University Distrcit Food Bank',
-						raddress: '5017 Roosevelt Way NE, Seattle, WA 98105',
-						rcontact: 'Steven',
-						rnumber: '555-555-5555',
-					}}
+				donatorInfo={donatorInfo}
+				receiverInfo={receiverInfo}
+				requestID={requestID}
+					// request={{
+					// 	dname: 'Local Point',
+					// 	daddress: '1245 NE Campus Pkwy, Seattle, WA 98105',
+					// 	dcontact: 'Steven',
+					// 	dnumber: '555-555-5555',
+					// 	rname: 'University Distrcit Food Bank',
+					// 	raddress: '5017 Roosevelt Way NE, Seattle, WA 98105',
+					// 	rcontact: 'Steven',
+					// 	rnumber: '555-555-5555',
+					// }}
 					date={deliveryDate}
 				/>
 			</motion.div>
