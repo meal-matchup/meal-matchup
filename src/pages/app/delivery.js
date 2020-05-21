@@ -204,8 +204,7 @@ function Delivery({ date, receiverInfo, donatorInfo, requestID }) {
 															justifyContent: 'center',
 															marginTop: 8,
 														}}
-													>                  
-													
+													>
 														{fields.length > 1 ? (
 															<MinusCircleOutlined
 																className="dynamic-delete-button"
@@ -368,13 +367,13 @@ Delivery.propTypes = {
 		address: PropTypes.string.isRequired,
 		contact_person: PropTypes.string.isRequired,
 		phone_number: PropTypes.string.isRequired,
-	}),
+	}).isRequired,
 	receiverInfo: PropTypes.shape({
 		name: PropTypes.string.isRequired,
 		address: PropTypes.string.isRequired,
 		contact_person: PropTypes.string.isRequired,
 		phone_number: PropTypes.string.isRequired,
-	}),
+	}).isRequired,
 	requestID: PropTypes.string.isRequired,
 };
 
