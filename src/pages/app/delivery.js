@@ -39,14 +39,16 @@ function Delivery({ date, receiverInfo, donatorInfo, requestID }) {
 	useEffect(() => {
 		function getFieldValues() {
 			const theValues = {};
-			items.forEach((user, index) => {
-				if (user) {
-					theValues[`user${index}`] = {
-						name: user.name,
-						pounds: user.pounds,
-					};
-				}
-			});
+			if (items) {
+				items.forEach((user, index) => {
+					if (user) {
+						theValues[`user${index}`] = {
+							name: user.name,
+							pounds: user.pounds,
+						};
+					}
+				});
+			}
 			return theValues;
 		}
 
@@ -83,9 +85,8 @@ function Delivery({ date, receiverInfo, donatorInfo, requestID }) {
 	};
 
 	const onFinishFoodLog = (values) => {
-		let newNames = values.names;
+		let newNames = values.names
 		setItems(newNames);
-		console.log(newNames)
 		setCurrent(current + 1);
 	};
 
