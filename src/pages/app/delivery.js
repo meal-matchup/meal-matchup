@@ -18,7 +18,7 @@ import {
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import debug from 'debug';
 
-function Delivery({ date, receiverInfo, donatorInfo }) {
+function Delivery({ date, receiverInfo, donatorInfo, requestID }) {
 	function formGoogleMapsURL(address) {
 		// Uncomment if you want to give this an agency object and change address to agency above
 		//let address = agency.address.line1;
@@ -29,8 +29,39 @@ function Delivery({ date, receiverInfo, donatorInfo }) {
 		)}`;
 	}
 
-	const onFinish = (values) => {
+	const [donatorSignature, setDonatorSignature] = useState(null);
+	const [receiverSignature, setReceiverSignature] = useState(null);
+	const [foodLogs, setFoodLogs] = useState(null);
+
+	const onFinishDelivery = (values) => {
 		console.log('Success:', values);
+		setReceiverSignature(values.receivingSignOff);
+		// update Logs
+		const logData = {
+			food_logs: foodLogs,
+			requestID: requestID,
+			donator_signature: donatorSignature,
+			receiver_signature: receiverSignature,
+		};
+		firebase
+			.firestore()
+			.collection('logs')
+			.add(logData)
+			.then(() => {
+				message.success('Successfully updated logs');
+			});
+	};
+
+	const onFinishDonating = (values) => {
+		console.log("donator signature", values);
+		setDonatorSignature(values.donatingSignOff);
+		setCurrent(current + 1);
+	};
+
+	const onFinishFoodLog = (values) => {
+		console.log("Food log entries", values);
+		setFoodLogs(values.names);
+		setCurrent(current + 1);
 	};
 
 	const { Step } = Steps;
@@ -69,7 +100,7 @@ function Delivery({ date, receiverInfo, donatorInfo }) {
 						id="pickup_form"
 						name="pickup_form"
 						initialValues={{ remember: true }}
-						onFinish={onFinish}
+						onFinish={onFinishDonating}
 					>
 						<Form.Item
 							name="donatingSignOff"
@@ -90,7 +121,7 @@ function Delivery({ date, receiverInfo, donatorInfo }) {
 						Please enter the name and number of pounds for each item that you
 						picked up:
 					</h3>
-					<Form id="food_log_form" name="food_log_form" onFinish={onFinish}>
+					<Form id="food_log_form" name="food_log_form" onFinish={onFinishFoodLog}>
 						<Form.List name="names">
 							{(fields, { add, remove }) => {
 								return (
@@ -195,10 +226,10 @@ function Delivery({ date, receiverInfo, donatorInfo }) {
 						id="delivery_form"
 						name="delivery_form"
 						initialValues={{ remember: true }}
-						onFinish={onFinish}
+						onFinish={onFinishDelivery}
 					>
 						<Form.Item
-							name="recievingSignOff"
+							name="receivingSignOff"
 							rules={[{ required: true, message: 'Please fill this out!' }]}
 						>
 							<Input />
@@ -231,7 +262,6 @@ function Delivery({ date, receiverInfo, donatorInfo }) {
 								{current === steps.length - 3 && (
 									<Button
 										type="primary"
-										onClick={() => setCurrent(current + 1)}
 										form="pickup_form"
 										style={{ marginLeft: 7 }}
 										htmlType="submit"
@@ -242,7 +272,7 @@ function Delivery({ date, receiverInfo, donatorInfo }) {
 								{current === steps.length - 2 && (
 									<Button
 										type="primary"
-										onClick={() => setCurrent(current + 1)}
+										// onClick={() => setCurrent(current + 1)}
 										form="food_log_form"
 										style={{ marginLeft: 7 }}
 										htmlType="submit"
@@ -292,6 +322,7 @@ Delivery.propTypes = {
 		contact_person: PropTypes.string.isRequired,
 		phone_number: PropTypes.string.isRequired,
 	}),
+	requestID: PropTypes.string.isRequired,
 };
 
 export default Delivery;

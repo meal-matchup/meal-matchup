@@ -25,6 +25,8 @@ function EntryPage({ location }) {
 
 	const [receiverInfo, setReceiverInfo] = useState(null);
 
+	const [requestID, setRequestID] = useState(null);
+
 	useEffect(() => {
 		if (!firebase || !loading || !key) return;
 
@@ -36,6 +38,7 @@ function EntryPage({ location }) {
 				.doc(key)
 				.get()
 				.then((doc) => {
+					setRequestID(doc.data().request);
 					setDonatorInfo(doc.data().donator_info);
 					setReceiverInfo(doc.data().receiver_info);
 					setDeliveryDate(doc.data().date.toDate());
@@ -71,6 +74,7 @@ function EntryPage({ location }) {
 					donatorInfo={donatorInfo}
 					receiverInfo={receiverInfo}
 					date={deliveryDate}
+					requestID={requestID}
 				/>
 			</motion.div>
 		)
