@@ -30,7 +30,6 @@ function Delivery({ date, receiverInfo, donatorInfo, requestID }) {
 	}
 
 	const [donatorSignature, setDonatorSignature] = useState(null);
-	const [receiverSignature, setReceiverSignature] = useState(null);
 	const [foodLogs, setFoodLogs] = useState(null);
 
 	const onFinishDelivery = (values) => {
@@ -82,7 +81,9 @@ function Delivery({ date, receiverInfo, donatorInfo, requestID }) {
 							}}
 						>
 							<p style={{ marginBottom: 0, marginRight: 3 }}>Phone Number:</p>
-							<a href={'tel:+' + donatorInfo.phone_number}>{donatorInfo.phone_number}</a>
+							<a href={'tel:+' + donatorInfo.phone_number}>
+								{donatorInfo.phone_number}
+							</a>
 						</div>
 						<a
 							href={formGoogleMapsURL(donatorInfo.address)}
@@ -119,7 +120,11 @@ function Delivery({ date, receiverInfo, donatorInfo, requestID }) {
 						Please enter the name and number of pounds for each item that you
 						picked up:
 					</h3>
-					<Form id="food_log_form" name="food_log_form" onFinish={onFinishFoodLog}>
+					<Form
+						id="food_log_form"
+						name="food_log_form"
+						onFinish={onFinishFoodLog}
+					>
 						<Form.List name="names">
 							{(fields, { add, remove }) => {
 								return (
