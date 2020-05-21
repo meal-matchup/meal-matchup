@@ -68,7 +68,7 @@ function EntryPage({ location }) {
 				}}
 				initial="initial"
 				animate="visible"
-				style={{ height: '100%' }}
+				style={{ height: '100%', maxWidth: '100%', overFlowX: 'hidden' }}
 			>
 				<Delivery
 					donatorInfo={donatorInfo}

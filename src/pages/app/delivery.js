@@ -29,14 +29,40 @@ function Delivery({ date, receiverInfo, donatorInfo, requestID }) {
 		)}`;
 	}
 
-	const [donatorSignature, setDonatorSignature] = useState(null);
-	const [foodLogs, setFoodLogs] = useState(null);
+	const [items, setItems] = useState([]);
+	const [donatorContact, setDonatorContact] = useState('');
+	const [receiverContact, setReceiverContact] = useState('');
+	const [initialValues, setInitialValues] = useState({});
+
+	const [itemsForm] = Form.useForm();
+
+	useEffect(() => {
+		function getFieldValues() {
+			const theValues = {};
+			items.forEach((user, index) => {
+				if (user) {
+					theValues[`user${index}`] = {
+						name: user.name,
+						pounds: user.pounds,
+					};
+				}
+			});
+			return theValues;
+		}
+
+		setInitialValues(getFieldValues());
+	}, [items]);
+
+	useEffect(() => {
+		itemsForm.setFieldsValue(initialValues);
+	}, [itemsForm, initialValues]);
 
 	const onFinishDelivery = (values) => {
+		setReceiverContact(values.receivingSignOff);
 		const logData = {
-			food_logs: foodLogs,
+			food_logs: items,
 			requestID: requestID,
-			donator_signature: donatorSignature,
+			donator_signature: donatorContact,
 			receiver_signature: values.receivingSignOff,
 		};
 		firebase
@@ -52,12 +78,14 @@ function Delivery({ date, receiverInfo, donatorInfo, requestID }) {
 	};
 
 	const onFinishDonating = (values) => {
-		setDonatorSignature(values.donatingSignOff);
+		setDonatorContact(values.donatingSignOff);
 		setCurrent(current + 1);
 	};
 
 	const onFinishFoodLog = (values) => {
-		setFoodLogs(values.names);
+		let newNames = values.names;
+		setItems(newNames);
+		console.log(newNames)
 		setCurrent(current + 1);
 	};
 
@@ -70,8 +98,8 @@ function Delivery({ date, receiverInfo, donatorInfo, requestID }) {
 			content: (
 				<div>
 					<h3> Please pick up the donation from:</h3>
-					<Card title={donatorInfo.name} style={{ width: '93vw' }}>
-						<p> Primary Contact: {" " + donatorInfo.contact_person} </p>
+					<Card title={donatorInfo.name} style={{ width: '91vw' }}>
+						<p> Primary Contact: {' ' + donatorInfo.contact_person} </p>
 
 						<div
 							style={{
@@ -94,18 +122,24 @@ function Delivery({ date, receiverInfo, donatorInfo, requestID }) {
 						</a>
 					</Card>
 					<br />
-					<p> Please have an employee sign off here: </p>
+					<p>
+						{' '}
+						Please enter the name of an employee or volunteer who supervised the
+						pickup here:{' '}
+					</p>
 					<Form
 						id="pickup_form"
 						name="pickup_form"
-						initialValues={{ remember: true }}
+						initialValues={{
+							donatingSignOff: donatorContact,
+						}}
 						onFinish={onFinishDonating}
 					>
 						<Form.Item
 							name="donatingSignOff"
 							rules={[{ required: true, message: 'Please fill this out!' }]}
 						>
-							<Input />
+							<Input style={{ width: '91vw' }} />
 						</Form.Item>
 					</Form>
 				</div>
@@ -117,14 +151,16 @@ function Delivery({ date, receiverInfo, donatorInfo, requestID }) {
 				<>
 					<h3>
 						{' '}
-						Please enter the name and number of pounds for each item that you
-						picked up:
+						Please enter the type of food and number of pounds for each item
+						that you picked up:
 					</h3>
 					<Form
+						form={itemsForm}
 						id="food_log_form"
 						name="food_log_form"
 						onFinish={onFinishFoodLog}
 					>
+
 						<Form.List name="names">
 							{(fields, { add, remove }) => {
 								return (
@@ -202,8 +238,8 @@ function Delivery({ date, receiverInfo, donatorInfo, requestID }) {
 			content: (
 				<div>
 					<h3> Please deliver the donation to:</h3>
-					<Card title={receiverInfo.name} style={{ width: '93vw' }}>
-						<p> Primary Contact: {" " + receiverInfo.contact_person} </p>
+					<Card title={receiverInfo.name} style={{ width: '91vw' }}>
+						<p> Primary Contact: {' ' + receiverInfo.contact_person} </p>
 
 						<div
 							style={{
@@ -213,7 +249,9 @@ function Delivery({ date, receiverInfo, donatorInfo, requestID }) {
 							}}
 						>
 							<p style={{ marginBottom: 0, marginRight: 3 }}>Phone Number:</p>
-							<a href={'tel:+' + receiverInfo.phone_number}>{receiverInfo.phone_number}</a>
+							<a href={'tel:+' + receiverInfo.phone_number}>
+								{receiverInfo.phone_number}
+							</a>
 						</div>
 						<a
 							href={formGoogleMapsURL(receiverInfo.address)}
@@ -224,18 +262,29 @@ function Delivery({ date, receiverInfo, donatorInfo, requestID }) {
 						</a>
 					</Card>
 					<br />
-					<p> Please have an employee sign off here: </p>
+					<p>
+						{' '}
+						Please enter the name of an employee or volunteer who recieved the
+						delivery here:{' '}
+					</p>
 					<Form
 						id="delivery_form"
 						name="delivery_form"
-						initialValues={{ remember: true }}
+						initialValues={{
+							receivingSignOff: receiverContact,
+						}}
 						onFinish={onFinishDelivery}
 					>
 						<Form.Item
 							name="receivingSignOff"
 							rules={[{ required: true, message: 'Please fill this out!' }]}
 						>
-							<Input />
+							<Input
+								onChange={(e) => {
+									setReceiverContact(e.target.value);
+								}}
+								style={{ width: '91vw' }}
+							/>
 						</Form.Item>
 					</Form>
 				</div>
@@ -244,15 +293,15 @@ function Delivery({ date, receiverInfo, donatorInfo, requestID }) {
 	];
 
 	return (
-		<Layout style={{ height: '100%' }}>
-			<Layout.Header theme="dark">
+		<Layout style={{ height: '100%', maxWidth: '100%', overflowX: 'hidden' }}>
+			<Layout.Header>
 				<h1>Meal Matchup</h1>
 			</Layout.Header>
 			<Layout.Content style={{ background: 'white', padding: '1em' }}>
 				<Row gutter={16}>
 					<Col span={24}>
 						<h1>Delivery on {moment(date).format('MMMM D, YYYY')}</h1>
-						<Divider />
+						<br />
 						<div>
 							<Steps current={current}>
 								{steps.map((item) => (
@@ -260,7 +309,6 @@ function Delivery({ date, receiverInfo, donatorInfo, requestID }) {
 								))}
 							</Steps>
 							<div className="steps-content">{steps[current].content}</div>
-							<br />
 							<div className="steps-action">
 								{current === steps.length - 3 && (
 									<Button
