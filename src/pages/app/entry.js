@@ -36,7 +36,6 @@ function EntryPage({ location }) {
 				.doc(key)
 				.get()
 				.then((doc) => {
-					setRequestID(doc.data().request);
 					setDonatorInfo(doc.data().donator_info);
 					setReceiverInfo(doc.data().receiver_info);
 					setDeliveryDate(doc.data().date.toDate());
