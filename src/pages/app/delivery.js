@@ -128,7 +128,7 @@ function Delivery({ date, receiverInfo, donatorInfo, requestID }) {
 											<Row key={field.key}>
 												<Col span={11}>
 													<Form.Item
-														name={[field.name, 'Item Name']}
+														name={[field.name, 'item_name']}
 														fieldKey={[field.fieldKey, 'itemName']}
 														rules={[
 															{
