@@ -45,7 +45,7 @@ function Delivery({ date, receiverInfo, donatorInfo, requestID }) {
 			.collection('logs')
 			.add(logData)
 			.then(() => {
-				message.success('Successfully updated logs');
+				message.success('Delivery Complete!');
 			})
 			.catch(() => {
 				message.error('Could not save delivery form');
@@ -283,7 +283,6 @@ function Delivery({ date, receiverInfo, donatorInfo, requestID }) {
 										style={{ marginLeft: 7 }}
 										htmlType="submit"
 										type="primary"
-										onClick={() => message.success('Delivery Complete!')}
 									>
 										Submit
 									</Button>
