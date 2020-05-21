@@ -166,7 +166,7 @@ function Delivery({ date, receiverInfo, donatorInfo, requestID }) {
 							{(fields, { add, remove }) => {
 								return (
 									<div>
-										{fields.map((field) => (
+										{fields.map((field, index) => (
 											<Row key={field.key}>
 												<Col span={11}>
 													<Form.Item
@@ -204,13 +204,16 @@ function Delivery({ date, receiverInfo, donatorInfo, requestID }) {
 															justifyContent: 'center',
 															marginTop: 8,
 														}}
-													>
-														<MinusCircleOutlined
-															className="dynamic-delete-button"
-															onClick={() => {
-																remove(field.name);
-															}}
-														/>
+													>                  
+													
+														{fields.length > 1 ? (
+															<MinusCircleOutlined
+																className="dynamic-delete-button"
+																onClick={() => {
+																	remove(field.name);
+																}}
+															/>
+														) : null}
 													</div>
 												</Col>
 											</Row>
