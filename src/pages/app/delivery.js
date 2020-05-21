@@ -160,8 +160,8 @@ function Delivery({ date, receiverInfo, donatorInfo, requestID }) {
 						id="food_log_form"
 						name="food_log_form"
 						onFinish={onFinishFoodLog}
+						initialValues={{ names: [{ item_name: '', pounds: '' }] }}
 					>
-
 						<Form.List name="names">
 							{(fields, { add, remove }) => {
 								return (
