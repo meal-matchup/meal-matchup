@@ -34,14 +34,11 @@ function Delivery({ date, receiverInfo, donatorInfo, requestID }) {
 	const [foodLogs, setFoodLogs] = useState(null);
 
 	const onFinishDelivery = (values) => {
-		console.log('Success:', values);
-		setReceiverSignature(values.receivingSignOff);
-		// update Logs
 		const logData = {
 			food_logs: foodLogs,
 			requestID: requestID,
 			donator_signature: donatorSignature,
-			receiver_signature: receiverSignature,
+			receiver_signature: values.receivingSignOff,
 		};
 		firebase
 			.firestore()
@@ -49,17 +46,18 @@ function Delivery({ date, receiverInfo, donatorInfo, requestID }) {
 			.add(logData)
 			.then(() => {
 				message.success('Successfully updated logs');
+			})
+			.catch(() => {
+				message.error('Could not save delivery form');
 			});
 	};
 
 	const onFinishDonating = (values) => {
-		console.log("donator signature", values);
 		setDonatorSignature(values.donatingSignOff);
 		setCurrent(current + 1);
 	};
 
 	const onFinishFoodLog = (values) => {
-		console.log("Food log entries", values);
 		setFoodLogs(values.names);
 		setCurrent(current + 1);
 	};
@@ -272,7 +270,6 @@ function Delivery({ date, receiverInfo, donatorInfo, requestID }) {
 								{current === steps.length - 2 && (
 									<Button
 										type="primary"
-										// onClick={() => setCurrent(current + 1)}
 										form="food_log_form"
 										style={{ marginLeft: 7 }}
 										htmlType="submit"
