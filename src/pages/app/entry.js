@@ -6,7 +6,8 @@ import { motion } from 'framer-motion';
 import moment from 'moment';
 import { Layout, Row, Col, Divider, Steps, Button, message } from 'antd';
 import debug from 'debug';
-import Delivery from './delivery';
+import Delivery from '../../components/delivery';
+import { GraphQLNonNull } from 'graphql';
 
 function EntryPage({ location }) {
 	// Only allow entry page if there is a key
@@ -21,22 +22,11 @@ function EntryPage({ location }) {
 
 	const [deliveryDate, setDeliveryDate] = useState(new Date());
 
-	const [donatorInfo, setDonatorInfo] = useState({
-		address: '',
-		contact_person: '',
-		name: '',
-		phone_number: '',
-	});
-	const [receiverInfo, setReceiverInfo] = useState({
-		address: '',
-		contact_person: '',
-		name: '',
-		phone_number: '',
-	});
-
+	const [donatorInfo, setDonatorInfo] = useState(null);
+	const [receiverInfo, setReceiverInfo] = useState(null);
 	const [requestID, setRequestID] = useState(null);
 
-	useEffect(() => {
+	useEffect(() => {GraphQLNonNull
 		if (!firebase || !loading || !key) return;
 
 		let mounted = true;

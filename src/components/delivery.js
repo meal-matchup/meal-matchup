@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 import firebase from 'gatsby-plugin-firebase';
-import { AgencyTypes } from '../../components/App/Enums';
+import { AgencyTypes } from './App/Enums';
 import {
 	Layout,
 	Row,
