@@ -11,12 +11,17 @@ import { GraphQLNonNull } from 'graphql';
 
 function EntryPage({ location }) {
 	// Only allow entry page if there is a key
-	if (!location.search) return navigate('/');
+	if (!location.search) setShouldLeave(true);
 	const params = new URLSearchParams(location.search);
 	const key = params.get('key');
+	const [shouldLeave, setShouldLeave] = useState(false);
 
 	// Only allow entry page if there is a key
-	if (!key || key === '') return navigate('/');
+	if (!key || key === '') setShouldLeave(true);
+
+	useEffect(() => {
+		if (window && shouldLeave) navigate('/');
+	}, [shouldLeave]);
 
 	const [loading, setLoading] = useState(true);
 
@@ -27,7 +32,7 @@ function EntryPage({ location }) {
 	const [requestID, setRequestID] = useState(null);
 
 	useEffect(() => {GraphQLNonNull
-		if (!firebase || !loading || !key) return;
+		if (!firebase || !loading || !key || typeof window === undefined) return;
 
 		let mounted = true;
 		const getRequestOccurrence = async () =>
@@ -55,6 +60,7 @@ function EntryPage({ location }) {
 	}, [loading]);
 
 	return (
+		!shouldLeave &&
 		!loading && (
 			<motion.div
 				variants={{
