@@ -11,12 +11,13 @@ import { GraphQLNonNull } from 'graphql';
 
 function EntryPage({ location }) {
 	// Only allow entry page if there is a key
-	const [shouldLeave, setShouldLeave] = useState(!location.search);
 	const params = new URLSearchParams(location.search);
 	const key = params.get('key');
 
 	// Only allow entry page if there is a key
-	if (!key || key === '') setShouldLeave(true);
+	const [shouldLeave, setShouldLeave] = useState(
+		!location.search || !key || key === ''
+	);
 
 	useEffect(() => {
 		if (window && shouldLeave) navigate('/');
