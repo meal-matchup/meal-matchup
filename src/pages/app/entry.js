@@ -11,10 +11,10 @@ import { GraphQLNonNull } from 'graphql';
 
 function EntryPage({ location }) {
 	// Only allow entry page if there is a key
+	const [shouldLeave, setShouldLeave] = useState(false);
 	if (!location.search) setShouldLeave(true);
 	const params = new URLSearchParams(location.search);
 	const key = params.get('key');
-	const [shouldLeave, setShouldLeave] = useState(false);
 
 	// Only allow entry page if there is a key
 	if (!key || key === '') setShouldLeave(true);
