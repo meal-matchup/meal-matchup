@@ -85,7 +85,7 @@ function Delivery({ date, receiverInfo, donatorInfo, requestID }) {
 	};
 
 	const onFinishFoodLog = (values) => {
-		let newNames = values.names
+		let newNames = values.names;
 		setItems(newNames);
 		setCurrent(current + 1);
 	};

@@ -11,8 +11,7 @@ import { GraphQLNonNull } from 'graphql';
 
 function EntryPage({ location }) {
 	// Only allow entry page if there is a key
-	const [shouldLeave, setShouldLeave] = useState(false);
-	if (!location.search) setShouldLeave(true);
+	const [shouldLeave, setShouldLeave] = useState(!location.search);
 	const params = new URLSearchParams(location.search);
 	const key = params.get('key');
 
@@ -32,7 +31,7 @@ function EntryPage({ location }) {
 	const [requestID, setRequestID] = useState(null);
 
 	useEffect(() => {GraphQLNonNull
-		if (!firebase || !loading || !key || typeof window === undefined) return;
+		if (!firebase || !loading || !key) return;
 
 		let mounted = true;
 		const getRequestOccurrence = async () =>
