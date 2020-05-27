@@ -1,64 +1,113 @@
-rules_version = '2';
+rules_version = "2";
+
 service cloud.firestore {
-  match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if false;
-    }
-    
-    match /users/{userId} {
-    	allow read, write: if request.auth.uid == userId; 
-    }
-    
-    match /umbrellas/{umbrellaId} {
-    	allow read: if true;
-      allow write: if false;
-    }
-    
-    match /requests/{requestId} {
-    	allow read: if request.auth != null && resource.data.umbrella == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.umbrella;
-      allow create: if request.auth != null && request.resource.data.umbrella == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.umbrella
-                    && request.resource.data.donator == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.agency
-                    && (request.resource.data.deliverer == 'any' || exists(/databases/$(database)/documents/agencies/$(request.resource.data.deliverer)));
-      allow update: if request.auth != null
-                    && (resource.data.donator == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.agency
-                    		|| (resource.data.deliverer == 'any' && request.resource.data.deliverer == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.agency && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['deliverer']))
-                        || (resource.data.receiver == 'any' && request.resource.data.receiver == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.agency && request.resource.data.diff(resource.data).affectedKeys().hasOnly['receiver']));
-    	allow delete: if request.auth != null
-                    && resource.data.donator == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.agency;
-    }
-    
-    function hasValidAgencyType() {
-    	return request.resource.data.type == 'DONATOR'
-      			 || request.resource.data.type == 'DELIVERER'
-             || request.resource.data.type == 'RECEIVER';
-    }
-    
-    function isAgencyMember() {
-    	return request.auth.uid in request.resource.data.members;
-    }
-    
-    function isAgencyAdmin() {
-    	return request.auth.uid in request.resource.data.admins;
-    }
-    
-    function hasValidUmbrella() {
-    	return request.resource.data.umbrella != null
-             && request.resource.data.umbrella == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.umbrella;
-    }
-    
-    function isUmbrellaAdmin() {
-    	return request.auth.uid in get(/databases/$(database)/documents/umbrellas/$(request.resource.data.umbrella)).data.admins;
-    }
-    
-    match /agencies/{agencyId} {
-    	allow read: if true;
-      allow create: if request.resource.data.approved == false && exists(/databases/$(database)/documents/umbrellas/$(request.resource.data.umbrella)) && hasValidAgencyType();
-      allow update: if (request.auth != null
-                   && hasValidUmbrella()
-      						 && ((hasValidAgencyType()
-                   && isAgencyMember()
-                   && isAgencyAdmin()) || isUmbrellaAdmin()))
-                   || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['members']) && request.resource.data.members.diff(resource.data.members).affectedKeys().hasOnly([request.auth.uid]));
-    }
-  }
+	match /databases/{database}/documents {
+		function hasValidAgencyType() {
+			return request.resource.data.type == "DONATOR" ||
+				request.resource.data.type == "DELIVERER" ||
+				request.resource.data.type == "RECEIVER";
+		}
+
+		function hasValidUmbrella() {
+			return request.resource.data.umbrella != null &&
+				request.resource.data.umbrella == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.umbrella;
+		}
+
+		function isAgencyAdmin() {
+			return request.auth.uid in resource.data.admins;
+		}
+
+		function isUmbrellaAdmin() {
+			return request.auth.uid in get(/databases/$(database)/documents/umbrellas/$(resource.data.umbrella)).data.admins;
+		}
+
+		match /{document=**} {
+			allow read, write: if false;
+		}
+
+		match /logs/{logId} {
+			allow create: if request.auth != null;
+			allow delete: if false;
+			allow read: if true;
+		}
+
+		match /keys/{keyId} {
+			allow create: if request.auth != null;
+			allow delete: if false;
+			allow read: if true;
+			allow list: if false;
+		}
+
+		match /users/{userId} {
+			allow read, write: if request.auth.uid == userId;
+		}
+
+		match /umbrellas/{umbrellaId} {
+			allow read: if true;
+			allow write: if false;
+		}
+
+		match /requests/{requestId} {
+			allow read: if request.auth != null &&
+				resource.data.umbrella == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.umbrella;
+			allow create: if request.auth != null &&
+				request.resource.data.umbrella == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.umbrella &&
+				request.resource.data.donator == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.agency &&
+				(
+					request.resource.data.deliverer == "ANY" ||
+					exists(/databases/$(database)/documents/agencies/$(request.resource.data.deliverer))
+				);
+			allow update: if request.auth != null &&
+			 (
+				 resource.data.donator == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.agency ||
+				 (
+					 resource.data.deliverer == "ANY" &&
+					 request.resource.data.deliverer == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.agency &&
+					 request.resource.data.diff(resource.data).affectedKeys().hasOnly(["deliverer", "deliverers"])
+				 ) ||
+				 (
+					 resource.data.receiver == "ANY" &&
+					 request.resource.data.receiver == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.agency &&
+					 request.resource.data.diff(resource.data).affectedKeys().hasOnly(["receiver"])
+				 )
+			 );
+		}
+
+		match /requests/{requestId}/occurrences/{occurrenceId} {
+			allow read: if request.auth != null &&
+				get(/databases/$(database)/documents/users/$(request.auth.uid)).data.umbrella == get(/databases/$(database)/documents/requests/$(requestId)).data.umbrella;
+
+			allow create: if request.auth != null &&
+				get(/databases/$(database)/documents/requests/$(requestId)).data.donator == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.agency;
+
+			allow update: if request.auth != null &&
+				(
+					get(/databases/$(database)/documents/requests/$(requestId)).data.donator == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.agency ||
+					(
+						get(/databases/$(database)/documents/requests/$(requestId)).data.deliverer == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.agency &&
+						request.resource.data.diff(resource.data).affectedKeys().hasOnly(["logId", "deliverers"])
+					) ||
+					(
+						get(/databases/$(database)/documents/requests/$(requestId)).data.receiver == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.agency &&
+						request.resource.data.diff(resource.data).affectedKeys().hasOnly(["receiverSignature"])
+					)
+				);
+
+			allow update: if request.auth != null &&
+				resource.data.donator == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.agency;
+		}
+
+		match /agencies/{agencyId} {
+			allow read: if true;
+			allow create: if request.resource.data.approved == false &&
+				exists(/databases/$(database)/documents/umbrellas/$(request.resource.data.umbrella)) &&
+				hasValidAgencyType();
+			allow update: if request.auth != null &&
+				hasValidUmbrella() &&
+				(
+					isAgencyAdmin() ||
+					isUmbrellaAdmin()
+				);
+		}
+	}
 }

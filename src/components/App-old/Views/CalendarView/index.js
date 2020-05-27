@@ -1,26 +1,23 @@
-import React from "react";
-import PropTypes from "prop-types";
-import firebase from "gatsby-plugin-firebase";
-import moment from "moment";
+import { AgencyTypes, RequestTitles, RequestTypes } from "../../Enums";
 import { AnimatePresence, motion } from "framer-motion";
-import debug from "debug";
-
 import {
 	Badge,
 	Button,
 	Calendar,
 	Descriptions,
 	Modal,
-	message,
 	Popconfirm,
 	Tooltip,
+	message,
 } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
-
-import Request from "./Request";
 import Log from "./Log";
-
-import { AgencyTypes, RequestTitles, RequestTypes } from "../../Enums";
+import PropTypes from "prop-types";
+import React from "react";
+import Request from "./Request";
+import debug from "debug";
+import firebase from "gatsby-plugin-firebase";
+import moment from "moment";
 
 class CalendarView extends React.Component {
 	static propTypes = {

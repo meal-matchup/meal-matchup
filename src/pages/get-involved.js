@@ -9,7 +9,8 @@ function NavBar() {
 				<img
 					src="//static1.squarespace.com/static/5aee05b75cfd79f523e4daf6/t/5ced930d104c7b1fe213c959/1582793180802/?format=1500w"
 					style={{ width: "70px", height: "45px" }}
-				></img>
+					alt=""
+				/>
 			</Col>
 			<Col span={8} offset={13}>
 				<Space direction="horizontal" size="large">
@@ -80,7 +81,7 @@ function Main() {
 					</Col>
 					<Col span={7} offset={1}>
 						<div className="img_wrapper">
-							<img src="https://images.squarespace-cdn.com/content/v1/5aee05b75cfd79f523e4daf6/1528070452083-D90RHP9TOH5SJ2G05N0T/ke17ZwdGBToddI8pDm48kNZr331BLc-Rota1ZP1Yh3h7gQa3H78H3Y0txjaiv_0fDoOvxcdMmMKkDsyUqMSsMWxHk725yiiHCCLfrh8O1z4YTzHvnKhyp6Da-NYroOW3ZGjoBKy3azqku80C789l0hReLB75oIvKxcDxwlnLXaYNPa96OWO5Z21xzWqpQF_bv3E39NLc0xdQYNJZ7z0n0g/salad+bar.JPG"></img>
+							<img src="https://images.squarespace-cdn.com/content/v1/5aee05b75cfd79f523e4daf6/1528070452083-D90RHP9TOH5SJ2G05N0T/ke17ZwdGBToddI8pDm48kNZr331BLc-Rota1ZP1Yh3h7gQa3H78H3Y0txjaiv_0fDoOvxcdMmMKkDsyUqMSsMWxHk725yiiHCCLfrh8O1z4YTzHvnKhyp6Da-NYroOW3ZGjoBKy3azqku80C789l0hReLB75oIvKxcDxwlnLXaYNPa96OWO5Z21xzWqpQF_bv3E39NLc0xdQYNJZ7z0n0g/salad+bar.JPG" alt="" />
 						</div>
 					</Col>
 				</Row>
@@ -107,7 +108,7 @@ function Main() {
 					</Col>
 					<Col span={7} offset={1}>
 						<div className="img_wrapper">
-							<img src="https://images.squarespace-cdn.com/content/v1/5aee05b75cfd79f523e4daf6/1526458179015-8A4YGBAK2ZJAK7SAO85X/ke17ZwdGBToddI8pDm48kK60W-ob1oA2Fm-j4E_9NQB7gQa3H78H3Y0txjaiv_0fDoOvxcdMmMKkDsyUqMSsMWxHk725yiiHCCLfrh8O1z4YTzHvnKhyp6Da-NYroOW3ZGjoBKy3azqku80C789l0kD6Ec8Uq9YczfrzwR7e2Mh5VMMOxnTbph8FXiclivDQnof69TlCeE0rAhj6HUpXkw/ashley-whitlatch-569234-unsplash.jpg"></img>
+							<img src="https://images.squarespace-cdn.com/content/v1/5aee05b75cfd79f523e4daf6/1526458179015-8A4YGBAK2ZJAK7SAO85X/ke17ZwdGBToddI8pDm48kK60W-ob1oA2Fm-j4E_9NQB7gQa3H78H3Y0txjaiv_0fDoOvxcdMmMKkDsyUqMSsMWxHk725yiiHCCLfrh8O1z4YTzHvnKhyp6Da-NYroOW3ZGjoBKy3azqku80C789l0kD6Ec8Uq9YczfrzwR7e2Mh5VMMOxnTbph8FXiclivDQnof69TlCeE0rAhj6HUpXkw/ashley-whitlatch-569234-unsplash.jpg" alt="" />
 						</div>
 					</Col>
 				</Row>
@@ -142,14 +143,14 @@ function Footer() {
 			</Row>
 			<Row>
 				<Col span={8} offset={8}>
-					<p class="footer-info">
+					<p className="footer-info">
 						University of Washington in Seattle, Washington, USA
 					</p>
 				</Col>
 			</Row>
 			<Row>
 				<Col span={14} offset={5}>
-					<p class="footer-info">
+					<p className="footer-info">
 						Copyright 2020. Site content is licensed under a Creative Commons
 						Attribution 4.0 International License.
 					</p>
@@ -159,7 +160,7 @@ function Footer() {
 	);
 }
 
-function Get_Involved() {
+function GetInvolved() {
 	return (
 		<div className="container">
 			<Header />
@@ -169,4 +170,4 @@ function Get_Involved() {
 	);
 }
 
-export default Get_Involved;
+export default GetInvolved;
