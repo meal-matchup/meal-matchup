@@ -1,13 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { ThemeProvider } from 'styled-components';
+import { siteTheme } from '../utils/themes';
 
 function Layout({ children }) {
 	return (
-		<div className="site">
-			Header
-			<main>{children}</main>
-			Footer
-		</div>
+		<ThemeProvider theme={siteTheme}>
+			<div className="site">
+				Header
+				<main>{children}</main>
+				Footer
+			</div>
+		</ThemeProvider>
 	);
 }
 
