@@ -102,9 +102,6 @@ class NewRequestDrawer extends React.Component<
 		endDate.setDate(endDate.getDate());
 		endDate.setHours(0, 0, 0, 0);
 
-		console.log("start date", startDate);
-		console.log("end date", endDate);
-
 		const occurrences: RequestOccurrence[] = [];
 
 		for (
@@ -120,15 +117,11 @@ class NewRequestDrawer extends React.Component<
 
 		if (notes) requestData.notes = notes;
 
-		console.log(requestData);
-		console.log(occurrences);
-
 		firebase
 			.firestore()
 			.collection("requests")
 			.add(requestData)
 			.then(requestDoc => {
-				console.log("got it!");
 				const batch = firebase.firestore().batch();
 
 				occurrences.forEach(occurrence => {
@@ -138,8 +131,6 @@ class NewRequestDrawer extends React.Component<
 						.doc(requestDoc.id)
 						.collection("occurrences")
 						.doc();
-
-						console.log("adding occurrence", occurrence);
 
 					batch.set(occurrenceRef, occurrence);
 				});
@@ -260,7 +251,7 @@ class NewRequestDrawer extends React.Component<
 								<DatePicker.RangePicker
 									disabled={creatingRequest}
 									format="MMMM D, YYYY"
-									disabledDate={invalidDates}
+									// disabledDate={invalidDates}
 									style={{
 										width: "100%",
 									}}

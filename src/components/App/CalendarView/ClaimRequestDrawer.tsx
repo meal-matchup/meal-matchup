@@ -1,4 +1,9 @@
-import { Agency, Request, RequestTypeNames } from "../../../utils/enums";
+import {
+	Agency,
+	AgencyTypes,
+	Request,
+	RequestTypeNames,
+} from "../../../utils/enums";
 import { Button, Col, Divider, Form, Row, Select, message } from "antd";
 import { Drawer } from "../";
 import React from "react";
@@ -8,7 +13,7 @@ import firebase from "gatsby-plugin-firebase";
 interface ClaimRequestDrawerProps {
 	open?: boolean;
 	onClose?: () => void;
-	request?: firebase.firestore.QueryDocumentSnapshot;
+	request?: firebase.firestore.DocumentSnapshot;
 	agency?: firebase.firestore.DocumentSnapshot;
 }
 
@@ -135,29 +140,31 @@ class ClaimRequestDrawer extends React.Component<
 
 					<Divider />
 
-					<Form.Item
-						name="deliverers"
-						rules={[
-							{
-								required: true,
-								message: "You must select at least one deliverer",
-							},
-						]}
-					>
-						<Select
-							mode="multiple"
-							value={selectedDeliverers}
-							onChange={this.updateDeliverers}
-							disabled={claiming}
-							placeholder="Deliverers"
+					{agency.data()?.type === AgencyTypes.DELIVERER && (
+						<Form.Item
+							name="deliverers"
+							rules={[
+								{
+									required: true,
+									message: "You must select at least one deliverer",
+								},
+							]}
 						>
-							{filteredDeliverers?.map(deliverer => (
-								<Select.Option key={deliverer} value={deliverer}>
-									{deliverer}
-								</Select.Option>
-							))}
-						</Select>
-					</Form.Item>
+							<Select
+								mode="multiple"
+								value={selectedDeliverers}
+								onChange={this.updateDeliverers}
+								disabled={claiming}
+								placeholder="Deliverers"
+							>
+								{filteredDeliverers?.map((deliverer: string) => (
+									<Select.Option key={deliverer} value={deliverer}>
+										{deliverer}
+									</Select.Option>
+								))}
+							</Select>
+						</Form.Item>
+					)}
 				</Form>
 			</Drawer>
 		);

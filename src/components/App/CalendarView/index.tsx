@@ -18,7 +18,7 @@ interface CalendarViewProps {
 }
 
 interface CalendarViewState {
-	currentRequest?: string;
+	currentRequest?: firebase.firestore.DocumentSnapshot;
 	mounted: boolean;
 	requests?: firebase.firestore.QuerySnapshot;
 	newRequestDrawerOpen: boolean;
@@ -170,7 +170,7 @@ class CalendarView extends React.Component<
 	openExistingRequestDrawer(request: firebase.firestore.QueryDocumentSnapshot) {
 		if (request) {
 			this.setState({
-				currentRequest: request.id,
+				currentRequest: request,
 				existingRequestDrawerOpen: true,
 			});
 		}
@@ -206,8 +206,7 @@ class CalendarView extends React.Component<
 							onClose={this.toggleExistingRequestDrawer}
 							request={currentRequest}
 							date={selectedDate}
-							agencies={appContext.agencies}
-							agency={appContext.agency || undefined}
+							agency={appContext.agency}
 						/>
 
 						{appContext.agency?.data()?.type === AgencyTypes.DONATOR && (
