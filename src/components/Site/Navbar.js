@@ -1,21 +1,12 @@
-/// type stuff
 import React from 'react';
-import { useStaticQuery, graphql } from 'gatsby'
+import { useStaticQuery, graphql } from 'gatsby';
 import styled from 'styled-components';
 import '../../templates/page';
 
-// const navbarInner = styled('div')`
-// 	max-width: ${(props) => props.theme.breakpoints.lg};
-// 	width: 80%;
-// 	text-align: center;
-// 	margin-left: auto;
-// 	margin-right: auto;
-// `;
 const NavbarInner = styled('div')`
 	max-width: ${(props) => props.theme.breakpoints.lg};
 	width: 100%;
 	height: auto;
-	text-align: center;
 	margin-left: auto;
 	margin-right: auto;
 `;
@@ -46,7 +37,6 @@ function Navbar() {
 		`,
 		'menu_order'
 	); // is this right??
-	// {item.node.title}
 	let navbar = data.allWordpressPage.edges;
 	let nav = navbar.map((item) => {
 		return <NavbarP key={item.node.title}>{item.node.title}</NavbarP>;
