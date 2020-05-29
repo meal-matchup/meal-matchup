@@ -1,15 +1,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Navbar from './Site/Navbar';
+import { ThemeProvider } from 'styled-components';
+import { siteTheme } from '../utils/themes';
+import NavBar from '../components/Site/Navbar';
 
 function Layout({ children }) {
 	return (
-		<div className="site">
-			Header
-			<Navbar />
-			<main>{children}</main>
-			Footer
-		</div>
+		<ThemeProvider theme={siteTheme}>
+			<div className="site">
+				Header
+				<NavBar></NavBar>
+				<main>{children}</main>
+				Footer
+			</div>
+		</ThemeProvider>
 	);
 }
 

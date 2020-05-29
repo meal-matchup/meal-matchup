@@ -4,28 +4,32 @@ import { useStaticQuery, graphql } from 'gatsby'
 import styled from 'styled-components';
 import '../../templates/page';
 
-const navbarInner = styled('div')`
-	max-width: ${props => props.theme.breakpoints.lg};
+// const navbarInner = styled('div')`
+// 	max-width: ${(props) => props.theme.breakpoints.lg};
+// 	width: 80%;
+// 	text-align: center;
+// 	margin-left: auto;
+// 	margin-right: auto;
+// `;
+const NavbarInner = styled('div')`
+	max-width: ${(props) => props.theme.breakpoints.lg};
 	width: 100%;
+	height: auto;
 	text-align: center;
 	margin-left: auto;
 	margin-right: auto;
 `;
 
-
 const NavbarNav = styled('nav')`
-	background-color: ${props => props.theme.colors.background};
+	background-color: ${(props) => props.theme.colors.background};
 	height: auto;
 `;
 
-
-const navbarLink = styled.a`
-	color: ${props => props.theme.colors.accent};
+const NavbarP = styled('p')`
+	color: ${(props) => props.theme.colors.accent};
 	font-size: 16px;
-	color: pink;
 	padding: 1em 0.5em;
 `;
-
 
 function Navbar() {
 	const data = useStaticQuery(graphql`
@@ -42,19 +46,15 @@ function Navbar() {
 		`,
 		'menu_order'
 	); // is this right??
-
-	// console.log("This data " + data.allWordpressPage.edges);
-	// let thisss = data.allWordpressPage.edges[0];
-	//console.log(thisss.node.title);
+	// {item.node.title}
 	let navbar = data.allWordpressPage.edges;
-
 	let nav = navbar.map((item) => {
-		return <navbarLink key={item.node.title}>{item.node.title}</navbarLink>;
+		return <NavbarP key={item.node.title}>{item.node.title}</NavbarP>;
 	});
 
 	return (
 		<NavbarNav>
-			<navbarInner>{nav}</navbarInner>
+			<NavbarInner>{nav}</NavbarInner>
 		</NavbarNav>
 	);
 }
