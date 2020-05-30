@@ -1,10 +1,9 @@
 import {
-	Agency,
 	AgencyTypes,
-	Request,
+	AgencyUser,
 	RequestTypeNames,
 } from "../../../utils/enums";
-import { Button, Col, Divider, Form, Row, Select, message } from "antd";
+import { Button, Col, Divider, Form, Input, Row, Select, message } from "antd";
 import { Drawer } from "../";
 import React from "react";
 import { Store } from "antd/lib/form/interface";
@@ -18,8 +17,10 @@ interface ClaimRequestDrawerProps {
 }
 
 interface ClaimRequestDrawerState {
-	selectedDeliverers: string[];
 	claiming: boolean;
+	newDelivererEmail: string;
+	newDelivererName: string;
+	selectedDeliverers: string[];
 }
 
 class ClaimRequestDrawer extends React.Component<
@@ -29,13 +30,16 @@ class ClaimRequestDrawer extends React.Component<
 	constructor(props: ClaimRequestDrawerProps) {
 		super(props);
 
+		this.addDeliverer = this.addDeliverer.bind(this);
+		this.claimRequest = this.claimRequest.bind(this);
 		this.onClose = this.onClose.bind(this);
 		this.updateDeliverers = this.updateDeliverers.bind(this);
-		this.claimRequest = this.claimRequest.bind(this);
 
 		this.state = {
-			selectedDeliverers: [],
 			claiming: false,
+			newDelivererEmail: "",
+			newDelivererName: "",
+			selectedDeliverers: [],
 		};
 	}
 
@@ -77,6 +81,24 @@ class ClaimRequestDrawer extends React.Component<
 			.catch(() => {
 				this.setState({ claiming: false });
 				message.error("Could not claim request");
+			});
+	}
+
+	addDeliverer(values: Store) {
+		const { name, email } = values.newDeliverer;
+		if (!name || !email || !this.props.agency) return false;
+
+		const newUser: AgencyUser = {
+			name,
+			email,
+		};
+
+		this.props.agency.ref
+			.update({
+				users: firebase.firestore.FieldValue.arrayUnion(newUser),
+			})
+			.then(() => {
+				message.success("Added deliverer");
 			});
 	}
 
@@ -156,6 +178,51 @@ class ClaimRequestDrawer extends React.Component<
 								onChange={this.updateDeliverers}
 								disabled={claiming}
 								placeholder="Deliverers"
+								dropdownRender={menu => (
+									<div>
+										{menu}
+
+										<Divider style={{ margin: "4px 0" }} />
+
+										<div style={{ padding: 8 }}>
+											<Form layout="inline" onFinish={this.addDeliverer}>
+												<Form.Item
+													name={["newDeliverer", "name"]}
+													rules={[
+														{
+															required: true,
+															message: "Enter a name",
+														},
+													]}
+												>
+													<Input type="text" placeholder="Name" />
+												</Form.Item>
+
+												<Form.Item
+													name={["newDeliverer", "email"]}
+													rules={[
+														{
+															required: true,
+															message: "Enter an email",
+														},
+														{
+															type: "email",
+															message: "Enter an email",
+														},
+													]}
+												>
+													<Input type="email" placeholder="Email address" />
+												</Form.Item>
+
+												<Form.Item>
+													<Button type="primary" htmlType="submit">
+														Add
+													</Button>
+												</Form.Item>
+											</Form>
+										</div>
+									</div>
+								)}
 							>
 								{filteredDeliverers?.map((deliverer: string) => (
 									<Select.Option key={deliverer} value={deliverer}>

@@ -87,7 +87,7 @@ class AccountView extends React.Component<
 								}
 							</Descriptions.Item>
 
-							{appContext.agency?.data()?.users && (
+							{appContext.agency && (
 								<Descriptions.Item label="Deliverers">
 									<ul style={{ paddingLeft: 0 }}>
 										{appContext.agency

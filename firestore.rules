@@ -29,6 +29,8 @@ service cloud.firestore {
 			allow create: if request.auth != null;
 			allow delete: if false;
 			allow read: if true;
+			allow update: if request.auth != null &&
+				get(/databases/$(database)/documents/requests/$(resource.data.requestId)).data.deliverer == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.agency;
 		}
 
 		match /keys/{keyId} {
@@ -66,6 +68,10 @@ service cloud.firestore {
 					 request.resource.data.diff(resource.data).affectedKeys().hasOnly(["deliverer", "deliverers"])
 				 ) ||
 				 (
+					 resource.data.deliverer == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.agency &&
+					 request.resource.data.diff(resource.data).affectedKeys().hasOnly(["completedDates"])
+				 ) ||
+				 (
 					 resource.data.receiver == "ANY" &&
 					 request.resource.data.receiver == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.agency &&
 					 request.resource.data.diff(resource.data).affectedKeys().hasOnly(["receiver"])
@@ -85,7 +91,7 @@ service cloud.firestore {
 					get(/databases/$(database)/documents/requests/$(requestId)).data.donator == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.agency ||
 					(
 						get(/databases/$(database)/documents/requests/$(requestId)).data.deliverer == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.agency &&
-						request.resource.data.diff(resource.data).affectedKeys().hasOnly(["logId", "deliverers"])
+						request.resource.data.diff(resource.data).affectedKeys().hasOnly(["logId", "deliverers", "complete"])
 					) ||
 					(
 						get(/databases/$(database)/documents/requests/$(requestId)).data.receiver == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.agency &&

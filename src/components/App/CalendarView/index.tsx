@@ -18,7 +18,7 @@ interface CalendarViewProps {
 }
 
 interface CalendarViewState {
-	currentRequest?: firebase.firestore.DocumentSnapshot;
+	currentRequest?: firebase.firestore.QueryDocumentSnapshot;
 	mounted: boolean;
 	requests?: firebase.firestore.QuerySnapshot;
 	newRequestDrawerOpen: boolean;
@@ -48,6 +48,21 @@ class CalendarView extends React.Component<
 			logDrawerOpen: false,
 			selectedDate: moment(),
 		};
+	}
+
+	componentDidUpdate(prevProps: CalendarViewProps) {
+		if (
+			this.props.requests &&
+			prevProps.requests &&
+			!this.props.requests.isEqual(prevProps.requests) &&
+			this.state.currentRequest
+		) {
+			this.setState({
+				currentRequest: this.props.requests?.docs.filter(
+					x => x.id === this.state.currentRequest?.id
+				)[0],
+			});
+		}
 	}
 
 	// componentDidUpdate(prevProps: CalendarViewProps) {
@@ -94,13 +109,6 @@ class CalendarView extends React.Component<
 					}}
 				>
 					{requestsOnDate.map(request => {
-						// const occurrence = request.occurrences?.filter(
-						// 	(x: RequestOccurrence) => {
-						// 		const a = x.date instanceof Date ? x.date : x.date.toDate();
-						// 		return isSameDate(a, date.toDate());
-						// 	}
-						// )[0];
-
 						let status:
 							| "default"
 							| "warning"
@@ -124,9 +132,13 @@ class CalendarView extends React.Component<
 							}
 						}
 
-						// if (occurrence?.complete) {
-						// 	status = "success";
-						// }
+						if (
+							request
+								.data()
+								?.completedDates?.indexOf(date.format("YYYY MMMM D")) > -1
+						) {
+							status = "success";
+						}
 
 						return (
 							<li key={request.id}>
@@ -206,6 +218,7 @@ class CalendarView extends React.Component<
 							onClose={this.toggleExistingRequestDrawer}
 							request={currentRequest}
 							date={selectedDate}
+							agencies={appContext.agencies}
 							agency={appContext.agency}
 						/>
 

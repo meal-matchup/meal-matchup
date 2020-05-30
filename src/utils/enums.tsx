@@ -10,7 +10,7 @@ export interface AppContextInterface {
 	user?: firebase.User | null;
 	umbrella?: firebase.firestore.DocumentSnapshot;
 	agencies?: firebase.firestore.QuerySnapshot;
-	agency?: firebase.firestore.DocumentSnapshot;
+	agency?: firebase.firestore.QueryDocumentSnapshot;
 	requests?: firebase.firestore.QuerySnapshot;
 }
 

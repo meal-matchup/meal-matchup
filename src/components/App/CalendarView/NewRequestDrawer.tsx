@@ -251,7 +251,7 @@ class NewRequestDrawer extends React.Component<
 								<DatePicker.RangePicker
 									disabled={creatingRequest}
 									format="MMMM D, YYYY"
-									// disabledDate={invalidDates}
+									disabledDate={invalidDates}
 									style={{
 										width: "100%",
 									}}
