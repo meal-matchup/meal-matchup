@@ -5,6 +5,7 @@ import {
 } from "../../../utils/enums";
 import { Button, Col, Divider, Form, Input, Row, Select, message } from "antd";
 import { Drawer } from "../";
+import { FormInstance } from "antd/lib/form";
 import React from "react";
 import { Store } from "antd/lib/form/interface";
 import firebase from "gatsby-plugin-firebase";
@@ -43,7 +44,14 @@ class ClaimRequestDrawer extends React.Component<
 		};
 	}
 
+	formRef = React.createRef<FormInstance>();
+
 	onClose() {
+		this.setState({ selectedDeliverers: [] });
+		this.formRef.current?.setFieldsValue({
+			deliverers: [],
+		});
+
 		if (this.props.onClose) this.props.onClose();
 	}
 
@@ -140,7 +148,7 @@ class ClaimRequestDrawer extends React.Component<
 					</div>
 				}
 			>
-				<Form id={formId} onFinish={this.claimRequest}>
+				<Form id={formId} ref={this.formRef} onFinish={this.claimRequest}>
 					<Row gutter={16}>
 						<Col span={24}>
 							<h2>Important!</h2>
