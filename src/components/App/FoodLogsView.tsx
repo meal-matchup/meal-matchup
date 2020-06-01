@@ -19,6 +19,8 @@ class FoodLogsView extends React.Component {
 				{appContext => {
 					const food: FoodItems = {};
 
+					let totalDontaionWeight = 0;
+
 					appContext.logs?.docs.forEach(log => {
 						log?.data()?.items?.forEach((item: FoodItem) => {
 							if (food[item.name]) {
@@ -26,6 +28,8 @@ class FoodLogsView extends React.Component {
 							} else {
 								food[item.name] = item.weight;
 							}
+
+							totalDontaionWeight = totalDontaionWeight + item.weight;
 						});
 					});
 
@@ -40,10 +44,14 @@ class FoodLogsView extends React.Component {
 														"MMMM D, YYYY"
 												  )
 												: "unknown";
+											let totalWeight = 0;
+											log.data()?.items?.forEach((item: FoodItem) => {
+												totalWeight = totalWeight + item.weight;
+											});
 
 											return (
 												<List.Item key={log.id}>
-													<Card size="small" title={`Donation on ${date}`}>
+													<Card size="small" title={`Donation on ${date}`} extra={`Total: ${totalWeight} lbs`}>
 														{log.data()?.items?.map((item: FoodItem) => (
 															<Card.Grid key={item.name} hoverable={false}>
 																<Statistic
@@ -62,7 +70,7 @@ class FoodLogsView extends React.Component {
 								</Tabs.TabPane>
 
 								<Tabs.TabPane key="2" tab="Total Donations">
-									<Card size="small" title="Items Donated">
+									<Card size="small" title="Items Donated" extra={`Total: ${totalDontaionWeight} lbs`}>
 										{Object.keys(food).map((item, index) => (
 											<Card.Grid key={`${item} ${index}`} hoverable={false}>
 												<Statistic
