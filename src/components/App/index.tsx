@@ -16,6 +16,7 @@ import CalendarView from "./CalendarView";
 import DirectoryView from "./DirectoryView";
 import Drawer from "./Drawer";
 import FoodLogsView from "./FoodLogsView";
+import { Helmet } from "react-helmet";
 import { InferProps } from "prop-types";
 import Loading from "./Loading";
 import React from "react";
@@ -439,6 +440,13 @@ class App extends React.Component<InferProps<typeof App.propTypes>, AppState> {
 		return (
 			<ThemeProvider theme={appTheme}>
 				<AppContext.Provider value={appContext}>
+					<Helmet>
+						<html lang="en" />
+						<title>
+							{user ? `${AppPages[currentPage].title} | Meal Matchup` : "Welcome to Meal Matchup"}
+						</title>
+					</Helmet>
+
 					<Loading loading={loading} />
 
 					<Layout>
