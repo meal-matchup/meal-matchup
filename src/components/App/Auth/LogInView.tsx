@@ -4,7 +4,6 @@ import { AppPage } from "../";
 import { FormItemProps } from "antd/lib/form";
 import React from "react";
 import { Store } from "antd/lib/form/interface";
-import debug from "../../../utils/debug";
 import firebase from "gatsby-plugin-firebase";
 
 interface LogInViewState {
