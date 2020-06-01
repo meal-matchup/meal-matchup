@@ -48,7 +48,7 @@ class LogInView extends React.Component<
 				});
 
 				switch (error.code) {
-					case "auth/invalid-password":
+					case "auth/wrong-password":
 						message.error("The password was incorrect");
 						break;
 
