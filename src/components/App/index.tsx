@@ -263,11 +263,21 @@ class App extends React.Component<InferProps<typeof App.propTypes>, AppState> {
 		}
 
 		if (
-			this.state.user &&
-			this.state.userData &&
-			this.state.umbrella &&
-			this.state.agencies &&
-			!this.state.agency
+			(
+				this.state.user &&
+				this.state.userData &&
+				this.state.umbrella &&
+				this.state.agencies &&
+				!this.state.agency
+			) ||
+			(
+				this.state.agency &&
+				this.state.agencies &&
+				(
+					!prevState.agencies ||
+					!this.state.agencies.isEqual(prevState.agencies)
+				)
+			)
 		) {
 			this.setState({
 				agency: this.state.agencies.docs.filter(
