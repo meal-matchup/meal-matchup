@@ -228,6 +228,23 @@ class ExistingRequestDrawer extends React.Component<
 						];
 					}
 
+				case AgencyTypes.RECEIVER:
+					if (request.data()?.receiver === AgencyTypes.ANY) {
+						return [
+							...defaultFooter,
+							<Button
+								key="claim"
+								type="primary"
+								onClick={this.toggleClaimRequestDrawer}
+								style={buttonStyles}
+							>
+								Claim
+							</Button>,
+						];
+					} else {
+						return [...defaultFooter];
+					}
+
 				default:
 					return defaultFooter;
 			}

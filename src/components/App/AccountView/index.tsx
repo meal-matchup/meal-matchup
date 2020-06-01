@@ -87,31 +87,32 @@ class AccountView extends React.Component<
 								}
 							</Descriptions.Item>
 
-							{appContext.agency && (
-								<Descriptions.Item label="Deliverers">
-									<ul style={{ paddingLeft: 0 }}>
-										{appContext.agency
-											.data()
-											?.users.map(
-												(
-													user: { name: string; email: string },
-													index: number
-												) => (
-													<li
-														key={`agency-users-${index}`}
-														style={{ marginLeft: "1em" }}
-													>
-														{user.name} (
-														<a href={`mailto:${user.email}`}>{user.email}</a>)
-													</li>
-												)
-											)}
-									</ul>
-									<Button onClick={this.toggleEditingDeliverers}>
-										Edit Deliverers
-									</Button>
-								</Descriptions.Item>
-							)}
+							{appContext.agency &&
+								appContext.agency.data().type === AgencyTypes.DELIVERER && (
+									<Descriptions.Item label="Deliverers">
+										<ul style={{ paddingLeft: 0 }}>
+											{appContext.agency
+												.data()
+												?.users.map(
+													(
+														user: { name: string; email: string },
+														index: number
+													) => (
+														<li
+															key={`agency-users-${index}`}
+															style={{ marginLeft: "1em" }}
+														>
+															{user.name} (
+															<a href={`mailto:${user.email}`}>{user.email}</a>)
+														</li>
+													)
+												)}
+										</ul>
+										<Button onClick={this.toggleEditingDeliverers}>
+											Edit Deliverers
+										</Button>
+									</Descriptions.Item>
+								)}
 
 							<Descriptions.Item label="Agency address">
 								{appContext.agency?.data()?.address.line1}

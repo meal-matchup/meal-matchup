@@ -3,7 +3,17 @@ import {
 	AgencyUser,
 	RequestTypeNames,
 } from "../../../utils/enums";
-import { Button, Col, Divider, Form, Input, Row, Select, message } from "antd";
+import {
+	Button,
+	Checkbox,
+	Col,
+	Divider,
+	Form,
+	Input,
+	Row,
+	Select,
+	message,
+} from "antd";
 import { Drawer } from "../";
 import { FormInstance } from "antd/lib/form";
 import React from "react";
@@ -69,27 +79,46 @@ class ClaimRequestDrawer extends React.Component<
 
 		this.setState({ claiming: true });
 
-		const deliverers = agencyData.users?.filter(
-			(x: { name: string }) => values.deliverers.indexOf(x.name) > -1
-		);
+		if (agency.data()?.type === AgencyTypes.DELIVERER) {
+			const deliverers = agencyData.users?.filter(
+				(x: { name: string }) => values.deliverers.indexOf(x.name) > -1
+			);
 
-		firebase
-			.firestore()
-			.collection("requests")
-			.doc(request.id)
-			.update({
-				[agencyData.type.toLocaleLowerCase()]: agency.id,
-				deliverers,
-			})
-			.then(() => {
-				this.setState({ claiming: false });
-				this.onClose();
-				message.success("Successfully claimed request");
-			})
-			.catch(() => {
-				this.setState({ claiming: false });
-				message.error("Could not claim request");
-			});
+			firebase
+				.firestore()
+				.collection("requests")
+				.doc(request.id)
+				.update({
+					[agencyData.type.toLocaleLowerCase()]: agency.id,
+					deliverers,
+				})
+				.then(() => {
+					this.setState({ claiming: false });
+					this.onClose();
+					message.success("Successfully claimed request");
+				})
+				.catch(() => {
+					this.setState({ claiming: false });
+					message.error("Could not claim request");
+				});
+		} else {
+			firebase
+				.firestore()
+				.collection("requests")
+				.doc(request.id)
+				.update({
+					[agencyData.type.toLocaleLowerCase()]: agency.id,
+				})
+				.then(() => {
+					this.setState({ claiming: false });
+					this.onClose();
+					message.success("Successfully claimed request");
+				})
+				.catch(() => {
+					this.setState({ claiming: false });
+					message.error("Could not claim request");
+				});
+		}
 	}
 
 	addDeliverer(values: Store) {
@@ -239,6 +268,31 @@ class ClaimRequestDrawer extends React.Component<
 								))}
 							</Select>
 						</Form.Item>
+					)}
+
+					{agency.data()?.type === AgencyTypes.RECEIVER && (
+						<>
+							<Form.Item name="contactless" valuePropName="checked">
+								<Checkbox>
+									I would like this to be a contactless delivery
+								</Checkbox>
+							</Form.Item>
+
+							<Form.Item
+								name="agree"
+								rules={[
+									{
+										validator: (_, value) =>
+											value
+												? Promise.resolve()
+												: Promise.reject("You must agree to the statement"),
+									},
+								]}
+								valuePropName="checked"
+							>
+								<Checkbox>I have read the above paragraph and agree</Checkbox>
+							</Form.Item>
+						</>
 					)}
 				</Form>
 			</Drawer>

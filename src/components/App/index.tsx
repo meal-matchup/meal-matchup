@@ -322,11 +322,12 @@ class App extends React.Component<InferProps<typeof App.propTypes>, AppState> {
 					break;
 
 				case AgencyTypes.RECEIVER:
+					console.log("we have receiver!");
 					this.requestsSnapshot = firebase
 						.firestore()
 						.collection("requests")
 						.where("umbrella", "==", this.state.umbrella.id)
-						.where("receiver", "==", this.state.agency.id)
+						.where("receiver", "in", [this.state.agency.id, AgencyTypes.ANY])
 						.onSnapshot(snapshot => {
 							if (this.state.mounted && this.state.user?.uid === userId) {
 								this.setState({
