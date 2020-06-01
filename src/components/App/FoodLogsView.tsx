@@ -1,7 +1,8 @@
 import { AppContext, AppPage } from "./";
-import { Card, List, Statistic, Tabs } from "antd";
+import { Card, Empty, List, Statistic, Tabs } from "antd";
 import React from "react";
 import moment from "moment";
+import { AgencyTypes } from "../../utils/enums";
 
 interface FoodItem {
 	name: string;
@@ -22,6 +23,10 @@ class FoodLogsView extends React.Component {
 					let totalDontaionWeight = 0;
 
 					appContext.logs?.docs.forEach(log => {
+						console.log()
+						const theRequest = appContext.requests?.docs.filter(x => x.id === log?.data()?.requestId)[0];
+						if (appContext.agency?.data()?.type !== AgencyTypes.UMBRELLA && (!theRequest || theRequest?.data()?.receiver !== appContext.agency?.id)) return false;
+
 						log?.data()?.items?.forEach((item: FoodItem) => {
 							if (food[item.name]) {
 								food[item.name] = food[item.name] + item.weight;
@@ -39,6 +44,9 @@ class FoodLogsView extends React.Component {
 								<Tabs.TabPane key="1" tab="History">
 									<List grid={{ column: 1, gutter: 16 }}>
 										{appContext.logs?.docs.map(log => {
+											const theRequest = appContext.requests?.docs.filter(x => x.id === log?.data()?.requestId)[0];
+											if (appContext.agency?.data()?.type !== AgencyTypes.UMBRELLA && (!theRequest || theRequest?.data()?.receiver !== appContext.agency?.id)) return false;
+
 											const date = log.data()?.date
 												? moment(log.data()?.date.toDate()).format(
 														"MMMM D, YYYY"
@@ -66,6 +74,8 @@ class FoodLogsView extends React.Component {
 												</List.Item>
 											);
 										})}
+
+										{Object.keys(food).length === 0 && <Empty />}
 									</List>
 								</Tabs.TabPane>
 
@@ -81,6 +91,8 @@ class FoodLogsView extends React.Component {
 												/>
 											</Card.Grid>
 										))}
+
+										{Object.keys(food).length === 0 && <Empty />}
 									</Card>
 								</Tabs.TabPane>
 							</Tabs>

@@ -35,11 +35,14 @@ class DirectoryView extends React.Component<
 							onChange={e => this.setState({ filter: e })}
 							style={{ width: 175, marginBottom: "2em" }}
 						>
-							{Object.keys(AgencyTypes).map((agencyType: string) => (
-								<Select.Option key={agencyType} value={agencyType}>
-									{AgencyTypeNames[agencyType]}
-								</Select.Option>
-							))}
+							{Object.keys(AgencyTypes).map(
+								(agencyType: string) =>
+									agencyType !== AgencyTypes.UMBRELLA && (
+										<Select.Option key={agencyType} value={agencyType}>
+											{AgencyTypeNames[agencyType]}
+										</Select.Option>
+									)
+							)}
 						</Select>
 
 						{appContext.agencies && (

@@ -28,7 +28,7 @@ service cloud.firestore {
 		match /logs/{logId} {
 			allow create: if request.auth != null;
 			allow delete: if false;
-			allow read: if true;
+			allow read: if request.auth != null;
 			allow update: if request.auth != null &&
 				get(/databases/$(database)/documents/requests/$(resource.data.requestId)).data.deliverer == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.agency;
 		}

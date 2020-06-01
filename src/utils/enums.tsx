@@ -90,6 +90,7 @@ export enum AgencyTypes {
 	DONATOR = "DONATOR",
 	DELIVERER = "DELIVERER",
 	RECEIVER = "RECEIVER",
+	UMBRELLA = "UMBRELLA",
 }
 
 export interface AgencyTypeNameInterface {
