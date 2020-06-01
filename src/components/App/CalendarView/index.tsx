@@ -65,28 +65,6 @@ class CalendarView extends React.Component<
 		}
 	}
 
-	// componentDidUpdate(prevProps: CalendarViewProps) {
-	// 	if (this.state.currentRequest && this.props.requests?.docChanges().length !== 0) {
-	// 		console.log("there is a current request and there are changes");
-	// 	}
-	// }
-
-	// componentDidUpdate(prevProps: CalendarViewProps) {
-	// 	if (
-	// 		this.props.requests &&
-	// 		prevProps.requests &&
-	// 		this.props.requests.docChanges().length !== 0
-	// 	) {
-	// 		if (this.state.currentRequest) {
-	// 			this.setState({
-	// 				currentRequest: this.props.requests?.docs.filter(
-	// 					x => x.id === this.state.currentRequest?.id
-	// 				)[0],
-	// 			});
-	// 		}
-	// 	}
-	// }
-
 	dateCellRender(date: moment.Moment): React.ReactNode {
 		const { agency } = this.props;
 		if (!agency) return null;
@@ -252,6 +230,8 @@ class CalendarView extends React.Component<
 
 						<Tabs defaultActiveKey="2">
 							<Tabs.TabPane tab="Calendar" key="1">
+								<h2>{selectedDate.format("MMMM YYYY")}</h2>
+
 								<Calendar
 									dateCellRender={this.dateCellRender}
 									onChange={value => this.setState({ selectedDate: value })}
