@@ -4,6 +4,7 @@ const admin = require("firebase-admin");
 const functions = require("firebase-functions");
 const firestore = require("@google-cloud/firestore");
 const moment = require("moment");
+const mailgun = require("mailgun-js");
 const client = new firestore.v1.FirestoreAdminClient();
 
 const serviceAccount = require("./sk.json");
@@ -12,6 +13,137 @@ admin.initializeApp({
 	credential: admin.credential.cert(serviceAccount),
 	databaseURL: "https://meal-matchup-development.firebaseio.com",
 });
+
+const MAILGUN_DOMAIN = "mg.mealmatchup.org";
+
+const mg = mailgun({
+	apiKey: functions.config().mailgun.key,
+	domain: MAILGUN_DOMAIN,
+});
+
+const today = new Date();
+today.setHours(0, 0, 0, 0);
+const mToday = moment(today);
+
+admin
+	.firestore()
+	.collection("requests")
+	.where("dates.to", ">=", today)
+	.get()
+	.then(snapshot => {
+		snapshot.docs.forEach(doc => {
+			doc.ref
+				.collection("occurrences")
+				.where("date", ">=", today)
+				.get()
+				.then(ocSnapshot => {
+					ocSnapshot.docs.forEach(ocDoc => {
+						if (ocDoc && !ocDoc.data().complete) {
+							const ocDate = ocDoc.data().date.toDate();
+							ocDate.setHours(0, 0, 0, 0);
+							const mOcDate = moment(ocDate);
+							const diff = mOcDate.diff(mToday, "days", true);
+
+							if (diff === 6 || diff === 5 || diff === 1 || diff === 0) {
+								// either 5, 1, or 0 days out
+
+								const donatorRef = admin
+									.firestore()
+									.collection("agencies")
+									.doc(doc.data().donator);
+								const receiverRef = admin
+									.firestore()
+									.collection("agencies")
+									.doc(doc.data().receiver);
+
+								const batch = admin.firestore().batch();
+								const newRef = admin.firestore().collection("keys").doc();
+
+								const keyData = {
+									complete: false,
+									date: ocDate,
+									donatorInfo: {},
+									occurrenceId: ocDoc.id,
+									password: newRef.id,
+									receiverInfo: {},
+									requestId: doc.id,
+								};
+
+								admin
+									.firestore()
+									.runTransaction(transaction => {
+										return transaction.get(donatorRef).then(donatorDoc => {
+											keyData.donatorInfo = {
+												address: { ...donatorDoc.data().address },
+												phone: donatorDoc.data().phone,
+												contact: {
+													name: donatorDoc.data().contact.name,
+													email: donatorDoc.data().contact.email,
+												},
+												name: donatorDoc.data().name,
+											};
+											return transaction.get(receiverRef).then(receiverDoc => {
+												if (receiverDoc.data()) {
+													keyData.receiverInfo = {
+														address: { ...receiverDoc.data().address },
+														phone: receiverDoc.data().phone,
+														contact: {
+															name: receiverDoc.data().contact.name,
+															email: receiverDoc.data().contact.email,
+														},
+														name: receiverDoc.data().name,
+													};
+												}
+											});
+										});
+									})
+									.then(() => {
+										batch.commit().then(() => {
+											const mailData = {
+												from: "Meal Matchup <no-reply@mealmatchup.org>",
+												to: doc
+													.data()
+													.deliverers.map(deliverer => deliverer.email)
+													.join(", "),
+												subject: "Upcoming Pickup Request",
+												text: `Howdy!
+
+You have an upcoming pickup request scheduled ${
+													diff === 0
+														? "today"
+														: diff === 1
+														? `in ${diff} day`
+														: `in ${diff} days`
+												}.
+
+When you're ready to start this pickup, click this link for instructions on where to go, how to complete the food log, and where to drop off the donation.
+
+https://www.mealmatchup.org/app/entry?key=${newRef.id}
+
+Thank you, and stay safe.
+
+Meal Matchup
+
+			`,
+											};
+
+											mg.messages().send(mailData);
+
+											console.log(mailData);
+										});
+									});
+							}
+						}
+					});
+				})
+				.catch(error => {
+					console.error(error);
+				});
+		});
+	})
+	.catch(error => {
+		console.error(error);
+	});
 
 const bucket = functions.config().gcp.bucket;
 
@@ -48,6 +180,12 @@ exports.scheduledFirestoreExport = functions.pubsub
 				console.error(error);
 				throw new Error("Export operation failed");
 			});
+	});
+
+exports.emailDeliverers = functions.pubsub
+	.schedule("every 24 hours")
+	.onRun(() => {
+		console.log("mailgun api key", functions.config().mailgun.key);
 	});
 
 exports.keyLogMade = functions.firestore
