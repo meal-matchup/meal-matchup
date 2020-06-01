@@ -109,7 +109,7 @@ export interface AgencyUser {
 }
 
 export type Agency = {
-	id: string;
+	id?: string;
 	address: Address;
 	approved: boolean;
 	contact: {
@@ -117,9 +117,13 @@ export type Agency = {
 		name: string;
 		phone?: string;
 	};
+	admins?: {
+		[id: string]: boolean;
+	};
 	members?: {
 		[id: string]: boolean;
 	};
+	umbrella: string;
 	users?: AgencyUser[];
 	name: string;
 	type: AgencyTypes;
