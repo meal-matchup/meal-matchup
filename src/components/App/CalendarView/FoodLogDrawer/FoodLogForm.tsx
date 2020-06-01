@@ -118,6 +118,7 @@ function FoodLogForm({
 			// Doesnt have log, create one
 			const logRef = firebase.firestore().collection("logs").doc();
 			batch.set(logRef, {
+				date: occurrence.data()?.date.toDate(),
 				items: logItems,
 				requestId: request.id,
 				occurrenceId: occurrence.id,

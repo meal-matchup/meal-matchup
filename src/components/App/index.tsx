@@ -15,6 +15,7 @@ import Auth from "./Auth";
 import CalendarView from "./CalendarView";
 import DirectoryView from "./DirectoryView";
 import Drawer from "./Drawer";
+import FoodLogsView from "./FoodLogsView";
 import { InferProps } from "prop-types";
 import Loading from "./Loading";
 import React from "react";
@@ -32,10 +33,13 @@ interface AppState {
 	agency?: firebase.firestore.QueryDocumentSnapshot;
 	currentPage: PageIDs;
 	loading: boolean;
+	logs?: firebase.firestore.QuerySnapshot;
+	logsLoading: boolean;
 	mounted: boolean;
 	requests?: firebase.firestore.QuerySnapshot;
 	requestsLoading: boolean;
 	settingAgenciesSnapshot: boolean;
+	settingLogsSnapshot: boolean;
 	settingRequestsSnapshot: boolean;
 	settingUmbrellaSnapshot: boolean;
 	umbrella?: firebase.firestore.DocumentSnapshot;
@@ -59,9 +63,11 @@ class App extends React.Component<InferProps<typeof App.propTypes>, AppState> {
 			agenciesLoading: true,
 			currentPage: PageIDs.CALENDAR,
 			loading: true,
+			logsLoading: true,
 			mounted: false,
 			requestsLoading: true,
 			settingAgenciesSnapshot: false,
+			settingLogsSnapshot: false,
 			settingRequestsSnapshot: false,
 			settingUmbrellaSnapshot: false,
 			umbrellaLoading: true,
@@ -78,6 +84,10 @@ class App extends React.Component<InferProps<typeof App.propTypes>, AppState> {
 	}
 
 	agenciesSnapshot(): void {
+		return App.defaultListener();
+	}
+
+	logsSnapshot(): void {
 		return App.defaultListener();
 	}
 
@@ -99,6 +109,9 @@ class App extends React.Component<InferProps<typeof App.propTypes>, AppState> {
 
 		this.requestsSnapshot();
 		this.requestsSnapshot = App.defaultListener;
+
+		this.logsSnapshot();
+		this.logsSnapshot = App.defaultListener;
 
 		this.umbrellaSnapshot();
 		this.umbrellaSnapshot = App.defaultListener;
@@ -122,6 +135,8 @@ class App extends React.Component<InferProps<typeof App.propTypes>, AppState> {
 			this.setState({
 				agencies: undefined,
 				agenciesLoading: true,
+				logs: undefined,
+				logsLoading: true,
 				requests: undefined,
 				requestsLoading: true,
 				umbrella: undefined,
@@ -144,6 +159,7 @@ class App extends React.Component<InferProps<typeof App.propTypes>, AppState> {
 			} else {
 				this.setState({
 					agenciesLoading: false,
+					logsLoading: false,
 					requestsLoading: false,
 					umbrellaLoading: false,
 					userLoading: false,
@@ -161,7 +177,8 @@ class App extends React.Component<InferProps<typeof App.propTypes>, AppState> {
 			!this.state.userLoading &&
 			!this.state.umbrellaLoading &&
 			!this.state.agenciesLoading &&
-			!this.state.requestsLoading
+			!this.state.requestsLoading &&
+			!this.state.logsLoading
 		) {
 			this.setState({ loading: false });
 		} else if (
@@ -169,7 +186,8 @@ class App extends React.Component<InferProps<typeof App.propTypes>, AppState> {
 			(this.state.userLoading ||
 				this.state.umbrellaLoading ||
 				this.state.agenciesLoading ||
-				this.state.requestsLoading)
+				this.state.requestsLoading ||
+				this.state.logsLoading)
 		) {
 			this.setState({ loading: true });
 		}
@@ -331,6 +349,37 @@ class App extends React.Component<InferProps<typeof App.propTypes>, AppState> {
 					break;
 			}
 		}
+
+		if (
+			this.state.user &&
+			this.state.userData &&
+			this.state.umbrella &&
+			this.state.agencies &&
+			this.state.agency &&
+			!this.state.logs &&
+			this.state.logsLoading &&
+			!this.state.settingLogsSnapshot
+		) {
+			this.setState({ settingLogsSnapshot: true });
+
+			const agencyId = this.state.agency.id;
+
+			this.logsSnapshot = firebase
+				.firestore()
+				.collection("logs")
+				.orderBy("date")
+				.onSnapshot(snapshot => {
+					if (this.state.mounted && agencyId === this.state.agency?.id) {
+						this.setState({
+							settingLogsSnapshot: false,
+							logs: snapshot,
+							logsLoading: false,
+						});
+					} else if (this.state.mounted) {
+						this.setState({ settingLogsSnapshot: false });
+					}
+				});
+		}
 	}
 
 	componentWillUnmount() {
@@ -346,6 +395,7 @@ class App extends React.Component<InferProps<typeof App.propTypes>, AppState> {
 			agency,
 			currentPage,
 			loading,
+			logs,
 			requests,
 			umbrella,
 			user,
@@ -364,11 +414,13 @@ class App extends React.Component<InferProps<typeof App.propTypes>, AppState> {
 			),
 			[PageIDs.DIRECTORY]: <DirectoryView />,
 			[PageIDs.ACCOUNT]: <AccountView />,
+			[PageIDs.FOODLOGS]: <FoodLogsView />,
 		};
 
 		const appContext: AppContextInterface = {
 			agency,
 			agencies,
+			logs,
 			requests,
 			umbrella,
 			user,

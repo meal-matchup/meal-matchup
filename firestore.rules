@@ -35,8 +35,13 @@ service cloud.firestore {
 
 		match /keys/{keyId} {
 			allow create: if request.auth != null;
-			allow delete: if false;
+			allow update: if request.resource.data.password == resource.data.password ||
+			(
+				request.auth != null &&
+				get(/databases/$(database)/documents/requests/$(resource.data.requestId)).data.deliverer == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.agency
+			);
 			allow read: if true;
+			allow delete: if false;
 			allow list: if false;
 		}
 

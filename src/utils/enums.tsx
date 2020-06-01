@@ -7,11 +7,12 @@ import React from "react";
 import firebase from "gatsby-plugin-firebase";
 
 export interface AppContextInterface {
-	user?: firebase.User | null;
-	umbrella?: firebase.firestore.DocumentSnapshot;
 	agencies?: firebase.firestore.QuerySnapshot;
 	agency?: firebase.firestore.QueryDocumentSnapshot;
+	logs?: firebase.firestore.QuerySnapshot;
 	requests?: firebase.firestore.QuerySnapshot;
+	umbrella?: firebase.firestore.DocumentSnapshot;
+	user?: firebase.User | null;
 }
 
 export type AppPage = {
