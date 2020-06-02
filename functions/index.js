@@ -159,6 +159,42 @@ const bucket = functions.config().gcp.bucket;
 //  response.send("Hello from Firebase!");
 // });
 
+const _MS_PER_DAY = 1000 * 60 * 60 * 24;
+
+function daysBetween(date1, date2) {
+	const utc1 = Date.UTC(date1.getFullYear(), date1.getMonth(), date1.getDate());
+	const utc2 = Date.UTC(date2.getFullYear(), date2.getMonth(), date2.getDate());
+	return Math.floor((utc2 - utc1) / _MS_PER_DAY);
+}
+
+exports.createKeyAndEmailUser = functions.pubsub
+	.schedule('every 24 hours')
+	.onRun((context) => {
+		const today = new Date();
+		db.collection('requests')
+			.get()
+			.then((snapshot) => {
+				snapshot.forEach((doc) => {
+					if (doc.data().dates.to.toDate <= today) {
+						doc.data().occurrences.forEach((occurrence, index) => {
+							const keyData = {
+								requestId: doc.id,
+								occurrence: index,
+							};
+
+							switch (daysBetween(today, occurrence.date.toDate())) {
+								case 1:
+								case 7:
+									// Request is either 1 or 7 days away
+									// send email
+									console.log("create key and send email", keyData);
+							}
+						});
+					}
+				});
+			});
+	});
+
 exports.scheduledFirestoreExport = functions.pubsub
 	.schedule("every 24 hours")
 	.onRun(context => {
