@@ -1,8 +1,8 @@
 import { AppContext, AppPage } from "./";
 import { Card, Empty, List, Statistic, Tabs } from "antd";
+import { AgencyTypes } from "../../utils/enums";
 import React from "react";
 import moment from "moment";
-import { AgencyTypes } from "../../utils/enums";
 
 interface FoodItem {
 	name: string;
@@ -23,9 +23,15 @@ class FoodLogsView extends React.Component {
 					let totalDontaionWeight = 0;
 
 					appContext.logs?.docs.forEach(log => {
-						console.log()
-						const theRequest = appContext.requests?.docs.filter(x => x.id === log?.data()?.requestId)[0];
-						if (appContext.agency?.data()?.type !== AgencyTypes.UMBRELLA && (!theRequest || theRequest?.data()?.receiver !== appContext.agency?.id)) return false;
+						const theRequest = appContext.requests?.docs.filter(
+							x => x.id === log?.data()?.requestId
+						)[0];
+						if (
+							appContext.agency?.data()?.type !== AgencyTypes.UMBRELLA &&
+							(!theRequest ||
+								theRequest?.data()?.receiver !== appContext.agency?.id)
+						)
+							return false;
 
 						log?.data()?.items?.forEach((item: FoodItem) => {
 							if (food[item.name]) {
@@ -44,8 +50,17 @@ class FoodLogsView extends React.Component {
 								<Tabs.TabPane key="1" tab="History">
 									<List grid={{ column: 1, gutter: 16 }}>
 										{appContext.logs?.docs.map(log => {
-											const theRequest = appContext.requests?.docs.filter(x => x.id === log?.data()?.requestId)[0];
-											if (appContext.agency?.data()?.type !== AgencyTypes.UMBRELLA && (!theRequest || theRequest?.data()?.receiver !== appContext.agency?.id)) return false;
+											const theRequest = appContext.requests?.docs.filter(
+												x => x.id === log?.data()?.requestId
+											)[0];
+											if (
+												appContext.agency?.data()?.type !==
+													AgencyTypes.UMBRELLA &&
+												(!theRequest ||
+													theRequest?.data()?.receiver !==
+														appContext.agency?.id)
+											)
+												return false;
 
 											const date = log.data()?.date
 												? moment(log.data()?.date.toDate()).format(
@@ -59,7 +74,11 @@ class FoodLogsView extends React.Component {
 
 											return (
 												<List.Item key={log.id}>
-													<Card size="small" title={`Donation on ${date}`} extra={`Total: ${totalWeight} lbs`}>
+													<Card
+														size="small"
+														title={`Donation on ${date}`}
+														extra={`Total: ${totalWeight} lbs`}
+													>
 														{log.data()?.items?.map((item: FoodItem) => (
 															<Card.Grid key={item.name} hoverable={false}>
 																<Statistic
@@ -80,7 +99,11 @@ class FoodLogsView extends React.Component {
 								</Tabs.TabPane>
 
 								<Tabs.TabPane key="2" tab="Total Donations">
-									<Card size="small" title="Items Donated" extra={`Total: ${totalDontaionWeight} lbs`}>
+									<Card
+										size="small"
+										title="Items Donated"
+										extra={`Total: ${totalDontaionWeight} lbs`}
+									>
 										{Object.keys(food).map((item, index) => (
 											<Card.Grid key={`${item} ${index}`} hoverable={false}>
 												<Statistic
