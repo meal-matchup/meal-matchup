@@ -1,25 +1,34 @@
 {
-  "name": "functions",
-  "description": "Cloud Functions for Firebase",
-  "scripts": {
-    "serve": "firebase emulators:start --only functions",
-    "shell": "firebase functions:shell",
-    "start": "npm run shell",
-    "deploy": "firebase deploy --only functions",
-    "logs": "firebase functions:log"
-  },
-  "engines": {
-    "node": "8"
-  },
-  "dependencies": {
-    "firebase-admin": "^8.12.1",
-    "firebase-functions": "^3.7.0",
-    "mailgun-js": "^0.22.0",
-    "moment": "^2.26.0",
-    "twilio": "^3.46.0"
-  },
-  "devDependencies": {
-    "firebase-functions-test": "^0.1.6"
-  },
-  "private": true
+	"name": "functions",
+	"description": "Cloud Functions for Firebase",
+	"scripts": {
+		"lint": "tslint --project tsconfig.json",
+		"build": "tsc",
+		"serve": "npm run build && firebase emulators:start --only functions",
+		"shell": "npm run build && firebase functions:shell",
+		"start": "npm run shell",
+		"deploy": "firebase deploy --only functions",
+		"logs": "firebase functions:log"
+	},
+	"engines": {
+		"node": "8"
+	},
+	"main": "lib/index.js",
+	"dependencies": {
+		"@google-cloud/firestore": "^3.8.5",
+		"firebase-admin": "^8.12.1",
+		"firebase-functions": "^3.7.0",
+		"mailgun-js": "^0.22.0",
+		"moment": "^2.26.0",
+		"twilio": "^3.46.0"
+	},
+	"devDependencies": {
+		"@types/mailgun-js": "^0.22.7",
+		"firebase-functions-test": "^0.1.6",
+		"install": "^0.13.0",
+		"npm": "^6.14.5",
+		"tslint": "^5.12.0",
+		"typescript": "^3.8.0"
+	},
+	"private": true
 }

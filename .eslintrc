@@ -1,46 +1,67 @@
 {
-	"parser": "@typescript-eslint/parser",
-	"parserOptions": {
-		"ecmaFeatures": {
-			"jsx": true
+	"overrides": [
+		{
+			"files": ["**/*.js"],
+			"excludedFiles": ["./functions/*"],
+			"extends": "react-app"
 		},
-		"ecmaVersion": 2018,
-		"sourceType": "module"
-	},
-	"env": {
-		"browser": true,
-		"node": true,
-		"es6": true
-	},
-	"rules": {
-		"strict": 0,
-		"no-console": "warn",
-		"quotes": [
-			"warn",
-			"double"
-		],
-		"prettier/prettier": "warn",
-		"react/prop-types": "warn",
-		"no-unused-vars": "warn",
-		"sort-imports": "warn",
-		"@typescript-eslint/explicit-function-return-type": "off"
-	},
-	"extends": [
-		"eslint:recommended",
-		"plugin:react/recommended",
-		"plugin:jsx-a11y/recommended",
-		"plugin:@typescript-eslint/recommended",
-		"plugin:prettier/recommended"
-	],
-	"plugins": [
-		"@typescript-eslint",
-		"react",
-		"prettier",
-		"jsx-a11y"
-	],
-	"settings": {
-		"react": {
-			"version": "detect"
+		{
+			"files": ["**/*.ts", "**/*.tsx"],
+			"excludedFiles": ["./functions/*"],
+			"parser": "@typescript-eslint/parser",
+			"parserOptions": {
+				"ecmaFeatures": {
+					"jsx": true
+				},
+				"ecmaVersion": 2018,
+				"sourceType": "module"
+			},
+			"env": {
+				"browser": true,
+				"node": true,
+				"es6": true
+			},
+			"rules": {
+				"strict": 0,
+				"no-console": "warn",
+				"quotes": [
+					"warn",
+					"double"
+				],
+				"prettier/prettier": "warn",
+				"react/prop-types": "warn",
+				"no-unused-vars": "warn",
+				"sort-imports": "warn",
+				"@typescript-eslint/explicit-function-return-type": "off"
+			},
+			"extends": [
+				"eslint:recommended",
+				"plugin:react/recommended",
+				"plugin:jsx-a11y/recommended",
+				"plugin:@typescript-eslint/recommended",
+				"plugin:prettier/recommended"
+			],
+			"plugins": [
+				"@typescript-eslint",
+				"react",
+				"prettier",
+				"jsx-a11y"
+			],
+			"settings": {
+				"react": {
+					"version": "detect"
+				}
+			}
+		},
+		{
+			"files": ["./functions/**/*.ts"],
+			"parser": "@typescript-eslint/parser",
+			"parserOptions": {
+				"ecmaVersion": 2017
+			},
+			"rules": {
+				"no-console": "off"
+			}
 		}
-	}
+	]
 }
