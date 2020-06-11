@@ -13,6 +13,7 @@ import { isSameWeekdayInPeriod } from "../../../utils/functions";
 import moment from "moment";
 
 interface CalendarViewProps {
+	userData?: firebase.firestore.DocumentData;
 	requests?: firebase.firestore.QuerySnapshot;
 	agency?: firebase.firestore.DocumentSnapshot;
 }
@@ -66,8 +67,7 @@ class CalendarView extends React.Component<
 	}
 
 	dateCellRender(date: moment.Moment): React.ReactNode {
-		const { agency } = this.props;
-		if (!agency) return null;
+		const { agency, userData } = this.props;
 
 		const requestsOnDate = this.props.requests?.docs.filter(x =>
 			isSameWeekdayInPeriod(
@@ -94,19 +94,29 @@ class CalendarView extends React.Component<
 							| "processing"
 							| "error" = "default";
 
-						if (request.data().type === RequestTypes.PICKUP) {
+						if (userData?.admin === true) {
 							if (
-								(agency.data()?.type === AgencyTypes.DONATOR &&
-									request.data().deliverer !== AgencyTypes.ANY) ||
-								request.data()[agency.data()?.type.toLowerCase()] !==
-									AgencyTypes.ANY
-								//  && !occurrence?.complete)
-							) {
+								request.data()?.deliverer !== AgencyTypes.ANY &&
+								request.data()?.receiver !== AgencyTypes.ANY
+							)
 								status = "warning";
-							}
+						} else if (!agency) {
+							return null;
 						} else {
-							if (request.data().deliverer !== AgencyTypes.ANY) {
-								status = "warning";
+							if (request.data().type === RequestTypes.PICKUP) {
+								if (
+									(agency.data()?.type === AgencyTypes.DONATOR &&
+										request.data().deliverer !== AgencyTypes.ANY) ||
+									request.data()[agency.data()?.type.toLowerCase()] !==
+										AgencyTypes.ANY
+									//  && !occurrence?.complete)
+								) {
+									status = "warning";
+								}
+							} else {
+								if (request.data().deliverer !== AgencyTypes.ANY) {
+									status = "warning";
+								}
 							}
 						}
 
@@ -198,6 +208,7 @@ class CalendarView extends React.Component<
 							date={selectedDate}
 							agencies={appContext.agencies}
 							agency={appContext.agency}
+							userData={appContext.userData}
 						/>
 
 						{appContext.agency?.data()?.type === AgencyTypes.DONATOR && (

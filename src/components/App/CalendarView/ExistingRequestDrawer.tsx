@@ -18,6 +18,7 @@ interface ExistingRequestDrawerProps {
 	open?: boolean;
 	request?: firebase.firestore.QueryDocumentSnapshot;
 	onClose?: () => void;
+	userData?: firebase.firestore.DocumentData;
 }
 
 interface ExistingRequestDrawerState {
@@ -125,10 +126,10 @@ class ExistingRequestDrawer extends React.Component<
 	}
 
 	render() {
-		const { agencies, agency, date, open, request } = this.props;
+		const { agencies, agency, date, open, request, userData } = this.props;
 		const { occurrence } = this.state;
 
-		if (!agencies || !agency || !request || !date) return null;
+		if (!agencies || !request || !date) return null;
 
 		const donatingAgency: firebase.firestore.QueryDocumentSnapshot = agencies.docs.filter(
 			x => x.id === request.data()?.donator
@@ -199,56 +200,62 @@ class ExistingRequestDrawer extends React.Component<
 		];
 
 		const footer = (): React.ReactNode[] => {
-			switch (agency.data()?.type) {
-				case AgencyTypes.DELIVERER:
-					if (request.data()?.deliverer === AgencyTypes.ANY) {
-						return [
-							...defaultFooter,
-							<Button
-								key="claim"
-								type="primary"
-								disabled={!agency.data()?.approved}
-								onClick={this.toggleClaimRequestDrawer}
-								style={buttonStyles}
-							>
-								Claim
-							</Button>,
-						];
-					} else {
-						return [
-							...defaultFooter,
-							<Button
-								key="food-log"
-								type="primary"
-								style={buttonStyles}
-								onClick={this.toggleFoodLogDrawer}
-								disabled={foodLogButtonDisabled}
-							>
-								{foodLogButtonText}
-							</Button>,
-						];
-					}
+			if (userData?.admin == true) {
+				return [...defaultFooter];
+			} else if (!agency) {
+				return [...defaultFooter];
+			} else {
+				switch (agency.data()?.type) {
+					case AgencyTypes.DELIVERER:
+						if (request.data()?.deliverer === AgencyTypes.ANY) {
+							return [
+								...defaultFooter,
+								<Button
+									key="claim"
+									type="primary"
+									disabled={!agency.data()?.approved}
+									onClick={this.toggleClaimRequestDrawer}
+									style={buttonStyles}
+								>
+									Claim
+								</Button>,
+							];
+						} else {
+							return [
+								...defaultFooter,
+								<Button
+									key="food-log"
+									type="primary"
+									style={buttonStyles}
+									onClick={this.toggleFoodLogDrawer}
+									disabled={foodLogButtonDisabled}
+								>
+									{foodLogButtonText}
+								</Button>,
+							];
+						}
 
-				case AgencyTypes.RECEIVER:
-					if (request.data()?.receiver === AgencyTypes.ANY) {
-						return [
-							...defaultFooter,
-							<Button
-								key="claim"
-								type="primary"
-								disabled={!agency.data()?.approved}
-								onClick={this.toggleClaimRequestDrawer}
-								style={buttonStyles}
-							>
-								Claim
-							</Button>,
-						];
-					} else {
-						return [...defaultFooter];
-					}
+					case AgencyTypes.RECEIVER:
+						if (request.data()?.receiver === AgencyTypes.ANY) {
+							return [
+								...defaultFooter,
+								<Button
+									key="claim"
+									type="primary"
+									disabled={!agency.data()?.approved}
+									onClick={this.toggleClaimRequestDrawer}
+									style={buttonStyles}
+								>
+									Claim
+								</Button>,
+							];
+						} else {
+							return [...defaultFooter];
+						}
 
-				default:
-					return defaultFooter;
+					default:
+						return defaultFooter;
+				}
 			}
 		};
 
@@ -354,7 +361,7 @@ class ExistingRequestDrawer extends React.Component<
 									<>
 										<strong>Not completed yet</strong>
 										<br />
-										{agency.data()?.type === AgencyTypes.DELIVERER ? (
+										{agency?.data()?.type === AgencyTypes.DELIVERER ? (
 											<Button
 												onClick={this.toggleFoodLogDrawer}
 												disabled={foodLogButtonDisabled}

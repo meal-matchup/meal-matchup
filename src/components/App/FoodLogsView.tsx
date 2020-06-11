@@ -1,6 +1,5 @@
 import { AppContext, AppPage } from "./";
 import { Card, Empty, List, Statistic, Tabs } from "antd";
-import { AgencyTypes } from "../../utils/enums";
 import React from "react";
 import moment from "moment";
 
@@ -20,25 +19,26 @@ class FoodLogsView extends React.Component {
 				{appContext => {
 					const food: FoodItems = {};
 
-					console.log(appContext.logs?.docs);
-
 					let totalDontaionWeight = 0;
 
 					appContext.logs?.docs.forEach(log => {
-						const theRequest = appContext.requests?.docs.filter(
+						const logRequest = appContext.requests?.docs.filter(
 							x => x.id === log?.data()?.requestId
 						)[0];
 
-						// console.log(theRequest.id);
-						// if (
-						// 	appContext.agency?.data()?.type !== AgencyTypes.UMBRELLA &&
-						// 	(!theRequest ||
-						// 		())
-						// )
-						// 	return false;
+						if (appContext.userData?.admin !== true) {
+							// not umbrella, so they must be related
+							if (!logRequest) return false;
+							const agencyType = appContext.agency?.data()?.type;
+							if (!agencyType) return false;
+							const agencyTypeKey = `${agencyType}`.toLocaleLowerCase();
+							const logRequestData = logRequest.data();
+							if (!logRequestData) return false;
+							if (logRequestData[agencyTypeKey] !== appContext.agency?.id)
+								return false;
+						}
 
 						log?.data()?.items?.forEach((item: FoodItem) => {
-							console.log(item);
 							if (food[item.name]) {
 								food[item.name] = food[item.name] + item.weight;
 							} else {
@@ -55,20 +55,24 @@ class FoodLogsView extends React.Component {
 								<Tabs.TabPane key="1" tab="History">
 									<List grid={{ column: 1, gutter: 16 }}>
 										{appContext.logs?.docs.map(log => {
-
-											console.log(log.id, log.data());
-											const theRequest = appContext.requests?.docs.filter(
+											const logRequest = appContext.requests?.docs.filter(
 												x => x.id === log?.data()?.requestId
 											)[0];
 
-											// if (
-											// 	appContext.agency?.data()?.type !==
-											// 		AgencyTypes.UMBRELLA &&
-											// 	(!theRequest ||
-											// 		theRequest?.data()?.receiver !==
-											// 			appContext.agency?.id)
-											// )
-											// 	return false;
+											if (appContext.userData?.admin !== true) {
+												// not umbrella, so they must be related
+												if (!logRequest) return false;
+												const agencyType = appContext.agency?.data()?.type;
+												if (!agencyType) return false;
+												const agencyTypeKey = `${agencyType}`.toLocaleLowerCase();
+												const logRequestData = logRequest.data();
+												if (!logRequestData) return false;
+												if (
+													logRequestData[agencyTypeKey] !==
+													appContext.agency?.id
+												)
+													return false;
+											}
 
 											const date = log.data()?.date
 												? moment(log.data()?.date.toDate()).format(

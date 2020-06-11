@@ -13,6 +13,7 @@ export interface AppContextInterface {
 	requests?: firebase.firestore.QuerySnapshot;
 	umbrella?: firebase.firestore.DocumentSnapshot;
 	user?: firebase.User | null;
+	userData?: firebase.firestore.DocumentData;
 }
 
 export type AppPage = {

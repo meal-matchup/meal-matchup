@@ -264,101 +264,25 @@ class App extends React.Component<InferProps<typeof App.propTypes>, AppState> {
 		}
 
 		if (
-			(
-				this.state.user &&
+			(this.state.user &&
 				this.state.userData &&
+				!this.state.userData.admin &&
 				this.state.umbrella &&
 				this.state.agencies &&
-				!this.state.agency
-			) ||
-			(
-				this.state.agency &&
+				!this.state.agency) ||
+			(this.state.agency &&
 				this.state.agencies &&
-				(
-					!prevState.agencies ||
-					!this.state.agencies.isEqual(prevState.agencies)
-				)
-			)
+				(!prevState.agencies ||
+					!this.state.agencies.isEqual(prevState.agencies)))
 		) {
-			this.setState({
-				agency: this.state.agencies.docs.filter(
-					x => x.id === this.state.userData?.agency
-				)[0],
-			});
-		}
-
-		if (
-			this.state.user &&
-			this.state.userData &&
-			this.state.umbrella &&
-			this.state.agencies &&
-			this.state.agency &&
-			!this.state.requests &&
-			this.state.requestsLoading &&
-			!this.state.settingRequestsSnapshot
-		) {
-			this.setState({ settingRequestsSnapshot: true });
-
-			const userId = this.state.user.uid;
-
-			switch (this.state.agency.data()?.type) {
-				case AgencyTypes.DONATOR:
-					this.requestsSnapshot = firebase
-						.firestore()
-						.collection("requests")
-						.where("umbrella", "==", this.state.umbrella.id)
-						.where("donator", "==", this.state.agency.id)
-						.onSnapshot(snapshot => {
-							if (this.state.mounted && this.state.user?.uid === userId) {
-								this.setState({
-									requests: snapshot,
-									requestsLoading: false,
-									settingRequestsSnapshot: false,
-								});
-							} else if (this.state.mounted) {
-								this.setState({ settingRequestsSnapshot: false });
-							}
-						});
-					break;
-
-				case AgencyTypes.RECEIVER:
-					console.log("we have receiver!");
-					this.requestsSnapshot = firebase
-						.firestore()
-						.collection("requests")
-						.where("umbrella", "==", this.state.umbrella.id)
-						.where("receiver", "in", [this.state.agency.id, AgencyTypes.ANY])
-						.onSnapshot(snapshot => {
-							if (this.state.mounted && this.state.user?.uid === userId) {
-								this.setState({
-									requests: snapshot,
-									requestsLoading: false,
-									settingRequestsSnapshot: false,
-								});
-							} else if (this.state.mounted) {
-								this.setState({ settingRequestsSnapshot: false });
-							}
-						});
-					break;
-
-				case AgencyTypes.DELIVERER:
-					this.requestsSnapshot = firebase
-						.firestore()
-						.collection("requests")
-						.where("umbrella", "==", this.state.umbrella.id)
-						.where("deliverer", "in", [this.state.agency.id, AgencyTypes.ANY])
-						.onSnapshot(snapshot => {
-							if (this.state.mounted && this.state.user?.uid === userId) {
-								this.setState({
-									requests: snapshot,
-									requestsLoading: false,
-									settingRequestsSnapshot: false,
-								});
-							} else if (this.state.mounted) {
-								this.setState({ settingRequestsSnapshot: false });
-							}
-						});
-					break;
+			if (this.state.userData?.admin === true) {
+				this.setState({ agency: undefined });
+			} else {
+				this.setState({
+					agency: this.state.agencies.docs.filter(
+						x => x.id === this.state.userData?.agency
+					)[0],
+				});
 			}
 		}
 
@@ -367,21 +291,111 @@ class App extends React.Component<InferProps<typeof App.propTypes>, AppState> {
 			this.state.userData &&
 			this.state.umbrella &&
 			this.state.agencies &&
-			this.state.agency &&
+			!this.state.requests &&
+			this.state.requestsLoading &&
+			!this.state.settingRequestsSnapshot
+		) {
+			this.setState({ settingRequestsSnapshot: true });
+
+			const userId = this.state.user.uid;
+
+			if (this.state.agency && this.state.userData.admin !== true) {
+				switch (this.state.agency.data()?.type) {
+					case AgencyTypes.DONATOR:
+						this.requestsSnapshot = firebase
+							.firestore()
+							.collection("requests")
+							.where("umbrella", "==", this.state.umbrella.id)
+							.where("donator", "==", this.state.agency.id)
+							.onSnapshot(snapshot => {
+								if (this.state.mounted && this.state.user?.uid === userId) {
+									this.setState({
+										requests: snapshot,
+										requestsLoading: false,
+										settingRequestsSnapshot: false,
+									});
+								} else if (this.state.mounted) {
+									this.setState({ settingRequestsSnapshot: false });
+								}
+							});
+						break;
+
+					case AgencyTypes.RECEIVER:
+						this.requestsSnapshot = firebase
+							.firestore()
+							.collection("requests")
+							.where("umbrella", "==", this.state.umbrella.id)
+							.where("receiver", "in", [this.state.agency.id, AgencyTypes.ANY])
+							.onSnapshot(snapshot => {
+								if (this.state.mounted && this.state.user?.uid === userId) {
+									this.setState({
+										requests: snapshot,
+										requestsLoading: false,
+										settingRequestsSnapshot: false,
+									});
+								} else if (this.state.mounted) {
+									this.setState({ settingRequestsSnapshot: false });
+								}
+							});
+						break;
+
+					case AgencyTypes.DELIVERER:
+						this.requestsSnapshot = firebase
+							.firestore()
+							.collection("requests")
+							.where("umbrella", "==", this.state.umbrella.id)
+							.where("deliverer", "in", [this.state.agency.id, AgencyTypes.ANY])
+							.onSnapshot(snapshot => {
+								if (this.state.mounted && this.state.user?.uid === userId) {
+									this.setState({
+										requests: snapshot,
+										requestsLoading: false,
+										settingRequestsSnapshot: false,
+									});
+								} else if (this.state.mounted) {
+									this.setState({ settingRequestsSnapshot: false });
+								}
+							});
+						break;
+				}
+			} else if (this.state.userData.admin === true) {
+				this.requestsSnapshot = firebase
+					.firestore()
+					.collection("requests")
+					.where("umbrella", "==", this.state.umbrella.id)
+					.onSnapshot(snapshot => {
+						if (this.state.mounted && this.state.user?.uid === userId) {
+							this.setState({
+								requests: snapshot,
+								requestsLoading: false,
+								settingRequestsSnapshot: false,
+							});
+						} else if (this.state.mounted) {
+							this.setState({ settingRequestsSnapshot: false });
+						}
+					});
+			}
+		}
+
+		if (
+			this.state.user &&
+			this.state.userData &&
+			this.state.umbrella &&
+			this.state.agencies &&
 			!this.state.logs &&
 			this.state.logsLoading &&
 			!this.state.settingLogsSnapshot
 		) {
 			this.setState({ settingLogsSnapshot: true });
 
-			const agencyId = this.state.agency.id;
+			const userId = this.state.user.uid;
 
 			this.logsSnapshot = firebase
 				.firestore()
 				.collection("logs")
 				.orderBy("date")
 				.onSnapshot(snapshot => {
-					if (this.state.mounted && agencyId === this.state.agency?.id) {
+					if (this.state.mounted && userId === this.state.user?.uid) {
 						this.setState({
 							settingLogsSnapshot: false,
 							logs: snapshot,
@@ -411,6 +425,7 @@ class App extends React.Component<InferProps<typeof App.propTypes>, AppState> {
 			requests,
 			umbrella,
 			user,
+			userData,
 		} = this.state;
 
 		const appViews: AppViewsInterface = {
@@ -420,6 +435,7 @@ class App extends React.Component<InferProps<typeof App.propTypes>, AppState> {
 						<CalendarView
 							agency={appContext.agency}
 							requests={appContext.requests}
+							userData={appContext.userData}
 						/>
 					)}
 				</AppContext.Consumer>
@@ -436,6 +452,7 @@ class App extends React.Component<InferProps<typeof App.propTypes>, AppState> {
 			requests,
 			umbrella,
 			user,
+			userData,
 		};
 
 		return (
@@ -444,7 +461,9 @@ class App extends React.Component<InferProps<typeof App.propTypes>, AppState> {
 					<Helmet>
 						<html lang="en" />
 						<title>
-							{user ? `${AppPages[currentPage].title} | Meal Matchup` : "Welcome to Meal Matchup"}
+							{user
+								? `${AppPages[currentPage].title} | Meal Matchup`
+								: "Welcome to Meal Matchup"}
 						</title>
 					</Helmet>
 

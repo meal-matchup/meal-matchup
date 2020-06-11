@@ -61,29 +61,38 @@ service cloud.firestore {
 				resource.data.umbrella == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.umbrella;
 			allow create: if request.auth != null &&
 				request.resource.data.umbrella == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.umbrella &&
-				request.resource.data.donator == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.agency &&
 				(
-					request.resource.data.deliverer == "ANY" ||
-					exists(/databases/$(database)/documents/agencies/$(request.resource.data.deliverer))
+					get(/databases/$(database)/documents/users/$(request.auth.uid)).data.admin == true ||
+					(
+						request.resource.data.donator == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.agency &&
+						(
+							request.resource.data.deliverer == "ANY" ||
+							exists(/databases/$(database)/documents/agencies/$(request.resource.data.deliverer))
+						)
+					)
 				);
 			allow update: if request.auth != null &&
-			 (
-				 resource.data.donator == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.agency ||
-				 (
-					 resource.data.deliverer == "ANY" &&
-					 request.resource.data.deliverer == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.agency &&
-					 request.resource.data.diff(resource.data).affectedKeys().hasOnly(["deliverer", "deliverers"])
-				 ) ||
-				 (
-					 resource.data.deliverer == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.agency &&
-					 request.resource.data.diff(resource.data).affectedKeys().hasOnly(["completedDates"])
-				 ) ||
-				 (
-					 resource.data.receiver == "ANY" &&
-					 request.resource.data.receiver == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.agency &&
-					 request.resource.data.diff(resource.data).affectedKeys().hasOnly(["receiver", "contactless"])
-				 )
-			 );
+				(
+					(
+						get(/databases/$(database)/documents/users/$(request.auth.uid)).data.umbrella == resource.data.umbrella &&
+						get(/databases/$(database)/documents/users/$(request.auth.uid)).data.admin == true
+					) ||
+					resource.data.donator == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.agency ||
+					(
+						resource.data.deliverer == "ANY" &&
+						request.resource.data.deliverer == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.agency &&
+						request.resource.data.diff(resource.data).affectedKeys().hasOnly(["deliverer", "deliverers"])
+					) ||
+					(
+						resource.data.deliverer == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.agency &&
+						request.resource.data.diff(resource.data).affectedKeys().hasOnly(["completedDates"])
+					) ||
+					(
+						resource.data.receiver == "ANY" &&
+						request.resource.data.receiver == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.agency &&
+						request.resource.data.diff(resource.data).affectedKeys().hasOnly(["receiver", "contactless"])
+					)
+				);
 		}
 
 		match /requests/{requestId}/occurrences/{occurrenceId} {
@@ -91,9 +100,17 @@ service cloud.firestore {
 				get(/databases/$(database)/documents/users/$(request.auth.uid)).data.umbrella == get(/databases/$(database)/documents/requests/$(requestId)).data.umbrella;
 
 			allow create: if request.auth != null &&
+				(
+					get(/databases/$(database)/documents/users/$(request.auth.uid)).data.umbrella == get(/databases/$(database)/documents/requests/$(requestId)).data.umbrella &&
+					get(/databases/$(database)/documents/users/$(request.auth.uid)).data.admin == true
+				) ||
 				get(/databases/$(database)/documents/requests/$(requestId)).data.donator == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.agency;
 
 			allow update: if request.auth != null &&
+				(
+					get(/databases/$(database)/documents/users/$(request.auth.uid)).data.umbrella == get(/databases/$(database)/documents/requests/$(requestId)).data.umbrella &&
+					get(/databases/$(database)/documents/users/$(request.auth.uid)).data.admin == true
+				) ||
 				(
 					get(/databases/$(database)/documents/requests/$(requestId)).data.donator == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.agency ||
 					(
