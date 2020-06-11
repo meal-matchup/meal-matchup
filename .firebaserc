@@ -1,5 +1,6 @@
 {
-	"projects": {
-		"default": "meal-matchup-development",
-	}
+  "projects": {
+    "default": "meal-matchup-development",
+    "prod": "meal-matchup"
+  }
 }
