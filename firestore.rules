@@ -79,7 +79,7 @@ service cloud.firestore {
 				 (
 					 resource.data.receiver == "ANY" &&
 					 request.resource.data.receiver == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.agency &&
-					 request.resource.data.diff(resource.data).affectedKeys().hasOnly(["receiver"])
+					 request.resource.data.diff(resource.data).affectedKeys().hasOnly(["receiver", "contactless"])
 				 )
 			 );
 		}
