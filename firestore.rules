@@ -46,7 +46,9 @@ service cloud.firestore {
 		}
 
 		match /users/{userId} {
-			allow read, write: if request.auth.uid == userId;
+			allow read: if request.auth.uid == userId;
+			allow create: if request.auth.uid == userId &&
+				request.resource.data.keys.hasOnly(["agency", "umbrella"]);
 		}
 
 		match /umbrellas/{umbrellaId} {
