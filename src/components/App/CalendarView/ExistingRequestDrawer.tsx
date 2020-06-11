@@ -207,6 +207,7 @@ class ExistingRequestDrawer extends React.Component<
 							<Button
 								key="claim"
 								type="primary"
+								disabled={!agency.data()?.approved}
 								onClick={this.toggleClaimRequestDrawer}
 								style={buttonStyles}
 							>
@@ -235,6 +236,7 @@ class ExistingRequestDrawer extends React.Component<
 							<Button
 								key="claim"
 								type="primary"
+								disabled={!agency.data()?.approved}
 								onClick={this.toggleClaimRequestDrawer}
 								style={buttonStyles}
 							>

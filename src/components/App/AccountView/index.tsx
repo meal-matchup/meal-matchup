@@ -91,22 +91,27 @@ class AccountView extends React.Component<
 								appContext.agency.data().type === AgencyTypes.DELIVERER && (
 									<Descriptions.Item label="Deliverers">
 										<ul style={{ paddingLeft: 0 }}>
-											{appContext.agency
-												.data()
-												?.users.map(
-													(
-														user: { name: string; email: string },
-														index: number
-													) => (
-														<li
-															key={`agency-users-${index}`}
-															style={{ marginLeft: "1em" }}
-														>
-															{user.name} (
-															<a href={`mailto:${user.email}`}>{user.email}</a>)
-														</li>
-													)
-												)}
+											{(appContext.agency.data()?.users &&
+												appContext.agency
+													.data()
+													?.users.map(
+														(
+															user: { name: string; email: string },
+															index: number
+														) => (
+															<li
+																key={`agency-users-${index}`}
+																style={{ marginLeft: "1em" }}
+															>
+																{user.name} (
+																<a href={`mailto:${user.email}`}>
+																	{user.email}
+																</a>
+																)
+															</li>
+														)
+													)) ||
+												"No deliverers"}
 										</ul>
 										<Button onClick={this.toggleEditingDeliverers}>
 											Edit Deliverers

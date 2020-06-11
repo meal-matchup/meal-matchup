@@ -4,7 +4,7 @@ import {
 	AgencyTypes,
 	AgencyUser,
 } from "../../../utils/enums";
-import { Button, Col, Divider, Form, Input, Row, Select } from "antd";
+import { Button, Col, Divider, Form, Input, Row, Select, message } from "antd";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import PropTypes, { InferProps } from "prop-types";
 import { AppPage } from "../";
@@ -109,6 +109,21 @@ class SignUpView extends React.Component<
 
 						return batch.commit();
 					});
+			})
+			.catch(e => {
+				switch (e.code) {
+					case "auth/weak-password":
+						message.error(e.message);
+						break;
+
+					case "auth/email-already-in-use":
+						message.error("This email is already in use. Try logging in");
+						break;
+
+					default:
+						message.error("Could not create account");
+						break;
+				}
 			});
 	}
 

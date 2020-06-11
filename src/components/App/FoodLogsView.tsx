@@ -20,20 +20,25 @@ class FoodLogsView extends React.Component {
 				{appContext => {
 					const food: FoodItems = {};
 
+					console.log(appContext.logs?.docs);
+
 					let totalDontaionWeight = 0;
 
 					appContext.logs?.docs.forEach(log => {
 						const theRequest = appContext.requests?.docs.filter(
 							x => x.id === log?.data()?.requestId
 						)[0];
-						if (
-							appContext.agency?.data()?.type !== AgencyTypes.UMBRELLA &&
-							(!theRequest ||
-								theRequest?.data()?.receiver !== appContext.agency?.id)
-						)
-							return false;
+
+						// console.log(theRequest.id);
+						// if (
+						// 	appContext.agency?.data()?.type !== AgencyTypes.UMBRELLA &&
+						// 	(!theRequest ||
+						// 		())
+						// )
+						// 	return false;
 
 						log?.data()?.items?.forEach((item: FoodItem) => {
+							console.log(item);
 							if (food[item.name]) {
 								food[item.name] = food[item.name] + item.weight;
 							} else {
@@ -50,17 +55,20 @@ class FoodLogsView extends React.Component {
 								<Tabs.TabPane key="1" tab="History">
 									<List grid={{ column: 1, gutter: 16 }}>
 										{appContext.logs?.docs.map(log => {
+
+											console.log(log.id, log.data());
 											const theRequest = appContext.requests?.docs.filter(
 												x => x.id === log?.data()?.requestId
 											)[0];
-											if (
-												appContext.agency?.data()?.type !==
-													AgencyTypes.UMBRELLA &&
-												(!theRequest ||
-													theRequest?.data()?.receiver !==
-														appContext.agency?.id)
-											)
-												return false;
+
+											// if (
+											// 	appContext.agency?.data()?.type !==
+											// 		AgencyTypes.UMBRELLA &&
+											// 	(!theRequest ||
+											// 		theRequest?.data()?.receiver !==
+											// 			appContext.agency?.id)
+											// )
+											// 	return false;
 
 											const date = log.data()?.date
 												? moment(log.data()?.date.toDate()).format(

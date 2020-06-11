@@ -75,7 +75,7 @@ class ClaimRequestDrawer extends React.Component<
 		const { agency, request } = this.props;
 		const agencyData = agency.data();
 
-		if (!agencyData) return false;
+		if (!agencyData || !agencyData.approved) return false;
 
 		this.setState({ claiming: true });
 
@@ -102,12 +102,14 @@ class ClaimRequestDrawer extends React.Component<
 					message.error("Could not claim request");
 				});
 		} else {
+			const contactless = values.contactless === true;
 			firebase
 				.firestore()
 				.collection("requests")
 				.doc(request.id)
 				.update({
 					[agencyData.type.toLocaleLowerCase()]: agency.id,
+					contactless,
 				})
 				.then(() => {
 					this.setState({ claiming: false });
