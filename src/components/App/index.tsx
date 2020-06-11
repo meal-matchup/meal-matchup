@@ -275,12 +275,14 @@ class App extends React.Component<InferProps<typeof App.propTypes>, AppState> {
 				(!prevState.agencies ||
 					!this.state.agencies.isEqual(prevState.agencies)))
 		) {
-			if (this.state.userData?.admin === true) {
+			const userData = this.state.userData;
+
+			if (userData?.admin === true || !userData) {
 				this.setState({ agency: undefined });
 			} else {
 				this.setState({
 					agency: this.state.agencies.docs.filter(
-						x => x.id === this.state.userData?.agency
+						x => x.id === userData.agency
 					)[0],
 				});
 			}
@@ -293,7 +295,8 @@ class App extends React.Component<InferProps<typeof App.propTypes>, AppState> {
 			this.state.agencies &&
 			!this.state.requests &&
 			this.state.requestsLoading &&
-			!this.state.settingRequestsSnapshot
+			!this.state.settingRequestsSnapshot &&
+			(this.state.userData.admin || this.state.agency)
 		) {
 			this.setState({ settingRequestsSnapshot: true });
 

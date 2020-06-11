@@ -64,12 +64,13 @@ function FoodLogForm({
 		form.setFieldsValue(initialValues);
 	}, [form, initialValues]);
 
-	useEffect(() => {
-		if (occurrence && occurrence.id !== currentOccurrence) {
-			setCurrentOccurrence(occurrence.id);
-			setItems(givenItems);
-		}
-	}, [occurrence]);
+	if (occurrence && occurrence.id !== currentOccurrence) {
+		setCurrentOccurrence(occurrence.id);
+		setItems(givenItems);
+	} else if (!occurrence && currentOccurrence !== "") {
+		setCurrentOccurrence("");
+		setItems([]);
+	}
 
 	const nameRules = [{ required: true, message: "Please enter a name" }];
 

@@ -53,8 +53,7 @@ class FoodLogDrawer extends React.Component<
 			this.props.occurrence?.data().logId &&
 			(!this.state.gotFoodLog ||
 				(prevState.gotFoodLog &&
-					(!prevProps.occurrence ||
-						!this.props.occurrence.isEqual(prevProps.occurrence))))
+					this.props.occurrence?.id !== prevProps.occurrence?.id))
 		) {
 			const occurrenceId = this.props.occurrence.id;
 			const logId = this.props.occurrence.data()?.logId;
@@ -72,6 +71,8 @@ class FoodLogDrawer extends React.Component<
 						this.setState({ log: logDoc, gotFoodLog: true });
 					}
 				});
+		} else if (!this.props.occurrence?.data()?.logId && this.state.log) {
+			this.setState({ log: undefined });
 		}
 	}
 
@@ -110,11 +111,11 @@ class FoodLogDrawer extends React.Component<
 			>
 				<FoodLogForm
 					formId={formId}
-					givenItems={log?.data()?.items}
-					log={log}
-					occurrence={occurrence}
+					givenItems={open ? log?.data()?.items : []}
+					log={open ? log : undefined}
+					occurrence={open ? occurrence : undefined}
 					onFinish={this.onClose}
-					request={request}
+					request={open ? request : undefined}
 				/>
 			</Drawer>
 		);
