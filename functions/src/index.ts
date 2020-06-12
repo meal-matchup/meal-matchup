@@ -28,27 +28,30 @@ export const createKeyAndEmailUser = functions.pubsub
 	.schedule("every 24 hours")
 	.onRun(() => {
 		const today = new Date();
-		today.setHours(0, 0, 0, 0);
-		const mToday = moment(today);
+		const mToday = moment.utc(today);
+
+		const yesterday = new Date(today.valueOf());
+		yesterday.setDate(yesterday.getDate() - 1);
 
 		admin
 			.firestore()
 			.collection("requests")
-			.where("dates.to", ">=", today)
+			.where("dates.to", ">=", yesterday)
 			.get()
 			.then(snapshot => {
+				console.log("today", today);
 				snapshot.docs.forEach(doc => {
 					doc.ref
 						.collection("occurrences")
-						.where("date", ">=", today)
+						.where("date", ">=", yesterday)
 						.get()
 						.then(ocSnapshot => {
 							ocSnapshot.docs.forEach(ocDoc => {
 								if (ocDoc && !ocDoc.data().complete) {
 									const ocDate = ocDoc.data().date.toDate();
-									ocDate.setHours(0, 0, 0, 0);
-									const mOcDate = moment(ocDate);
-									const diff = mOcDate.diff(mToday, "days", true);
+									console.log(today, ocDate);
+									const mOcDate = moment.utc(ocDate);
+									const diff = Math.round(mOcDate.diff(mToday, "days", true));
 
 									switch (diff) {
 										case 5:
@@ -120,24 +123,22 @@ export const createKeyAndEmailUser = functions.pubsub
 																			deliverer.email
 																	)
 																	.join(", "),
-																subject: "Upcoming Request",
+																subject: `Upcoming Request on ${mOcDate.format(
+																	"D/M"
+																)}`,
 																text: `Howdy!
 
-You have an upcoming pickup request scheduled ${
-																	diff === 0
-																		? "today"
-																		: diff === 1
-																		? `in ${diff} day`
-																		: `in ${diff} days`
-																}.
+		You have an upcoming pickup request scheduled ${
+			diff === 0 ? "today" : diff === 1 ? `in ${diff} day` : `in ${diff} days`
+		}.
 
-When you're ready to start this pickup, click this link for instructions on where to go, how to complete the food log, and where to drop off the donation.
+		When you're ready to start this pickup, click this link for instructions on where to go, how to complete the food log, and where to drop off the donation.
 
-https://www.mealmatchup.org/app/entry?key=${newRef.id}
+		https://www.mealmatchup.org/app/entry?key=${newRef.id}
 
-Thank you, and stay safe.
+		Thank you, and stay safe.
 
-Meal Matchup`,
+		Meal Matchup`,
 															};
 
 															mg.messages()
