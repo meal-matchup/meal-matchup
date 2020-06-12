@@ -9,4 +9,5 @@ node_modules/
 
 # Custom files
 .runtimeconfig.json
+.test-runtimeconfig.json
 sk.json
