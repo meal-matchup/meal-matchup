@@ -29,9 +29,11 @@ interface DirectoryCardProps {
 }
 
 class DirectoryCard extends React.Component<DirectoryCardProps> {
+	/** Renders the directory card */
 	render() {
 		const { name, type, contact, address } = this.props;
 
+		// If there is a missing prop, do not render a card
 		if (!name || !type || !contact || !address) return null;
 
 		const iconStyle = { fontSize: "1.5em" };

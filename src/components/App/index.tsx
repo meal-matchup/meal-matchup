@@ -4,7 +4,7 @@ import {
 	AppPages,
 	AppViewsInterface,
 	MenuLocations,
-	PageIDs,
+	PageIds,
 } from "../../utils/enums";
 import { Layout, Menu, PageHeader } from "antd";
 import AccountView from "./AccountView";
@@ -13,26 +13,24 @@ import AppContext from "./AppContext";
 import AppPage from "./AppPage";
 import Auth from "./Auth";
 import CalendarView from "./CalendarView";
+import Debug from "debug";
 import DirectoryView from "./DirectoryView";
 import Drawer from "./Drawer";
 import FoodLogsView from "./FoodLogsView";
 import { Helmet } from "react-helmet";
-import { InferProps } from "prop-types";
 import Loading from "./Loading";
 import React from "react";
 import { ThemeProvider } from "styled-components";
 import { appTheme } from "../../utils/themes";
 import firebase from "gatsby-plugin-firebase";
 
-interface PageContentProps {
-	siderVisible: 1 | 0;
-}
+const debug = Debug("http");
 
 interface AppState {
 	agencies?: firebase.firestore.QuerySnapshot;
 	agenciesLoading: boolean;
 	agency?: firebase.firestore.QueryDocumentSnapshot;
-	currentPage: PageIDs;
+	currentPage: PageIds;
 	loading: boolean;
 	logs?: firebase.firestore.QuerySnapshot;
 	logsLoading: boolean;
@@ -50,10 +48,13 @@ interface AppState {
 	userLoading: boolean;
 }
 
-class App extends React.Component<InferProps<typeof App.propTypes>, AppState> {
-	static propTypes = {};
-
-	constructor(props: InferProps<typeof App.propTypes>) {
+class App extends React.Component<React.ComponentProps<"div">, AppState> {
+	/**
+	 * Initializes the App
+	 *
+	 * @param props The props of the App
+	 */
+	constructor(props: React.ComponentProps<"div">) {
 		super(props);
 
 		this.agenciesSnapshot = this.agenciesSnapshot.bind(this);
@@ -62,7 +63,7 @@ class App extends React.Component<InferProps<typeof App.propTypes>, AppState> {
 
 		this.state = {
 			agenciesLoading: true,
-			currentPage: PageIDs.CALENDAR,
+			currentPage: PageIds.CALENDAR,
 			loading: true,
 			logsLoading: true,
 			mounted: false,
@@ -76,34 +77,43 @@ class App extends React.Component<InferProps<typeof App.propTypes>, AppState> {
 		};
 	}
 
+	/** A void function used as a placeholder */
 	static defaultListener(): void {
+		debug("There is no listener");
 		return void 0;
 	}
 
+	/** A function to be replaced by a firebase snapsot listener */
 	authListener(): void {
 		return App.defaultListener();
 	}
 
+	/** A function to be replaced by a firebase snapsot listener */
 	agenciesSnapshot(): void {
 		return App.defaultListener();
 	}
 
+	/** A function to be replaced by a firebase snapsot listener */
 	logsSnapshot(): void {
 		return App.defaultListener();
 	}
 
+	/** A function to be replaced by a firebase snapsot listener */
 	requestsSnapshot(): void {
 		return App.defaultListener();
 	}
 
+	/** A function to be replaced by a firebase snapsot listener */
 	umbrellaSnapshot(): void {
 		return App.defaultListener();
 	}
 
+	/** Logs the user out of firebase */
 	logOut() {
 		firebase.auth().signOut();
 	}
 
+	/** Calls the snapshot listener functions to end them, then resets them */
 	resetSnapshots() {
 		this.agenciesSnapshot();
 		this.agenciesSnapshot = App.defaultListener;
@@ -120,13 +130,23 @@ class App extends React.Component<InferProps<typeof App.propTypes>, AppState> {
 		this.setState({ agency: undefined });
 	}
 
-	changeView(id: PageIDs) {
+	/**
+	 * Changes the app's current view
+	 *
+	 * @param id THe ID of the page to switch to
+	 */
+	changeView(id: PageIds) {
 		this.setState({ currentPage: id });
 	}
 
+	/** "Mounts" the App and adds a firebase auth listener */
 	componentDidMount() {
 		const setState = this.setState.bind(this);
 
+		/**
+		 * Setting the state to mounted prevents the component from trying to
+		 * update the state when it is not mountned.
+		 */
 		setState({ mounted: true });
 
 		this.authListener = firebase.auth().onAuthStateChanged(newUser => {
@@ -169,10 +189,14 @@ class App extends React.Component<InferProps<typeof App.propTypes>, AppState> {
 		});
 	}
 
+	/** Runs when the component props or state changes */
 	componentDidUpdate(
-		_prevProps: InferProps<typeof App.propTypes>,
+		_prevProps: React.ComponentProps<"div">,
 		prevState: AppState
 	) {
+		/**
+		 * Mark the App as loaded once each individual piece has loaded.
+		 */
 		if (
 			this.state.loading &&
 			!this.state.userLoading &&
@@ -193,6 +217,7 @@ class App extends React.Component<InferProps<typeof App.propTypes>, AppState> {
 			this.setState({ loading: true });
 		}
 
+		/** Reset the snapshots if the user logs in or out */
 		if (
 			(this.state.user && !prevState.user) ||
 			(this.state.user &&
@@ -202,10 +227,15 @@ class App extends React.Component<InferProps<typeof App.propTypes>, AppState> {
 			this.resetSnapshots();
 		}
 
+		/** Reset the snapshot if there is no user anymore */
 		if (!this.state.user && prevState.user) {
 			this.resetSnapshots();
 		}
 
+		/**
+		 * Once the user has logged in and their data has been loaded,
+		 * then we can load their umbrella agency.
+		 */
 		if (
 			this.state.user &&
 			this.state.userData &&
@@ -234,6 +264,10 @@ class App extends React.Component<InferProps<typeof App.propTypes>, AppState> {
 				});
 		}
 
+		/**
+		 * Once the user has logged in and their data loaded, as well as their
+		 * umbrella agency loaded, we can load the agencies for their umbrella.
+		 */
 		if (
 			this.state.user &&
 			this.state.userData &&
@@ -263,6 +297,13 @@ class App extends React.Component<InferProps<typeof App.propTypes>, AppState> {
 				});
 		}
 
+		/**
+		 * If there is a user logged in with data loaded, and they are not an admin,
+		 * OR if there is an agency set but the agencies have changed via snapshot,
+		 * we should load the agency specific to the user.
+		 *
+		 * Admins do not have agencies (thus do not load the agency for admins).
+		 */
 		if (
 			(this.state.user &&
 				this.state.userData &&
@@ -288,6 +329,10 @@ class App extends React.Component<InferProps<typeof App.propTypes>, AppState> {
 			}
 		}
 
+		/**
+		 * If there is a user and their data, umbrella, and all the relevant
+		 * agencies have loaded, we can load the relevant requests.
+		 */
 		if (
 			this.state.user &&
 			this.state.userData &&
@@ -300,11 +345,15 @@ class App extends React.Component<InferProps<typeof App.propTypes>, AppState> {
 		) {
 			this.setState({ settingRequestsSnapshot: true });
 
+			// Save the user's ID as the state may change while this is loading
 			const userId = this.state.user.uid;
 
+			// Run if the user is not an admin and their agency has loaded
 			if (this.state.agency && this.state.userData.admin !== true) {
+				// We change the firebase call depending on the user's agency type
 				switch (this.state.agency.data()?.type) {
 					case AgencyTypes.DONATOR:
+						// Dontaors can only see the requests they made
 						this.requestsSnapshot = firebase
 							.firestore()
 							.collection("requests")
@@ -324,6 +373,7 @@ class App extends React.Component<InferProps<typeof App.propTypes>, AppState> {
 						break;
 
 					case AgencyTypes.RECEIVER:
+						// Receivers can see their requests as well as unclaimed requests
 						this.requestsSnapshot = firebase
 							.firestore()
 							.collection("requests")
@@ -343,6 +393,7 @@ class App extends React.Component<InferProps<typeof App.propTypes>, AppState> {
 						break;
 
 					case AgencyTypes.DELIVERER:
+						// Deliverers can see their requests as well as unclaimed requests
 						this.requestsSnapshot = firebase
 							.firestore()
 							.collection("requests")
@@ -362,6 +413,7 @@ class App extends React.Component<InferProps<typeof App.propTypes>, AppState> {
 						break;
 				}
 			} else if (this.state.userData.admin === true) {
+				// Adminns can see all requests in the same umbrella
 				this.requestsSnapshot = firebase
 					.firestore()
 					.collection("requests")
@@ -380,6 +432,10 @@ class App extends React.Component<InferProps<typeof App.propTypes>, AppState> {
 			}
 		}
 
+		/**
+		 * If the user, their data, their umbrella, and all agencies have loaded,
+		 * we can load the relevant food log data.
+		 */
 		if (
 			this.state.user &&
 			this.state.userData &&
@@ -411,6 +467,7 @@ class App extends React.Component<InferProps<typeof App.propTypes>, AppState> {
 		}
 	}
 
+	/** Before the component unmounts, reset auth and "unmount" the state */
 	componentWillUnmount() {
 		this.authListener();
 		this.authListener = App.defaultListener;
@@ -418,6 +475,7 @@ class App extends React.Component<InferProps<typeof App.propTypes>, AppState> {
 		this.setState({ mounted: false });
 	}
 
+	/** Renders the App component */
 	render() {
 		const {
 			agencies,
@@ -431,8 +489,12 @@ class App extends React.Component<InferProps<typeof App.propTypes>, AppState> {
 			userData,
 		} = this.state;
 
+		/**
+		 * Define the app views in render so that they will be updated if the state
+		 * or props change.
+		 */
 		const appViews: AppViewsInterface = {
-			[PageIDs.CALENDAR]: (
+			[PageIds.CALENDAR]: (
 				<AppContext.Consumer>
 					{appContext => (
 						<CalendarView
@@ -443,11 +505,12 @@ class App extends React.Component<InferProps<typeof App.propTypes>, AppState> {
 					)}
 				</AppContext.Consumer>
 			),
-			[PageIDs.DIRECTORY]: <DirectoryView />,
-			[PageIDs.ACCOUNT]: <AccountView />,
-			[PageIDs.FOODLOGS]: <FoodLogsView />,
+			[PageIds.DIRECTORY]: <DirectoryView />,
+			[PageIds.ACCOUNT]: <AccountView />,
+			[PageIds.FOODLOGS]: <FoodLogsView />,
 		};
 
+		// Create the app context to provide to all children
 		const appContext: AppContextInterface = {
 			agency,
 			agencies,

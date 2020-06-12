@@ -1,5 +1,6 @@
 import { DefaultTheme } from "styled-components";
 
+/** The App's theme, using ant.design breakpoints */
 export const appTheme: DefaultTheme = {
 	breakpoints: {
 		xs: "480px",

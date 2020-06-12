@@ -3,7 +3,6 @@ import { AppContext, AppPage } from "../";
 import { Button, Descriptions, Tooltip } from "antd";
 import { CheckCircleTwoTone, ClockCircleTwoTone } from "@ant-design/icons";
 import EditDeliverers from "./EditDeliverers";
-import { InferProps } from "prop-types";
 import React from "react";
 
 interface AccountViewState {
@@ -11,12 +10,11 @@ interface AccountViewState {
 }
 
 class AccountView extends React.Component<
-	InferProps<typeof AccountView.propTypes>,
+	React.ComponentProps<"div">,
 	AccountViewState
 > {
-	static propTypes = {};
-
-	constructor(props: InferProps<typeof AccountView.propTypes>) {
+	/** Initializes the account view */
+	constructor(props: React.ComponentProps<"div">) {
 		super(props);
 
 		this.toggleEditingDeliverers = this.toggleEditingDeliverers.bind(this);
@@ -26,10 +24,12 @@ class AccountView extends React.Component<
 		};
 	}
 
+	/** Toggles the edit deliverers modal */
 	toggleEditingDeliverers() {
 		this.setState({ editingDeliverers: !this.state.editingDeliverers });
 	}
 
+	/** Renders the account view component */
 	render() {
 		const { editingDeliverers } = this.state;
 
@@ -65,6 +65,10 @@ class AccountView extends React.Component<
 								{appContext.umbrella?.data()?.name}
 							</Descriptions.Item>
 
+							{/**
+							 * Admins don't have an agency so do not render agency data
+							 * for them.
+							 */}
 							{!appContext.userData?.admin && (
 								<>
 									<Descriptions.Item label="Agency">

@@ -6,10 +6,13 @@ import {
 import { Button, Descriptions } from "antd";
 import { formGoogleMapsUrl, isSameDate } from "../../../utils/functions";
 import ClaimRequestDrawer from "./ClaimRequestDrawer";
+import Debug from "debug";
 import { Drawer } from "../";
 import FoodLogDrawer from "./FoodLogDrawer";
 import React from "react";
 import moment from "moment";
+
+const debug = Debug("http");
 
 interface ExistingRequestDrawerProps {
 	agencies?: firebase.firestore.QuerySnapshot;
@@ -33,6 +36,7 @@ class ExistingRequestDrawer extends React.Component<
 	ExistingRequestDrawerProps,
 	ExistingRequestDrawerState
 > {
+	/** Initializes the existing request drawer */
 	constructor(props: ExistingRequestDrawerProps) {
 		super(props);
 
@@ -49,49 +53,60 @@ class ExistingRequestDrawer extends React.Component<
 		};
 	}
 
+	/** A void function used as a placeholder */
 	static defaultSnapshot(): void {
+		debug("There is no listener");
 		return void 0;
 	}
 
+	/** A function to be replaced by a firebase snapsot listener */
 	occurrenceSnapshot(): void {
 		return ExistingRequestDrawer.defaultSnapshot();
 	}
 
+	/** Calls the snapshot listener functions to end them, then resets them */
 	resetSnapshots() {
 		this.occurrenceSnapshot();
 		this.occurrenceSnapshot = ExistingRequestDrawer.defaultSnapshot;
 	}
 
+	/** Runs when the drawer is closed */
 	onClose() {
 		if (this.props.onClose) this.props.onClose();
 	}
 
+	/** Toggles the claim request drawer */
 	toggleClaimRequestDrawer() {
 		this.setState({ claiming: !this.state.claiming });
 	}
 
+	/** Toggles the food log drawer */
 	toggleFoodLogDrawer() {
 		this.setState({ editingFoodLog: !this.state.editingFoodLog });
 	}
 
+	/** Sets the state mounted to true when mounted */
 	componentDidMount() {
 		this.setState({ mounted: true });
 	}
 
+	/** Runs when the component props or state changes */
 	componentDidUpdate() {
-		// if (
-		// 	(this.props.request && !prevProps.request) ||
-		// 	(!this.props.request && prevProps.request)
-		// ) {
-		// 	this.getOccurrence();
-		// }
-
+		/**
+		 * If the component is not open but there is an occurence in the state,
+		 * reset the snapshots and remove the occurrence from the state.
+		 */
 		if (!this.props.open && this.state.occurrence) {
 			// Remove occurrence
 			this.resetSnapshots();
 			this.setState({ occurrence: undefined });
 		}
 
+		/**
+		 * If the drawer is open, there is a request in the state, and there is a
+		 * date in the state, we can get the individual occurrence if we are
+		 * not already.
+		 */
 		if (
 			this.props.open &&
 			this.props.request &&
@@ -125,6 +140,7 @@ class ExistingRequestDrawer extends React.Component<
 		}
 	}
 
+	/** Renders the existing request drawer */
 	render() {
 		const { agencies, agency, date, open, request, userData } = this.props;
 		const { occurrence } = this.state;
@@ -199,6 +215,11 @@ class ExistingRequestDrawer extends React.Component<
 			</Button>,
 		];
 
+		/**
+		 * Creates a footer based on the user's admin status and their agency type
+		 *
+		 * @returns An array of react nodes for the drawer footer
+		 */
 		const footer = (): React.ReactNode[] => {
 			if (userData?.admin == true) {
 				return [...defaultFooter];
@@ -207,6 +228,10 @@ class ExistingRequestDrawer extends React.Component<
 			} else {
 				switch (agency.data()?.type) {
 					case AgencyTypes.DELIVERER:
+						/**
+						 * Deliverers can either claim unclaimed requests or they can enter
+						 * the food log if they have completed the request.
+						 */
 						if (request.data()?.deliverer === AgencyTypes.ANY) {
 							return [
 								...defaultFooter,
@@ -236,6 +261,7 @@ class ExistingRequestDrawer extends React.Component<
 						}
 
 					case AgencyTypes.RECEIVER:
+						// Receivers can claim unclaimed requests
 						if (request.data()?.receiver === AgencyTypes.ANY) {
 							return [
 								...defaultFooter,

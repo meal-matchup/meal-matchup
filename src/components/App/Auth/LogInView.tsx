@@ -1,25 +1,22 @@
 import { Button, Col, Divider, Form, Input, Row, message } from "antd";
-import PropTypes, { InferProps } from "prop-types";
 import { AppPage } from "../";
 import { FormItemProps } from "antd/lib/form";
 import React from "react";
 import { Store } from "antd/lib/form/interface";
 import firebase from "gatsby-plugin-firebase";
 
+interface LogInViewProps {
+	changeView: () => void;
+}
+
 interface LogInViewState {
 	loggingIn: boolean;
 	genericStatus?: FormItemProps["validateStatus"];
 }
 
-class LogInView extends React.Component<
-	InferProps<typeof LogInView.propTypes>,
-	LogInViewState
-> {
-	static propTypes = {
-		changeView: PropTypes.func.isRequired,
-	};
-
-	constructor(props: InferProps<typeof LogInView.propTypes>) {
+class LogInView extends React.Component<LogInViewProps, LogInViewState> {
+	/** Initializes the log in view */
+	constructor(props: LogInViewProps) {
 		super(props);
 
 		this.state = {
@@ -29,6 +26,11 @@ class LogInView extends React.Component<
 		this.logIn = this.logIn.bind(this);
 	}
 
+	/**
+	 * Logs in the user with their email and password
+	 *
+	 * @param values An ant.design values store
+	 */
 	logIn(values: Store) {
 		this.setState({
 			loggingIn: true,
@@ -58,6 +60,7 @@ class LogInView extends React.Component<
 			});
 	}
 
+	/** Renders the log in view */
 	render() {
 		const { changeView } = this.props;
 		const { loggingIn, genericStatus } = this.state;

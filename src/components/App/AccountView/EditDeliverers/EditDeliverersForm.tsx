@@ -3,14 +3,22 @@ import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import PropTypes, { InferProps } from "prop-types";
 import React, { useEffect, useState } from "react";
 import { AgencyUser } from "../../../../utils/enums";
+import Debug from "debug";
 import { Store } from "antd/lib/form/interface";
-import debug from "../../../../utils/debug";
 import firebase from "gatsby-plugin-firebase";
+
+const debug = Debug("http");
 
 interface EditDeliverersInitialValues {
 	[id: string]: AgencyUser;
 }
 
+/**
+ * Uses a functional component as the ant.design hooks are easier to use than
+ * messing with class components.
+ *
+ * @param orops Props as described
+ */
 function EditDeliverersForm({
 	givenUsers = [],
 	agencyId,
@@ -22,6 +30,7 @@ function EditDeliverersForm({
 	const [submitting, setSubmitting] = useState(false);
 	const [form] = Form.useForm();
 
+	/** Gets the values for the deliverer fields */
 	const getFieldValues = () => {
 		const theValues: EditDeliverersInitialValues = {};
 		users.forEach((user, index) => {
@@ -35,10 +44,12 @@ function EditDeliverersForm({
 		return theValues;
 	};
 
+	/** Sets the initial values of the form when the items change */
 	useEffect(() => {
 		setInitialValues(getFieldValues());
 	}, [users]);
 
+	/** Sets the field values of the form when the initialValues change */
 	useEffect(() => {
 		form.setFieldsValue(initialValues);
 	}, [form, initialValues]);
@@ -56,6 +67,11 @@ function EditDeliverersForm({
 		},
 	];
 
+	/**
+	 * Updates the agencies users using the form data
+	 *
+	 * @param values An ant.design values store
+	 */
 	const submitForm = (values: Store) => {
 		if (!agencyId) return false;
 
@@ -91,7 +107,7 @@ function EditDeliverersForm({
 				onFinish && onFinish();
 			})
 			.catch(error => {
-				debug.error(error);
+				debug(error);
 				message.error("Could not complete request");
 				setSubmitting(false);
 			});

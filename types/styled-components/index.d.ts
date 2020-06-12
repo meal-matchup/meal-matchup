@@ -1,5 +1,9 @@
 import "styled-components";
 
+/**
+ * Declares how the themes should be structured for use in
+ * styled components.
+ */
 declare module "styled-components" {
 	export interface DefaultTheme {
 		breakpoints: {

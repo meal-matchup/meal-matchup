@@ -1,33 +1,29 @@
 import { Button, Modal } from "antd";
-import PropTypes, { InferProps } from "prop-types";
 import { AgencyUser } from "../../../../utils/enums";
 import EditDeliverersForm from "./EditDeliverersForm";
 import { FormInstance } from "antd/lib/form";
 import React from "react";
+
+interface EditDeliverersProps {
+	onClose?: () => void;
+	visible?: boolean;
+	users?: {
+		name: string;
+		email: string;
+	}[];
+	agencyId?: string;
+}
 
 interface EditDeliverersState {
 	users: AgencyUser[];
 }
 
 class EditDeliverers extends React.Component<
-	InferProps<typeof EditDeliverers.propTypes>,
+	EditDeliverersProps,
 	EditDeliverersState
 > {
-	static propTypes = {
-		onClose: PropTypes.func,
-		visible: PropTypes.bool,
-		users: PropTypes.arrayOf(
-			PropTypes.shape({
-				name: PropTypes.string.isRequired,
-				email: PropTypes.string.isRequired,
-			})
-		),
-		agencyId: PropTypes.string,
-	};
-
-	formRef = React.createRef<FormInstance>();
-
-	constructor(props: InferProps<typeof EditDeliverers.propTypes>) {
+	/** Initializes the edit deliverers modal */
+	constructor(props: EditDeliverersProps) {
 		super(props);
 
 		this.updateSavedUsers = this.updateSavedUsers.bind(this);
@@ -38,10 +34,15 @@ class EditDeliverers extends React.Component<
 		};
 	}
 
+	/** Creates a form ref for the ant.design form */
+	formRef = React.createRef<FormInstance>();
+
+	/** Runs when the component is mounted */
 	componentDidMount() {
 		this.updateSavedUsers();
 	}
 
+	/** Updates the saved users */
 	updateSavedUsers() {
 		const givenUsers: AgencyUser[] = [];
 
@@ -60,10 +61,12 @@ class EditDeliverers extends React.Component<
 		});
 	}
 
+	/** Runs when the modal is closed */
 	onClose() {
 		if (this.props.onClose) this.props.onClose();
 	}
 
+	/** Renders the edit deliverers modal */
 	render() {
 		const visible = !!this.props.visible;
 		const { agencyId } = this.props;

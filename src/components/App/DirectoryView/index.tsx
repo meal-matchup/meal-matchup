@@ -2,7 +2,6 @@ import { AgencyTypeNames, AgencyTypes } from "../../../utils/enums";
 import { AppContext, AppPage } from "../";
 import { List, Select } from "antd";
 import DirectoryCard from "./DirectoryCard";
-import { InferProps } from "prop-types";
 import React from "react";
 
 interface DirectoryViewState {
@@ -10,12 +9,11 @@ interface DirectoryViewState {
 }
 
 class DirectoryView extends React.Component<
-	InferProps<typeof DirectoryView.propTypes>,
+	React.ComponentProps<"div">,
 	DirectoryViewState
 > {
-	static propTypes = {};
-
-	constructor(props: InferProps<typeof DirectoryView.propTypes>) {
+	/** Initializes the directory view */
+	constructor(props: React.ComponentProps<"div">) {
 		super(props);
 
 		this.state = {
@@ -23,6 +21,7 @@ class DirectoryView extends React.Component<
 		};
 	}
 
+	/** Renders the directory view */
 	render() {
 		const { filter } = this.state;
 
@@ -30,6 +29,7 @@ class DirectoryView extends React.Component<
 			<AppContext.Consumer>
 				{appContext => (
 					<AppPage id="DirectoryView">
+						{/** Allow users to filter agencies by type */}
 						<Select
 							defaultValue={AgencyTypes.ANY}
 							onChange={e => this.setState({ filter: e })}

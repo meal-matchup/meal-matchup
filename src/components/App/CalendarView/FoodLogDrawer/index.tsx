@@ -21,6 +21,7 @@ class FoodLogDrawer extends React.Component<
 	FoodLogDrawerProps,
 	FoodLogDrawerState
 > {
+	/** Initializes the food log drawer */
 	constructor(props: FoodLogDrawerProps) {
 		super(props);
 
@@ -32,22 +33,31 @@ class FoodLogDrawer extends React.Component<
 		};
 	}
 
+	/** Runs when the drawer is closed */
 	onClose() {
 		if (this.props.onClose) this.props.onClose();
 	}
 
+	/** "Mounts" the component in its state */
 	componentDidMount() {
 		this.setState({ mounted: true });
 	}
 
+	/** Unmounts the component in state */
 	componentWillUnmount() {
 		this.setState({ mounted: false });
 	}
 
+	/** Runs when the component props or state changes */
 	componentDidUpdate(
 		prevProps: FoodLogDrawerProps,
 		prevState: FoodLogDrawerState
 	) {
+		/**
+		 * If there is an occurrence and that occurence has an existing log, BUT
+		 * we have not got the food log of the current occurrence, we have to get
+		 * that food log data.
+		 */
 		if (
 			this.props.occurrence &&
 			this.props.occurrence?.data().logId &&
@@ -76,6 +86,7 @@ class FoodLogDrawer extends React.Component<
 		}
 	}
 
+	/** Renders the food log drawer */
 	render() {
 		const { occurrence, open, request } = this.props;
 		const { log } = this.state;

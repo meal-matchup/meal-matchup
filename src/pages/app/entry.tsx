@@ -47,6 +47,7 @@ interface EntryPageState {
 }
 
 class EntryPage extends React.Component<EntryPageProps, EntryPageState> {
+	/** Initializes the food log entry page */
 	constructor(props: EntryPageProps) {
 		super(props);
 
@@ -71,19 +72,23 @@ class EntryPage extends React.Component<EntryPageProps, EntryPageState> {
 		};
 	}
 
+	/** Create form refs for our ant.design forms */
 	donatingFormRef = React.createRef<FormInstance>();
 	receivingFormRef = React.createRef<FormInstance>();
 
+	/** A void function used as a placeholder */
 	keySnapshot(): void {
 		return void 0;
 	}
 
+	/** Navigates the user away if they should leave */
 	leave() {
 		if (window && this.state.shouldLeave) {
 			navigate("/");
 		}
 	}
 
+	/** Goes to the previous step */
 	previous() {
 		if (this.state.currentStep > 0) {
 			this.setState({ currentStep: this.state.currentStep - 1 });
@@ -100,6 +105,11 @@ class EntryPage extends React.Component<EntryPageProps, EntryPageState> {
 		}
 	}
 
+	/**
+	 * Runs when the pickup is finished
+	 *
+	 * @param values An ant.design form values store
+	 */
 	finishPickup(values: Store) {
 		if (values.donating?.supervisor) {
 			const newFormValues = { ...this.state.formValues };
@@ -122,6 +132,11 @@ class EntryPage extends React.Component<EntryPageProps, EntryPageState> {
 		}
 	}
 
+	/**
+	 * Runs when the food log is finished
+	 *
+	 * @param values An ant.design form values store
+	 */
 	finishFoodLog(values: Store) {
 		if (values.items && values.items.length === 0) {
 			message.error("Please enter at least one item");
@@ -143,6 +158,11 @@ class EntryPage extends React.Component<EntryPageProps, EntryPageState> {
 		});
 	}
 
+	/**
+	 * Runs when the drop off is finished.
+	 *
+	 * @param values An ant.design form values store
+	 */
 	finishDropOff(values: Store) {
 		if (values.receiving?.supervisor) {
 			this.state.keyDocument?.ref
@@ -159,9 +179,11 @@ class EntryPage extends React.Component<EntryPageProps, EntryPageState> {
 		}
 	}
 
+	/** Runs when the component is mounted */
 	componentDidMount() {
 		this.setState({ mounted: true });
 
+		// @TODO: this if wrapper may be redundant
 		if (window && this.state.shouldLeave) {
 			this.leave();
 		}
@@ -181,21 +203,26 @@ class EntryPage extends React.Component<EntryPageProps, EntryPageState> {
 		}
 	}
 
+	/** Runs when the component props or state changes */
 	componentDidUpdate() {
+		/** Try to leave if user should */
 		if (window && this.state.shouldLeave) {
 			this.leave();
 		}
 
+		/** When done loading, mark it as such */
 		if (this.state.loading && this.state.keyDocument) {
 			this.setState({ loading: false });
 		}
 	}
 
+	/** "Unmounts" the component before it does */
 	componentWillUnmount() {
 		this.keySnapshot();
 		this.setState({ mounted: false });
 	}
 
+	/** Renders the entry page */
 	render() {
 		const {
 			currentForm,

@@ -17,12 +17,18 @@ import {
 	Select,
 	TimePicker,
 } from "antd";
-import PropTypes, { InferProps } from "prop-types";
 import { Drawer } from "../";
 import React from "react";
 import { Store } from "antd/lib/form/interface";
 import firebase from "gatsby-plugin-firebase";
 import moment from "moment";
+
+interface NewRequestDrawerProps {
+	agencyId?: string;
+	onClose?: () => void;
+	open?: boolean;
+	umbrellaId?: string;
+}
 
 interface NewRequestDrawerState {
 	creatingRequest: boolean;
@@ -31,17 +37,11 @@ interface NewRequestDrawerState {
 }
 
 class NewRequestDrawer extends React.Component<
-	InferProps<typeof NewRequestDrawer.propTypes>,
+	NewRequestDrawerProps,
 	NewRequestDrawerState
 > {
-	static propTypes = {
-		open: PropTypes.bool,
-		umbrellaId: PropTypes.string,
-		agencyId: PropTypes.string,
-		onClose: PropTypes.func,
-	};
-
-	constructor(props: InferProps<typeof NewRequestDrawer.propTypes>) {
+	/** Initializes the new request drawer */
+	constructor(props: NewRequestDrawerProps) {
 		super(props);
 
 		this.onClose = this.onClose.bind(this);
@@ -52,16 +52,21 @@ class NewRequestDrawer extends React.Component<
 		};
 	}
 
+	/** Creates a request from the form values */
 	createRequest(values: Store) {
 		const { umbrellaId, agencyId } = this.props;
+
+		// If there is not umbrella or agency ID, we cannot create a request.
 		if (!umbrellaId || !agencyId) return false;
 
 		this.setState({
-			// creatingRequest: true,
+			creatingRequest: true,
 		});
 
+		// We can use this to account for multiple errors
 		let errors = false;
 
+		// Values we need from our form
 		const { dates, time, frequency, notes, type } = values;
 
 		if (!dates) {
@@ -74,11 +79,14 @@ class NewRequestDrawer extends React.Component<
 			errors = true;
 		}
 
+		// After checking for errors, don't submit if there are any
+		// @TODO: maybe show an ant.design message in this case
 		if (errors) {
 			this.setState({ creatingRequest: false });
 			return false;
 		}
 
+		// For the request data for our database
 		const requestData: Request = {
 			dates: {
 				from: dates[0].toDate(),
@@ -96,14 +104,17 @@ class NewRequestDrawer extends React.Component<
 			type,
 		};
 
+		// Create standardized dates for our requests
 		const startDate: Date = dates[0].toDate();
 		startDate.setHours(0, 0, 0, 0);
 		const endDate: Date = dates[1].toDate();
 		endDate.setDate(endDate.getDate());
 		endDate.setHours(0, 0, 0, 0);
 
+		// Create an array to keep track of individual occurrences
 		const occurrences: RequestOccurrence[] = [];
 
+		// Create an occurrence for each week through the end date
 		for (
 			let date = startDate;
 			date <= endDate;
@@ -115,6 +126,7 @@ class NewRequestDrawer extends React.Component<
 			});
 		}
 
+		// Add notes if there are any
 		if (notes) requestData.notes = notes;
 
 		firebase
@@ -142,14 +154,17 @@ class NewRequestDrawer extends React.Component<
 			});
 	}
 
+	/** What happens when the drawer is closed */
 	onClose() {
 		if (this.props.onClose && !this.state.creatingRequest) this.props.onClose();
 	}
 
+	/** Renders the new request drawer */
 	render() {
 		const { creatingRequest, dateRangeStatus, timeRangeStatus } = this.state;
 		const { open } = this.props;
 
+		// Don't let users create a request for yesterday and before
 		const invalidDates = (now: moment.Moment) =>
 			now && now < moment().endOf("day");
 

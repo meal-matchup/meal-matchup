@@ -13,21 +13,27 @@ interface FoodItems {
 }
 
 class FoodLogsView extends React.Component {
+	/** Renders the food logs view component */
 	render() {
 		return (
 			<AppContext.Consumer>
 				{appContext => {
+					// Create a map of all food items
 					const food: FoodItems = {};
 
+					// Keep track of total donation weight
 					let totalDontaionWeight = 0;
 
+					// If there are logs, add them up
 					appContext.logs?.docs.forEach(log => {
+						// Get the request associated with the log to filter by user info
 						const logRequest = appContext.requests?.docs.filter(
 							x => x.id === log?.data()?.requestId
 						)[0];
 
+						// Admins can see everything. Other users only see related log info
 						if (appContext.userData?.admin !== true) {
-							// not umbrella, so they must be related
+							// Not umbrella, so they must be related
 							if (!logRequest) return false;
 							const agencyType = appContext.agency?.data()?.type;
 							if (!agencyType) return false;
@@ -38,6 +44,10 @@ class FoodLogsView extends React.Component {
 								return false;
 						}
 
+						/**
+						 * If there's log data, and we haven't returned false before, we can
+						 * add the data to our storage.
+						 */
 						log?.data()?.items?.forEach((item: FoodItem) => {
 							if (food[item.name]) {
 								food[item.name] = food[item.name] + item.weight;
@@ -55,12 +65,13 @@ class FoodLogsView extends React.Component {
 								<Tabs.TabPane key="1" tab="History">
 									<List grid={{ column: 1, gutter: 16 }}>
 										{appContext.logs?.docs.map(log => {
+											// @TODO: This repeates lines 29–45; maybe can condense
 											const logRequest = appContext.requests?.docs.filter(
 												x => x.id === log?.data()?.requestId
 											)[0];
 
 											if (appContext.userData?.admin !== true) {
-												// not umbrella, so they must be related
+												// Not umbrella, so they must be related
 												if (!logRequest) return false;
 												const agencyType = appContext.agency?.data()?.type;
 												if (!agencyType) return false;
@@ -74,11 +85,16 @@ class FoodLogsView extends React.Component {
 													return false;
 											}
 
-											const date = log.data()?.date
-												? moment(log.data()?.date.toDate()).format(
-														"MMMM D, YYYY"
-												  )
-												: "unknown";
+											/**
+											 * Adds the log date if present. We don't have to worry
+											 * about cases where there is no date as firebase will
+											 * filter out those items (see ./index.tsx line 455,
+											 * `.orderBy("date")`).
+											 */
+											const date = moment(log.data()?.date.toDate()).format(
+												"MMMM D, YYYY"
+											);
+
 											let totalWeight = 0;
 											log.data()?.items?.forEach((item: FoodItem) => {
 												totalWeight = totalWeight + item.weight;

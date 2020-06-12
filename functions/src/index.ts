@@ -8,22 +8,36 @@ import moment = require("moment");
 
 const client = new firestore.v1.FirestoreAdminClient();
 
+/**
+ * Grabs the service account from our env variables. For a tutorial on how to do this,
+ * see our {@link https://github.com/meal-matchup/meal-matchup/wiki/Working-on-Firebase-Functions | GitHub wiki}.
+ */
 const serviceAccount = functions.config().sk;
 
+/** Initialize the app using the service account in our env variables */
 admin.initializeApp({
 	credential: admin.credential.cert(serviceAccount),
 	databaseURL: "https://meal-matchup-development.firebaseio.com",
 });
 
+// The domain we use for mailgun
 const MAILGUN_DOMAIN = "mg.mealmatchup.org";
 
+/** Initialize Mailgun using our API key and domain */
 const mg = mailgun({
 	apiKey: functions.config().mailgun.key,
 	domain: MAILGUN_DOMAIN,
 });
 
+// Our Google Cloud storage bucket
 const bucket = functions.config().gcp.bucket;
 
+/**
+ * Ever 24 hours, check upcoming requests. If they occur today, tomorrow,
+ * or in 5 days, we send an email to all parties reminding them.
+ *
+ * @TODO Include donators and receivers in this.
+ */
 export const createKeyAndEmailUser = functions.pubsub
 	.schedule("every 24 hours")
 	.onRun(() => {
@@ -165,6 +179,9 @@ Meal Matchup`,
 			.catch(error => console.error(error));
 	});
 
+/**
+ * Every 24 hours, take a backup of our firestore database
+ */
 export const scheduledFirestoreExport = functions.pubsub
 	.schedule("every 24 hours")
 	.onRun(() => {
@@ -188,6 +205,10 @@ export const scheduledFirestoreExport = functions.pubsub
 			});
 	});
 
+/**
+ * When an entry is made from a one-off link, create an actual log
+ * in the database and reference it in the request and occurrence
+ */
 export const keyLogMade = functions.firestore
 	.document("keys/{keyId}")
 	.onUpdate(change => {

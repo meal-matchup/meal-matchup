@@ -1,3 +1,4 @@
+// Use .env.{development|production} files to set up our env variables
 require("dotenv").config({
 	path: `.env.${process.env.NODE_ENV}`,
 });
@@ -13,6 +14,7 @@ const isNetlifyProduction = NETLIFY_ENV === "production";
 const siteUrl = isNetlifyProduction ? NETLIFY_SITE_URL : NETLIFY_DEPLOY_URL;
 const firebasePrefix = isNetlifyProduction ? "PROD" : "DEV";
 
+/** Export siteMetadata and plugins for Gatsby */
 module.exports = {
 	siteMetadata: {
 		title: "Meal Matchup",

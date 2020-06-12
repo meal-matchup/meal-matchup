@@ -1,6 +1,5 @@
 import { AnimatePresence } from "framer-motion";
 import { AppPage } from "../";
-import { InferProps } from "prop-types";
 import LogInView from "./LogInView";
 import React from "react";
 import SignUpView from "./SignUpView";
@@ -29,13 +28,9 @@ interface AuthState {
 	signingUp: boolean;
 }
 
-class Auth extends React.Component<
-	InferProps<typeof Auth.propTypes>,
-	AuthState
-> {
-	static propTypes = {};
-
-	constructor(props: InferProps<typeof Auth.propTypes>) {
+class Auth extends React.Component<React.ComponentProps<"div">, AuthState> {
+	/** Initializes the auth pages */
+	constructor(props: React.ComponentProps<"div">) {
 		super(props);
 
 		this.state = {
@@ -45,10 +40,12 @@ class Auth extends React.Component<
 		this.changeView = this.changeView.bind(this);
 	}
 
+	/** Changes the view between loggin in and signing up */
 	changeView() {
 		this.setState({ signingUp: !this.state.signingUp });
 	}
 
+	/** Renders the auth pages */
 	render() {
 		const { signingUp } = this.state;
 

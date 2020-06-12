@@ -38,6 +38,7 @@ class ClaimRequestDrawer extends React.Component<
 	ClaimRequestDrawerProps,
 	ClaimRequestDrawerState
 > {
+	/** Initializes the claim request drawer */
 	constructor(props: ClaimRequestDrawerProps) {
 		super(props);
 
@@ -54,8 +55,10 @@ class ClaimRequestDrawer extends React.Component<
 		};
 	}
 
+	/** Creates a form ref for the ant.design form */
 	formRef = React.createRef<FormInstance>();
 
+	/** Runs when the drawer is closed; effecitvely clears state */
 	onClose() {
 		this.setState({ selectedDeliverers: [] });
 		this.formRef.current?.setFieldsValue({
@@ -65,10 +68,16 @@ class ClaimRequestDrawer extends React.Component<
 		if (this.props.onClose) this.props.onClose();
 	}
 
+	/** Updates the deliverers based on the user selection */
 	updateDeliverers(selectedDeliverers: string[]) {
 		this.setState({ selectedDeliverers });
 	}
 
+	/**
+	 * Claims a request
+	 *
+	 * @param values An ant.design form store
+	 */
 	claimRequest(values: Store) {
 		if (!firebase || !this.props.agency || !this.props.request) return false;
 
@@ -79,6 +88,10 @@ class ClaimRequestDrawer extends React.Component<
 
 		this.setState({ claiming: true });
 
+		/**
+		 * Deliverers and Receivers can claim requests, but they claim those
+		 * requests differently.
+		 */
 		if (agency.data()?.type === AgencyTypes.DELIVERER) {
 			const deliverers = agencyData.users?.filter(
 				(x: { name: string }) => values.deliverers.indexOf(x.name) > -1
@@ -123,6 +136,11 @@ class ClaimRequestDrawer extends React.Component<
 		}
 	}
 
+	/**
+	 * Adds a deliverer to the agency so they can be used for the request
+	 *
+	 * @param values An ant.design form store
+	 */
 	addDeliverer(values: Store) {
 		const { name, email } = values.newDeliverer;
 		if (!name || !email || !this.props.agency) return false;
@@ -141,6 +159,7 @@ class ClaimRequestDrawer extends React.Component<
 			});
 	}
 
+	/** Renders the claim request drawer */
 	render() {
 		const { open, request, agency } = this.props;
 		const { claiming, selectedDeliverers } = this.state;
@@ -200,6 +219,8 @@ class ClaimRequestDrawer extends React.Component<
 					</Row>
 
 					<Divider />
+
+					{/** Render different content for deliverers and receivers */}
 
 					{agency.data()?.type === AgencyTypes.DELIVERER && (
 						<Form.Item

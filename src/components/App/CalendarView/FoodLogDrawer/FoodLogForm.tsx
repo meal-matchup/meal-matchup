@@ -29,6 +29,12 @@ interface FoodLogFormProps {
 	request?: firebase.firestore.QueryDocumentSnapshot;
 }
 
+/**
+ * Using functional component as ant.design forms are hard to use
+ * in class components.
+ *
+ * @param props Props as described
+ */
 function FoodLogForm({
 	formId,
 	givenItems = [],
@@ -43,6 +49,7 @@ function FoodLogForm({
 	const [submitting, setSubmitting] = useState(false);
 	const [form] = Form.useForm();
 
+	/** Gets the values for the deliverer fields */
 	const getFieldValues = () => {
 		const theValues: FoodLogInitialValues = {};
 		items.forEach((item, index) => {
@@ -56,14 +63,17 @@ function FoodLogForm({
 		return theValues;
 	};
 
+	/** Sets the initial values of the form when the items change */
 	useEffect(() => {
 		setInitialValues(getFieldValues());
 	}, [items]);
 
+	/** Sets the field values of the form when the initialValues change */
 	useEffect(() => {
 		form.setFieldsValue(initialValues);
 	}, [form, initialValues]);
 
+	/** If there is an occurrence but the ID is new, we have to reset */
 	if (occurrence && occurrence.id !== currentOccurrence) {
 		setCurrentOccurrence(occurrence.id);
 		setItems(givenItems);
@@ -83,13 +93,20 @@ function FoodLogForm({
 		},
 	];
 
+	/**
+	 * Submites and saves the food log data
+	 *
+	 * @param values An ant.design form values store
+	 */
 	const submitFoodLog = (values: Store) => {
 		if (!occurrence || !request || (occurrence.data()?.logId && !log)) {
 			return false;
 		}
 
+		/** Sets submitting to true so we can't double submit */
 		setSubmitting(true);
 
+		// Creates an array of log items
 		const logItems: FoodLogItem[] = [];
 
 		Object.keys(values).forEach(item => {
@@ -108,6 +125,10 @@ function FoodLogForm({
 			});
 		});
 
+		/**
+		 * We're doing either all or nothing; don't fill the database with unused
+		 * or unreferenced entries.
+		 */
 		const batch = firebase.firestore().batch();
 
 		if (log) {

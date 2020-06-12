@@ -32,6 +32,7 @@ class CalendarView extends React.Component<
 	CalendarViewProps,
 	CalendarViewState
 > {
+	/** Initialize the calendar view */
 	constructor(props: CalendarViewProps) {
 		super(props);
 
@@ -51,7 +52,12 @@ class CalendarView extends React.Component<
 		};
 	}
 
+	/** Runs when the component props or state changes. */
 	componentDidUpdate(prevProps: CalendarViewProps) {
+		/**
+		 * If there are requests and the requests have changed, then we can updated
+		 * the state of the current request as it might have changed
+		 */
 		if (
 			this.props.requests &&
 			prevProps.requests &&
@@ -66,6 +72,11 @@ class CalendarView extends React.Component<
 		}
 	}
 
+	/**
+	 * Takes a date and determines what to render in the calendar for that date
+	 *
+	 * @param date The date of the calendar which we are rendering in
+	 */
 	dateCellRender(date: moment.Moment): React.ReactNode {
 		const { agency, userData } = this.props;
 
@@ -163,10 +174,16 @@ class CalendarView extends React.Component<
 		return null;
 	}
 
+	/** Toggles the new request drawer between open and closed */
 	toggleNewRequestDrawer() {
 		this.setState({ newRequestDrawerOpen: !this.state.newRequestDrawerOpen });
 	}
 
+	/**
+	 * Opens the existing request drawer if there is a request
+	 *
+	 * @param request A firebase query document snapshot
+	 */
 	openExistingRequestDrawer(request: firebase.firestore.QueryDocumentSnapshot) {
 		if (request) {
 			this.setState({
@@ -176,12 +193,14 @@ class CalendarView extends React.Component<
 		}
 	}
 
+	/** Toggles the existing request drawer */
 	toggleExistingRequestDrawer() {
 		this.setState({
 			existingRequestDrawerOpen: !this.state.existingRequestDrawerOpen,
 		});
 	}
 
+	/** Renders the calendar view */
 	render() {
 		const {
 			newRequestDrawerOpen,

@@ -1,6 +1,7 @@
 import { Drawer } from "antd";
 import styled from "styled-components";
 
+/** Creates a styled ant.design drawer */
 const DrawerWrapper = styled(Drawer)`
 	&.ant-drawer-open {
 		& > .ant-drawer-content-wrapper {

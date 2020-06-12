@@ -6,12 +6,15 @@ import {
 } from "../../../utils/enums";
 import { Button, Col, Divider, Form, Input, Row, Select, message } from "antd";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
-import PropTypes, { InferProps } from "prop-types";
 import { AppPage } from "../";
 import { FormItemProps } from "antd/lib/form";
 import React from "react";
 import { Store } from "antd/lib/form/interface";
 import firebase from "gatsby-plugin-firebase";
+
+interface SignUpViewProps {
+	changeView: () => void;
+}
 
 interface SignUpViewState {
 	confirmStatus?: FormItemProps["validateStatus"];
@@ -24,15 +27,9 @@ interface SignUpViewState {
 	umbrellas?: firebase.firestore.QuerySnapshot;
 }
 
-class SignUpView extends React.Component<
-	InferProps<typeof SignUpView.propTypes>,
-	SignUpViewState
-> {
-	static propTypes = {
-		changeView: PropTypes.func.isRequired,
-	};
-
-	constructor(props: InferProps<typeof SignUpView.propTypes>) {
+class SignUpView extends React.Component<SignUpViewProps, SignUpViewState> {
+	/** Initializes the sign up view */
+	constructor(props: SignUpViewProps) {
 		super(props);
 
 		this.state = {
@@ -43,6 +40,12 @@ class SignUpView extends React.Component<
 		this.signUp = this.signUp.bind(this);
 	}
 
+	/**
+	 * Signs up the user with their email and password, as well as the data
+	 * required for their new agency.
+	 *
+	 * @param values An ant.design form values store
+	 */
 	signUp(values: Store) {
 		if (!this.state.selectedUmbrella) return false;
 
@@ -127,6 +130,7 @@ class SignUpView extends React.Component<
 			});
 	}
 
+	/** Mounts the component and gets all umbrellas */
 	componentDidMount() {
 		this.setState({ mounted: true });
 
@@ -135,6 +139,7 @@ class SignUpView extends React.Component<
 			.collection("umbrellas")
 			.get()
 			.then(snapshot => {
+				// Don't try to update state if the component is not mounted anymore
 				if (this.state.mounted) {
 					this.setState({
 						umbrellas: snapshot,
@@ -143,10 +148,12 @@ class SignUpView extends React.Component<
 			});
 	}
 
+	/** Unmounts the component */
 	componentWillUnmount() {
 		this.setState({ mounted: false });
 	}
 
+	/** Renders the sign up view */
 	render() {
 		const { changeView } = this.props;
 		const {

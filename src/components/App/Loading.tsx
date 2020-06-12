@@ -26,6 +26,11 @@ class Loading extends React.Component<InferProps<typeof Loading.propTypes>> {
 		loading: PropTypes.bool,
 	};
 
+	/**
+	 * A loading spinner component
+	 *
+	 * @returns A react component with a loading spinner
+	 */
 	render() {
 		const loading = this.props.loading || false;
 

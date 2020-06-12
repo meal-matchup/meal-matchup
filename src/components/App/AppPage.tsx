@@ -1,13 +1,13 @@
-import PropTypes, { InferProps } from "prop-types";
 import React from "react";
 import { motion } from "framer-motion";
 
-class AppPage extends React.Component<InferProps<typeof AppPage.propTypes>> {
-	static propTypes = {
-		id: PropTypes.string.isRequired,
-		children: PropTypes.node,
-	};
+interface AppPageProps {
+	id: string;
+	children?: React.ReactNode;
+}
 
+class AppPage extends React.Component<AppPageProps> {
+	/** Renders the app page given an ID */
 	render() {
 		const { id, children } = this.props;
 

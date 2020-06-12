@@ -17,13 +17,13 @@ export interface AppContextInterface {
 }
 
 export type AppPage = {
-	id: PageIDs;
+	id: PageIds;
 	location: MenuLocations;
 	icon?: React.ReactNode;
 	title: string;
 };
 
-export enum PageIDs {
+export enum PageIds {
 	CALENDAR,
 	DIRECTORY,
 	FOODLOGS,
@@ -36,37 +36,37 @@ export enum MenuLocations {
 }
 
 interface AppPagesInterface {
-	[PageIDs: string]: AppPage;
+	[PageIds: string]: AppPage;
 }
 
 export const AppPages: AppPagesInterface = {
-	[PageIDs.CALENDAR]: {
-		id: PageIDs.CALENDAR,
+	[PageIds.CALENDAR]: {
+		id: PageIds.CALENDAR,
 		location: MenuLocations.SIDER,
 		icon: <CalendarOutlined />,
 		title: "Calendar",
 	},
-	[PageIDs.DIRECTORY]: {
-		id: PageIDs.DIRECTORY,
+	[PageIds.DIRECTORY]: {
+		id: PageIds.DIRECTORY,
 		location: MenuLocations.SIDER,
 		icon: <ContactsOutlined />,
 		title: "Directory",
 	},
-	[PageIDs.FOODLOGS]: {
-		id: PageIDs.FOODLOGS,
+	[PageIds.FOODLOGS]: {
+		id: PageIds.FOODLOGS,
 		location: MenuLocations.SIDER,
 		icon: <ProfileOutlined />,
 		title: "Food Logs",
 	},
-	[PageIDs.ACCOUNT]: {
-		id: PageIDs.ACCOUNT,
+	[PageIds.ACCOUNT]: {
+		id: PageIds.ACCOUNT,
 		location: MenuLocations.HEADER,
 		title: "Account",
 	},
 };
 
 export interface AppViewsInterface {
-	[PageIDs: string]: React.ReactNode;
+	[PageIds: string]: React.ReactNode;
 }
 
 export type User = {
