@@ -39,7 +39,8 @@ const bucket = functions.config().gcp.bucket;
  * @TODO Include donators and receivers in this.
  */
 export const createKeyAndEmailUser = functions.pubsub
-	.schedule("every 24 hours")
+	.schedule("5 11 * * *")
+	.timeZone("America/Los_Angeles")
 	.onRun(() => {
 		const today = new Date();
 		const mToday = moment.utc(today);
