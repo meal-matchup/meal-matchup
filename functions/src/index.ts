@@ -128,17 +128,21 @@ export const createKeyAndEmailUser = functions.pubsub
 																)}`,
 																text: `Howdy!
 
-		You have an upcoming pickup request scheduled ${
-			diff === 0 ? "today" : diff === 1 ? `in ${diff} day` : `in ${diff} days`
-		}.
+You have an upcoming pickup request scheduled ${
+																	diff === 0
+																		? "today"
+																		: diff === 1
+																		? `in ${diff} day`
+																		: `in ${diff} days`
+																}, on ${mOcDate.format("D/M")}.
 
-		When you're ready to start this pickup, click this link for instructions on where to go, how to complete the food log, and where to drop off the donation.
+When you're ready to start this pickup, click this link for instructions on where to go, how to complete the food log, and where to drop off the donation.
 
-		https://www.mealmatchup.org/app/entry?key=${newRef.id}
+https://www.mealmatchup.org/app/entry?key=${newRef.id}
 
-		Thank you, and stay safe.
+Thank you, and stay safe.
 
-		Meal Matchup`,
+Meal Matchup`,
 															};
 
 															mg.messages()
