@@ -2,7 +2,7 @@
 
 > Helping feed the hungry and streamline the efficiency of food recovery.
 
-© 2020 
+© 2020
 
 ## License
 

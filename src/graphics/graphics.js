@@ -1,7 +1,7 @@
-import React from 'react';
+import React from "react";
 
-export const Logo = ({ color = '#000000', vertical = false }) => (
-	<div className={`logo logo-${vertical ? 'vertical' : 'horizontal'}`}>
+export const Logo = ({ color = "#000000", vertical = false }) => (
+	<div className={`logo logo-${vertical ? "vertical" : "horizontal"}`}>
 		<span className="logo-text">
 			<svg
 				xmlns="http://www.w3.org/2000/svg"

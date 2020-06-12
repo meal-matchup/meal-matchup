@@ -1,0 +1,19 @@
+{
+	"plugins": [
+		"@babel/plugin-proposal-optional-chaining",
+		"@babel/proposal-class-properties",
+		"@babel/plugin-proposal-object-rest-spread"
+	],
+	"presets": [
+		"@babel/env",
+		"@babel/preset-typescript",
+		[
+			"babel-preset-gatsby",
+			{
+				"targets": {
+					"browsers": [">0.25%", "not dead"]
+				}
+			}
+		]
+	]
+}
