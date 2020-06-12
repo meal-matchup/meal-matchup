@@ -68,8 +68,7 @@ export const createKeyAndEmailUser = functions.pubsub
 									const diff = Math.round(mOcDate.diff(mToday, "days", true));
 
 									switch (diff) {
-										case 5:
-										case 1:
+										case 2:
 										case 0: {
 											const donatorRef = admin
 												.firestore()
@@ -109,6 +108,29 @@ export const createKeyAndEmailUser = functions.pubsub
 																name: donatorDoc.data()?.name,
 															};
 
+															const donatorMailData = {
+																from: "Meal Matchup <no-reply@mealmatchup.org>",
+																to: donatorDoc.data()?.contact.email,
+																subject: `Upcoming Request on ${mOcDate.format(
+																	"D/M"
+																)}`,
+																text: `Howdy!
+
+This is just a reminder that you have an upcoming request scheduled ${
+																	diff === 0 ? "for today" : `in ${diff} days`
+																}, on ${mOcDate.format("D/M")}.
+
+You can check on the status of this request by logging in at https://www.mealmatchup.org/app.
+
+Thank you, and stay safe.
+
+Meal Matchup`,
+															};
+
+															mg.messages()
+																.send(donatorMailData)
+																.catch(error => console.error(error));
+
 															return transaction
 																.get(receiverRef)
 																.then(receiverDoc => {
@@ -121,6 +143,32 @@ export const createKeyAndEmailUser = functions.pubsub
 																		},
 																		name: receiverDoc.data()?.name,
 																	};
+
+																	const donatorMailData = {
+																		from:
+																			"Meal Matchup <no-reply@mealmatchup.org>",
+																		to: receiverDoc.data()?.contact.email,
+																		subject: `Upcoming Request on ${mOcDate.format(
+																			"D/M"
+																		)}`,
+																		text: `Howdy!
+
+This is just a reminder that you have an upcoming request scheduled ${
+																			diff === 0
+																				? "for today"
+																				: `in ${diff} days`
+																		}, on ${mOcDate.format("D/M")}.
+
+You can check on the status of this request by logging in at https://www.mealmatchup.org/app.
+
+Thank you, and stay safe.
+
+Meal Matchup`,
+																	};
+
+																	mg.messages()
+																		.send(donatorMailData)
+																		.catch(error => console.error(error));
 																});
 														});
 												})
@@ -143,11 +191,7 @@ export const createKeyAndEmailUser = functions.pubsub
 																text: `Howdy!
 
 You have an upcoming pickup request scheduled ${
-																	diff === 0
-																		? "today"
-																		: diff === 1
-																		? `in ${diff} day`
-																		: `in ${diff} days`
+																	diff === 0 ? "today" : `in ${diff} days`
 																}, on ${mOcDate.format("D/M")}.
 
 When you're ready to start this pickup, click this link for instructions on where to go, how to complete the food log, and where to drop off the donation.
