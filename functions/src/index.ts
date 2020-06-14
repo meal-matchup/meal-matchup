@@ -113,13 +113,13 @@ export const createKeyAndEmailUser = functions.pubsub
 																from: "Meal Matchup <no-reply@mealmatchup.org>",
 																to: donatorDoc.data()?.contact.email,
 																subject: `Upcoming Request on ${mOcDate.format(
-																	"D/M"
+																	"M/D"
 																)}`,
 																text: `Howdy!
 
 This is just a reminder that you have an upcoming request scheduled ${
 																	diff === 0 ? "for today" : `in ${diff} days`
-																}, on ${mOcDate.format("D/M")}.
+																}, on ${mOcDate.format("M/D")}.
 
 You can check on the status of this request by logging in at https://www.mealmatchup.org/app.
 
@@ -150,7 +150,7 @@ Meal Matchup`,
 																			"Meal Matchup <no-reply@mealmatchup.org>",
 																		to: receiverDoc.data()?.contact.email,
 																		subject: `Upcoming Request on ${mOcDate.format(
-																			"D/M"
+																			"M/D"
 																		)}`,
 																		text: `Howdy!
 
@@ -158,7 +158,7 @@ This is just a reminder that you have an upcoming request scheduled ${
 																			diff === 0
 																				? "for today"
 																				: `in ${diff} days`
-																		}, on ${mOcDate.format("D/M")}.
+																		}, on ${mOcDate.format("M/D")}.
 
 You can check on the status of this request by logging in at https://www.mealmatchup.org/app.
 
@@ -187,13 +187,13 @@ Meal Matchup`,
 																	)
 																	.join(", "),
 																subject: `Upcoming Request on ${mOcDate.format(
-																	"D/M"
+																	"M/D"
 																)}`,
 																text: `Howdy!
 
 You have an upcoming pickup request scheduled ${
 																	diff === 0 ? "today" : `in ${diff} days`
-																}, on ${mOcDate.format("D/M")}.
+																}, on ${mOcDate.format("M/D")}.
 
 When you're ready to start this pickup, click this link for instructions on where to go, how to complete the food log, and where to drop off the donation.
 
