@@ -65,6 +65,7 @@
 		"eslint-plugin-react": "^7.20.0",
 		"gatsby-plugin-eslint": "^2.0.8",
 		"prettier": "^2.0.5",
+		"supports-color": "^7.1.0",
 		"typescript": "^3.9.3",
 		"typescript-plugin-styled-components": "^1.4.4"
 	}

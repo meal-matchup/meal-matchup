@@ -6,7 +6,7 @@ import {
 	MenuLocations,
 	PageIds,
 } from "../../utils/enums";
-import { Layout, Menu, PageHeader } from "antd";
+import { Layout, Menu, PageHeader, message } from "antd";
 import AccountView from "./AccountView";
 import { AnimatePresence } from "framer-motion";
 import AppContext from "./AppContext";
@@ -173,8 +173,16 @@ class App extends React.Component<React.ComponentProps<"div">, AppState> {
 					.doc(newUser.uid)
 					.get()
 					.then(userDoc => {
-						if (this.state.mounted) {
+						if (userDoc.data() && this.state.mounted) {
 							this.setState({ userData: userDoc.data(), userLoading: false });
+						} else if (this.state.mounted) {
+							message.error(
+								<>
+									An error occurred. Please email{" "}
+									<a href="mailto:mealmatchup@uw.edu">mealmatchup@uw.edu</a>
+								</>
+							);
+							this.logOut();
 						}
 					});
 			} else {
@@ -194,6 +202,14 @@ class App extends React.Component<React.ComponentProps<"div">, AppState> {
 		_prevProps: React.ComponentProps<"div">,
 		prevState: AppState
 	) {
+		/** Check the loading states */
+		debug("loading         ", this.state.loading);
+		debug("user loading    ", this.state.userLoading);
+		debug("umbrella loading", this.state.umbrellaLoading);
+		debug("agencies loading", this.state.agenciesLoading);
+		debug("requests loading", this.state.requestsLoading);
+		debug("logs loading    ", this.state.logsLoading);
+
 		/**
 		 * Mark the App as loaded once each individual piece has loaded.
 		 */
