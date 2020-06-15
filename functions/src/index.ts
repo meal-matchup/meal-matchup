@@ -149,7 +149,7 @@ Meal Matchup`,
 																		name: receiverDoc.data()?.name,
 																	};
 
-																	const donatorMailData = {
+																	const receiverMailData = {
 																		from:
 																			"Meal Matchup <no-reply@mealmatchup.org>",
 																		to: receiverDoc.data()?.contact.email,
@@ -172,7 +172,7 @@ Meal Matchup`,
 																	};
 
 																	mg.messages()
-																		.send(donatorMailData)
+																		.send(receiverMailData)
 																		.catch(error => console.error(error));
 																});
 														});
