@@ -1,0 +1,24 @@
+{
+	"compilerOptions": {
+		"module": "CommonJS",
+		"target": "ESNext",
+		"jsx": "preserve",
+		"lib": ["DOM", "ESNext"],
+		"strict": true,
+		"noEmit": true,
+		"isolatedModules": true,
+		"esModuleInterop": true,
+		"noUnusedLocals": false,
+		"allowJs": true,
+		"typeRoots": ["./types", "./node_modules/@types"],
+		"plugins": [
+			{
+				"transform": "typescript-plugin-styled-components",
+				"type": "config",
+				"ssr": true,
+			}
+		]
+	},
+	"include": ["src/**/*"],
+	"exclude": ["node_modules", "public", ".cache"]
+}
