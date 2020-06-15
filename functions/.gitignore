@@ -1,0 +1,13 @@
+## Compiled JavaScript files
+**/*.js
+**/*.js.map
+
+# Typescript v1 declaration files
+typings/
+
+node_modules/
+
+# Custom files
+.runtimeconfig.json
+.test-runtimeconfig.json
+sk.json

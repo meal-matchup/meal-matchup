@@ -1,35 +1,39 @@
-require('dotenv').config({
+// Use .env.{development|production} files to set up our env variables
+require("dotenv").config({
 	path: `.env.${process.env.NODE_ENV}`,
 });
 
 const {
 	NODE_ENV,
-	URL: NETLIFY_SITE_URL = 'https://www.mmuw.xyz',
+	URL: NETLIFY_SITE_URL = "https://www.mmuw.xyz",
 	DEPLOY_PRIME_URL: NETLIFY_DEPLOY_URL = NETLIFY_SITE_URL,
 	CONTEXT: NETLIFY_ENV = NODE_ENV,
 } = process.env;
 
-const isNetlifyProduction = NETLIFY_ENV === 'production';
+const isNetlifyProduction = NETLIFY_ENV === "production";
 const siteUrl = isNetlifyProduction ? NETLIFY_SITE_URL : NETLIFY_DEPLOY_URL;
-const firebasePrefix = isNetlifyProduction ? 'PROD' : 'DEV';
+const firebasePrefix = isNetlifyProduction ? "PROD" : "DEV";
 
+/** Export siteMetadata and plugins for Gatsby */
 module.exports = {
 	siteMetadata: {
-		title: 'Meal Matchup',
-		description: '',
+		title: "Meal Matchup",
+		description: "",
 		siteUrl,
 	},
 	plugins: [
-		'gatsby-plugin-sass',
-		'gatsby-plugin-react-helmet',
+		"gatsby-plugin-typescript",
+		"gatsby-plugin-eslint",
+		"gatsby-plugin-sass",
+		"gatsby-plugin-react-helmet",
 		{
-			resolve: 'gatsby-plugin-less',
+			resolve: "gatsby-plugin-less",
 			options: {
 				javascriptEnabled: true,
 			},
 		},
 		{
-			resolve: 'gatsby-plugin-firebase',
+			resolve: "gatsby-plugin-firebase",
 			options: {
 				credentials: {
 					apiKey: process.env[`${firebasePrefix}_FIREBASE_API_KEY`],
@@ -56,7 +60,7 @@ module.exports = {
 		{
 			resolve: 'gatsby-plugin-manifest',
 			options: {
-				icon: 'src/graphics/icon.png',
+				icon: "src/graphics/icon.png",
 			},
 		},
 	],
