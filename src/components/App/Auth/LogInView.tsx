@@ -1,9 +1,12 @@
 import { Button, Col, Divider, Form, Input, Row, message } from "antd";
 import { AppPage } from "../";
+import Debug from "debug";
 import { FormItemProps } from "antd/lib/form";
 import React from "react";
 import { Store } from "antd/lib/form/interface";
 import firebase from "gatsby-plugin-firebase";
+
+const debug = Debug("http");
 
 interface LogInViewProps {
 	changeView: () => void;
@@ -53,7 +56,12 @@ class LogInView extends React.Component<LogInViewProps, LogInViewState> {
 						message.error("The password was incorrect");
 						break;
 
+					case "auth/user-not-found":
+						message.error("This user does not exist");
+						break;
+
 					default:
+						debug("Log in error", error);
 						message.error("An error occurred");
 						break;
 				}
