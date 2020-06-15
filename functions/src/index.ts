@@ -1,10 +1,14 @@
 "use strict";
 
 import admin = require("firebase-admin");
+import Debug = require("debug");
 import firestore = require("@google-cloud/firestore");
 import functions = require("firebase-functions");
 import mailgun = require("mailgun-js");
 import moment = require("moment");
+import uniqid = require("uniqid");
+
+const debug = Debug("func");
 
 const client = new firestore.v1.FirestoreAdminClient();
 
@@ -248,6 +252,162 @@ export const scheduledFirestoreExport = functions.pubsub
 				console.error(error);
 				throw new Error("Export operation failed");
 			});
+	});
+
+/**
+ *
+ */
+export const newRequestCreated = functions.firestore
+	.document("requests/{requestId}")
+	.onUpdate(change => {
+		if (
+			change.after.data().deliverer === "ANY" ||
+			change.after.data().receiver === "ANY"
+		) {
+			/**
+			 * There is any donator, and likely new request; we should send an email
+			 * to Delivering Agencies' admins
+			 */
+			if (
+				change.after.data().deliverer === "ANY" &&
+				change.after.data().receiver === change.before.data().receiver
+			) {
+				admin
+					.firestore()
+					.collection("agencies")
+					.where("umbrella", "==", change.after.data().umbrella)
+					.where("type", "==", "DELIVERER")
+					.get()
+					.then(snapshot => {
+						const uids: { uid: string }[] = [];
+
+						snapshot.docs.forEach(doc => {
+							Object.keys(doc.data().admins).forEach(uid => uids.push({ uid }));
+						});
+
+						return admin.auth().getUsers(uids);
+					})
+					.then(getUsersResult => {
+						const addresses: string[] = [];
+
+						getUsersResult.users.forEach(userRecord => {
+							if (userRecord.email) addresses.push(userRecord.email);
+						});
+
+						if (addresses.length > 0) {
+							const recipientVariables: {
+								[email: string]: { uid: string };
+							} = {};
+
+							addresses.forEach(
+								address => (recipientVariables[address] = { uid: uniqid() })
+							);
+
+							mg.messages()
+								.send({
+									from: "Meal Matchup <no-reply@mealmatchup.org>",
+									to: addresses.join(", "),
+									subject: "New Meal Matchup Request Available!",
+									text: `Howdy deliverer!
+
+There's a new ${`${
+										change.after.data().type
+									}`.toLocaleLowerCase()} request scheduled from ${moment(
+										change.after.data().dates.from.getDate()
+									).format("M/D/YYYY")} to ${moment(
+										change.after.data().dates.to.getDate()
+									).format("M/D/YYYY")} between ${moment(
+										change.after.data().time.start.getDate()
+									).format("h:mm a")} and ${moment(
+										change.after.data().time.to.getDate()
+									).format("h:mm a")}.
+
+If you are able and willing, please log in to Meal Matchup and claim this request!
+
+Thanks, and stay safe!
+Meal Matchup
+`,
+									"recipient-variables": JSON.stringify({}),
+								})
+								.catch(error => console.error(error));
+						}
+					})
+					.catch(e => {
+						debug(e);
+						console.error(e);
+					});
+			}
+
+			if (
+				change.after.data().receiver === "ANY" &&
+				change.after.data().deliverer === change.before.data().deliverer
+			) {
+				admin
+					.firestore()
+					.collection("agencies")
+					.where("umbrella", "==", change.after.data().umbrella)
+					.where("type", "==", "RECEIVER")
+					.get()
+					.then(snapshot => {
+						const uids: { uid: string }[] = [];
+
+						snapshot.docs.forEach(doc => {
+							Object.keys(doc.data().admins).forEach(uid => uids.push({ uid }));
+						});
+
+						return admin.auth().getUsers(uids);
+					})
+					.then(getUsersResult => {
+						const addresses: string[] = [];
+
+						getUsersResult.users.forEach(userRecord => {
+							if (userRecord.email) addresses.push(userRecord.email);
+						});
+
+						if (addresses.length > 0) {
+							const recipientVariables: {
+								[email: string]: { uid: string };
+							} = {};
+
+							addresses.forEach(
+								address => (recipientVariables[address] = { uid: uniqid() })
+							);
+
+							mg.messages()
+								.send({
+									from: "Meal Matchup <no-reply@mealmatchup.org>",
+									to: addresses.join(", "),
+									subject: "New Meal Matchup Request Available!",
+									text: `Howdy receiver!
+
+There's a new ${`${
+										change.after.data().type
+									}`.toLocaleLowerCase()} request scheduled from ${moment(
+										change.after.data().dates.from.getDate()
+									).format("M/D/YYYY")} to ${moment(
+										change.after.data().dates.to.getDate()
+									).format("M/D/YYYY")} between ${moment(
+										change.after.data().time.start.getDate()
+									).format("h:mm a")} and ${moment(
+										change.after.data().time.to.getDate()
+									).format("h:mm a")}.
+
+If you are able and willing, please log in to Meal Matchup and claim this request!
+
+Thanks, and stay safe!
+Meal Matchup
+`,
+									"recipient-variables": JSON.stringify({}),
+								})
+								.catch(error => console.error(error));
+						}
+					})
+					.catch(e => {
+						debug(e);
+						console.error(e);
+					});
+			}
+		}
 	});
 
 /**
