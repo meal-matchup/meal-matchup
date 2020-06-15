@@ -57,7 +57,6 @@ export const isSameWeekdayInPeriod = (
  */
 export const formGoogleMapsUrl = (address: Address): string => {
 	let str = address.line1;
-	if (address.line2) str += ` ${address.line2}`;
 	str += `, ${address.city}, ${address.state} ${address.zip}`;
 
 	return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(

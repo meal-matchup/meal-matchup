@@ -279,6 +279,21 @@ class ExistingRequestDrawer extends React.Component<
 							return [...defaultFooter];
 						}
 
+					case AgencyTypes.DONATOR:
+						// Donators can delete their requests
+						return [
+							...defaultFooter,
+							<Button
+								key="delete"
+								type="primary"
+								danger
+								disabled={!agency.data()?.approved}
+								style={buttonStyles}
+							>
+								Delete
+							</Button>,
+						];
+
 					default:
 						return defaultFooter;
 				}

@@ -117,12 +117,15 @@ class CalendarView extends React.Component<
 							if (request.data().type === RequestTypes.PICKUP) {
 								if (
 									(agency.data()?.type === AgencyTypes.DONATOR &&
-										request.data().deliverer !== AgencyTypes.ANY) ||
-									request.data()[agency.data()?.type.toLowerCase()] !==
-										AgencyTypes.ANY
-									//  && !occurrence?.complete)
+										request.data().deliverer !== AgencyTypes.ANY &&
+										request.data().receiver !== AgencyTypes.ANY) ||
+									(agency.data()?.type !== AgencyTypes.DONATOR &&
+										request.data()[agency.data()?.type.toLowerCase()] !==
+											AgencyTypes.ANY)
 								) {
 									status = "warning";
+								} else {
+									status = "default";
 								}
 							} else {
 								if (request.data().deliverer !== AgencyTypes.ANY) {

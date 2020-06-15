@@ -7,10 +7,13 @@ import {
 import { Button, Col, Divider, Form, Input, Row, Select, message } from "antd";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import { AppPage } from "../";
+import Debug from "debug";
 import { FormItemProps } from "antd/lib/form";
 import React from "react";
 import { Store } from "antd/lib/form/interface";
 import firebase from "gatsby-plugin-firebase";
+
+const debug = Debug("http");
 
 interface SignUpViewProps {
 	changeView: () => void;
@@ -66,6 +69,10 @@ class SignUpView extends React.Component<SignUpViewProps, SignUpViewState> {
 			type: this.state.selectedAgencyType as AgencyTypes,
 			umbrella: this.state.selectedUmbrella,
 		};
+
+		if (values.signup.agencyAddressLine2) {
+			agencyData.address.line2 = values.signup.agencyAddressLine2;
+		}
 
 		if (values.users && values.users.length > 0) {
 			const users: AgencyUser[] = [];
@@ -124,6 +131,7 @@ class SignUpView extends React.Component<SignUpViewProps, SignUpViewState> {
 						break;
 
 					default:
+						debug("Error!", e);
 						message.error("Could not create account");
 						break;
 				}
