@@ -49,16 +49,23 @@ module.exports = {
 			},
 		},
 		{
-			resolve: 'gatsby-source-wordpress',
+			resolve: "gatsby-source-wordpress",
 			options: {
-				baseUrl: 'depts.washington.edu/mealmatchup/wordpress',
-				protocol: 'https',
+				baseUrl: "depts.washington.edu/mealmatchup/wordpress",
+				protocol: "https",
 				hostingWPCOM: false,
 				useACT: false,
 			},
 		},
 		{
-			resolve: 'gatsby-plugin-manifest',
+			resolve: "gatsby-source-filesystem",
+			options: {
+				name: "graphics",
+				path: `${__dirname}/src/graphics/`,
+			},
+		},
+		{
+			resolve: "gatsby-plugin-manifest",
 			options: {
 				icon: "src/graphics/icon.png",
 			},
