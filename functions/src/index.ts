@@ -5,7 +5,7 @@ import Debug = require("debug");
 import firestore = require("@google-cloud/firestore");
 import functions = require("firebase-functions");
 import mailgun = require("mailgun-js");
-import moment = require("moment");
+import moment = require("moment-timezone");
 import uniqid = require("uniqid");
 
 const debug = Debug("func");
@@ -260,7 +260,10 @@ export const scheduledFirestoreExport = functions.pubsub
 export const newRequestCreated = functions.firestore
 	.document("requests/{requestId}")
 	.onCreate(newDoc => {
+		console.log("new doc", newDoc);
+		console.log("new doc dates", newDoc.data().dates);
 		if (newDoc.data().deliverer === "ANY") {
+			console.log("no delieverer, lets send email");
 			admin
 				.firestore()
 				.collection("agencies")
@@ -268,11 +271,14 @@ export const newRequestCreated = functions.firestore
 				.where("type", "==", "DELIVERER")
 				.get()
 				.then(snapshot => {
+					console.log("got snapshot");
 					const uids: { uid: string }[] = [];
 
 					snapshot.docs.forEach(doc => {
 						Object.keys(doc.data().admins).forEach(uid => uids.push({ uid }));
 					});
+
+					console.log("got uids", uids);
 
 					return admin.auth().getUsers(uids);
 				})
@@ -283,6 +289,8 @@ export const newRequestCreated = functions.firestore
 						if (userRecord.email) addresses.push(userRecord.email);
 					});
 
+					console.log("got addresses", addresses);
+
 					if (addresses.length > 0) {
 						const recipientVariables: {
 							[email: string]: { uid: string };
@@ -291,6 +299,8 @@ export const newRequestCreated = functions.firestore
 						addresses.forEach(
 							address => (recipientVariables[address] = { uid: uniqid() })
 						);
+
+						console.log("recipient variables", recipientVariables);
 
 						mg.messages()
 							.send({
@@ -302,14 +312,22 @@ export const newRequestCreated = functions.firestore
 There's a new ${`${
 									newDoc.data().type
 								}`.toLocaleLowerCase()} request scheduled from ${moment(
-									newDoc.data().dates.from.getDate()
-								).format("M/D/YYYY")} to ${moment(
-									newDoc.data().dates.to.getDate()
-								).format("M/D/YYYY")} between ${moment(
-									newDoc.data().time.start.getDate()
-								).format("h:mm a")} and ${moment(
-									newDoc.data().time.to.getDate()
-								).format("h:mm a")}.
+									newDoc.data().dates.from.toDate()
+								)
+									.tz("America/Los_Angeles")
+									.format("M/D/YYYY")} to ${moment(
+									newDoc.data().dates.to.toDate()
+								)
+									.tz("America/Los_Angeles")
+									.format("M/D/YYYY")} between ${moment(
+									newDoc.data().time.start.toDate()
+								)
+									.tz("America/Los_Angeles")
+									.format("h:mm a")} and ${moment(
+									newDoc.data().time.to.toDate()
+								)
+									.tz("America/Los_Angeles")
+									.format("h:mm a")}.
 
 If you are able and willing, please log in to Meal Matchup and claim this request!
 
@@ -369,14 +387,22 @@ Meal Matchup
 There's a new ${`${
 									newDoc.data().type
 								}`.toLocaleLowerCase()} request scheduled from ${moment(
-									newDoc.data().dates.from.getDate()
-								).format("M/D/YYYY")} to ${moment(
-									newDoc.data().dates.to.getDate()
-								).format("M/D/YYYY")} between ${moment(
-									newDoc.data().time.start.getDate()
-								).format("h:mm a")} and ${moment(
-									newDoc.data().time.to.getDate()
-								).format("h:mm a")}.
+									newDoc.data().dates.from.toDate()
+								)
+									.tz("America/Los_Angeles")
+									.format("M/D/YYYY")} to ${moment(
+									newDoc.data().dates.to.toDate()
+								)
+									.tz("America/Los_Angeles")
+									.format("M/D/YYYY")} between ${moment(
+									newDoc.data().time.start.toDate()
+								)
+									.tz("America/Los_Angeles")
+									.format("h:mm a")} and ${moment(
+									newDoc.data().time.to.toDate()
+								)
+									.tz("America/Los_Angeles")
+									.format("h:mm a")}.
 
 If you are able and willing, please log in to Meal Matchup and claim this request!
 
@@ -392,6 +418,125 @@ Meal Matchup
 					debug(e);
 					console.error(e);
 				});
+		}
+	});
+
+export const requestUpdated = functions.firestore
+	.document("requests/{requestId}")
+	.onUpdate(change => {
+		if (
+			change.after.data().deliverer !== "ANY" &&
+			change.before.data().deliverer !== change.after.data().deliverer
+		) {
+			// Request was claimed by either deliverer or receiver
+			const body = `Howdy!
+
+Your request has been claimed by a Delivering Agency! They should be there to pick up your donations from now on.
+
+Please log in to Meal Matchup for more details.
+
+Thanks, and stay safe!
+Meal Matchup`;
+
+			const addresses: string[] = [];
+
+			admin
+				.firestore()
+				.collection("agencies")
+				.doc(change.after.data().donator)
+				.get()
+				.then(agencyDoc => {
+					const agencyDocData = agencyDoc.data();
+					if (agencyDoc && agencyDocData) {
+						if (agencyDocData.contact?.email) {
+							addresses.push(agencyDocData.contact?.email);
+						}
+
+						const admins: { uid: string }[] = [];
+
+						Object.keys(agencyDocData.admins).forEach(uid =>
+							admins.push({ uid })
+						);
+
+						return admin
+							.auth()
+							.getUsers(admins)
+							.then(getUsersResult => {
+								getUsersResult.users.forEach(userRecord => {
+									if (userRecord.email) addresses.push(userRecord.email);
+								});
+
+								mg.messages()
+									.send({
+										from: "Meal Matchup <no-reply@mealmatchup.org>",
+										to: addresses.join(", "),
+										subject: "Your request was claimed!",
+										text: body,
+									})
+									.catch(error => console.error(error));
+							});
+					} else {
+						return Promise.reject("No agency doc data");
+					}
+				})
+				.catch(error => console.error(error));
+		}
+
+		if (
+			change.after.data().receiver !== "ANY" &&
+			change.before.data().receiver !== change.after.data().receiver
+		) {
+			const body = `Howdy!
+
+Your request has been claimed by a Receiving Agency! They will receive your donation.
+
+Please log in to Meal Matchup for more details.
+
+Thanks, and stay safe!
+Meal Matchup`;
+
+			const addresses: string[] = [];
+
+			admin
+				.firestore()
+				.collection("agencies")
+				.doc(change.after.data().donator)
+				.get()
+				.then(agencyDoc => {
+					const agencyDocData = agencyDoc.data();
+					if (agencyDoc && agencyDocData) {
+						if (agencyDocData.contact?.email) {
+							addresses.push(agencyDocData.contact?.email);
+						}
+
+						const admins: { uid: string }[] = [];
+
+						Object.keys(agencyDocData.admins).forEach(uid =>
+							admins.push({ uid })
+						);
+
+						return admin
+							.auth()
+							.getUsers(admins)
+							.then(getUsersResult => {
+								getUsersResult.users.forEach(userRecord => {
+									if (userRecord.email) addresses.push(userRecord.email);
+								});
+
+								mg.messages()
+									.send({
+										from: "Meal Matchup <no-reply@mealmatchup.org>",
+										to: addresses.join(", "),
+										subject: "Your request was claimed!",
+										text: body,
+									})
+									.catch(error => console.error(error));
+							});
+					} else {
+						return Promise.reject("No agency doc data");
+					}
+				})
+				.catch(error => console.error(error));
 		}
 	});
 
