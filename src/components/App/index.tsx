@@ -6,7 +6,7 @@ import {
 	MenuLocations,
 	PageIds,
 } from "../../utils/enums";
-import { Layout, Menu, PageHeader } from "antd";
+import { Badge, Layout, Menu, PageHeader } from "antd";
 import AccountView from "./AccountView";
 import { AnimatePresence } from "framer-motion";
 import AppContext from "./AppContext";
@@ -561,18 +561,41 @@ class App extends React.Component<React.ComponentProps<"div">, AppState> {
 									Meal Matchup
 								</div>
 								<Menu theme="dark" selectedKeys={[`${currentPage}`]}>
-									{Object.keys(AppPages).map(pageID => {
-										const page = AppPages[pageID];
+									{Object.keys(AppPages).map(pageId => {
+										const page = AppPages[pageId];
 										if (page.location === MenuLocations.SIDER) {
-											return (
-												<Menu.Item
-													key={page.id}
-													onClick={() => this.changeView(page.id)}
-												>
-													{page.icon && page.icon}
-													{page.title}
-												</Menu.Item>
-											);
+											if (
+												page.id === PageIds.DIRECTORY &&
+												appContext.userData?.admin === true
+											) {
+												return (
+													<Menu.Item
+														key={page.id}
+														onClick={() => this.changeView(page.id)}
+													>
+														<Badge
+															count={
+																appContext.agencies?.docs.filter(
+																	doc => !doc.data()?.approved
+																).length
+															}
+														>
+															{page.icon && page.icon}
+															{page.title}
+														</Badge>
+													</Menu.Item>
+												);
+											} else {
+												return (
+													<Menu.Item
+														key={page.id}
+														onClick={() => this.changeView(page.id)}
+													>
+														{page.icon && page.icon}
+														{page.title}
+													</Menu.Item>
+												);
+											}
 										}
 									})}
 								</Menu>
