@@ -1,3 +1,4 @@
+import { Helmet } from "react-helmet";
 import React from "react";
 import { SiteContext } from "../components/Site";
 import { graphql } from "gatsby";
@@ -23,7 +24,14 @@ class PageTemplate extends React.Component<PageTemplateProps> {
 			<SiteContext.Consumer>
 				{siteContext => (
 					<>
-						{!siteContext.isHome && <h1>{title}</h1>}
+						<Helmet>
+							<html lang="en" />
+							<title>
+								{siteContext.isHome
+									? "Meal Matchup"
+									: `${title} - Meal Matchup`}
+							</title>
+						</Helmet>
 
 						<div dangerouslySetInnerHTML={{ __html: content }} />
 					</>

@@ -3,21 +3,6 @@ import React from "react";
 import { SiteContext } from "./";
 import styled from "styled-components";
 
-const AppLink = styled(Link)`
-	border: 2px solid ${props => props.theme.colors.accent};
-	border-radius: 1em;
-	color: ${props => props.theme.colors.accent};
-	font-size: 1em;
-	font-weight: 500;
-	padding: 0.25em 0.5em;
-	transition: background-color 0.3s, color 0.3s;
-
-	&:hover {
-		background-color: ${props => props.theme.colors.accent};
-		color: ${props => props.theme.colors.background};
-	}
-`;
-
 interface SiteTitleProps {
 	logo?: string;
 }
@@ -26,35 +11,18 @@ const SiteTitle = styled("span")<SiteTitleProps>`
 	background-image: url(${props => props.logo});
 	background-repeat: no-repeat;
 	background-size: contain;
-	box-sizing: content-box;
 	display: block;
-	font-family: ${props => props.theme.fonts.heading};
-	font-size: 1em;
 	height: 4.8rem;
-	margin: 1em 0;
-	width: 35.8rem;
-`;
-
-const HeaderContent = styled("div")`
-	align-items: center;
-	display: flex;
-	justify-content: space-between;
-	margin: 0 auto;
-	max-width: ${props => props.theme.breakpoints.lg};
-	width: calc(100% - 2em);
-`;
-
-const HeaderWrapper = styled("header")`
-	background-color: ${props => props.theme.colors.background};
-	position: relative;
-	width: 100%;
+	line-height: 1;
+	margin: 0;
+	width: 11.4rem;
 `;
 
 class Header extends React.Component {
 	render() {
 		const logoQuery = graphql`
 			query HeaderLogoQuery {
-				logo: file(relativePath: { eq: "logo.png" }) {
+				fork: file(relativePath: { eq: "fork.png" }) {
 					publicURL
 				}
 			}
@@ -63,14 +31,14 @@ class Header extends React.Component {
 		return (
 			<SiteContext.Consumer>
 				{siteContext => (
-					<HeaderWrapper>
-						<HeaderContent>
-							<Link to="/">
+					<header className="site-header">
+						<div className="site-header-inner">
+							<Link to="/" className="site-logo">
 								<StaticQuery
-									query={`${logoQuery}`}
+									query={logoQuery}
 									render={data => (
 										<SiteTitle
-											logo={data.logo?.publicURL}
+											logo={data.fork?.publicURL}
 											as={siteContext.isHome ? "h1" : "span"}
 										>
 											<span className="sr-only">Meal Matchup</span>
@@ -79,9 +47,17 @@ class Header extends React.Component {
 								/>
 							</Link>
 
-							<AppLink to="/app">Log In/Sign Up</AppLink>
-						</HeaderContent>
-					</HeaderWrapper>
+							<nav className="site-header-nav">
+								<Link to="/about">About</Link>
+							</nav>
+
+							<div className="app-link-container">
+								<Link className="btn special" to="/app">
+									Log In →
+								</Link>
+							</div>
+						</div>
+					</header>
 				)}
 			</SiteContext.Consumer>
 		);

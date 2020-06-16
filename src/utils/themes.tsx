@@ -16,8 +16,8 @@ export const siteTheme: DefaultTheme = {
 	},
 
 	fonts: {
-		heading: "Roboto Slab, serif",
-		copy: "Roboto, sans-serif",
+		heading: "Nunito Sans, sans-serif",
+		copy: "Nunito Sans, sans-serif",
 	},
 };
 

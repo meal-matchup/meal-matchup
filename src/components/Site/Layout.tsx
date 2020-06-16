@@ -1,9 +1,7 @@
-import { Footer, GlobalStyle, Header, Navbar } from "./";
-import styled, { ThemeProvider } from "styled-components";
+import { Footer, GlobalStyle, Header, SiteContext } from "./";
 import React from "react";
+import { ThemeProvider } from "styled-components";
 import { siteTheme } from "../../utils/themes";
-
-const MainWrapper = styled("main")``;
 
 interface LayoutProps {
 	children?: React.ReactNode;
@@ -14,17 +12,21 @@ class Layout extends React.Component<LayoutProps> {
 		const { children } = this.props;
 
 		return (
-			<ThemeProvider theme={siteTheme}>
-				<GlobalStyle />
+			<SiteContext.Consumer>
+				{siteContext => (
+					<ThemeProvider theme={siteTheme}>
+						<div className={`site ${siteContext.isHome ? "home" : "page"}`}>
+							<GlobalStyle />
 
-				<Header />
+							<Header />
 
-				<Navbar />
+							<main className="site-main">{children}</main>
 
-				<MainWrapper>{children}</MainWrapper>
-
-				<Footer />
-			</ThemeProvider>
+							<Footer />
+						</div>
+					</ThemeProvider>
+				)}
+			</SiteContext.Consumer>
 		);
 	}
 }

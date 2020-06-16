@@ -19,13 +19,31 @@ const GlobalStyle = createGlobalStyle`
 	h5,
 	h6 {
 		font-family: ${props => props.theme.fonts.heading};
+		font-size: 150%;
+		font-style: italic;
+		font-weight: 800;
 		line-height: 1;
 		margin: 1em 0 0.5em;
 	}
 
+	h1 {
+		font-size: 5.6rem;
+	}
+
+	h2 {
+		font-size: 4.4rem;
+	}
+
 	p {
-		line-height: 1.6;
+		font-size: 1.8rem;
+		line-height: 1.666;
 		margin: 0 0 1em;
+	}
+
+	ul,
+	ol {
+		font-size: 1.8rem;
+		line-height: 1.666;
 	}
 
 	.sr-only {

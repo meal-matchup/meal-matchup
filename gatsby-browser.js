@@ -3,6 +3,12 @@ require("firebase/app");
 require("firebase/auth");
 require("firebase/firestore");
 
+// Require fonts
+require("fontsource-nunito-sans");
+
+// Require site styles
+require("./src/styles/site.less");
+
 // Require ant design on all pages
 require("antd/dist/antd.less");
 
