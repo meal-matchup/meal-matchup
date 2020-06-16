@@ -3,7 +3,7 @@ import {
 	AgencyTypes,
 	RequestTypes,
 } from "../../../utils/enums";
-import { Button, Descriptions } from "antd";
+import { Button, Descriptions, Popconfirm, message } from "antd";
 import { formGoogleMapsUrl, isSameDate } from "../../../utils/functions";
 import ClaimRequestDrawer from "./ClaimRequestDrawer";
 import Debug from "debug";
@@ -44,6 +44,7 @@ class ExistingRequestDrawer extends React.Component<
 		this.toggleClaimRequestDrawer = this.toggleClaimRequestDrawer.bind(this);
 		this.toggleFoodLogDrawer = this.toggleFoodLogDrawer.bind(this);
 		this.resetSnapshots = this.resetSnapshots.bind(this);
+		this.deleteRequest = this.deleteRequest.bind(this);
 
 		this.state = {
 			claiming: false,
@@ -83,6 +84,18 @@ class ExistingRequestDrawer extends React.Component<
 	/** Toggles the food log drawer */
 	toggleFoodLogDrawer() {
 		this.setState({ editingFoodLog: !this.state.editingFoodLog });
+	}
+
+	/** Deletes the current request series */
+	deleteRequest() {
+		const { request } = this.props;
+
+		if (!request) return;
+
+		request.ref.update({ deleted: true }).then(() => {
+			message.success("Deleted request series");
+			this.onClose();
+		});
 	}
 
 	/** Sets the state mounted to true when mounted */
@@ -283,15 +296,22 @@ class ExistingRequestDrawer extends React.Component<
 						// Donators can delete their requests
 						return [
 							...defaultFooter,
-							<Button
+							<Popconfirm
 								key="delete"
-								type="primary"
-								danger
-								disabled={!agency.data()?.approved}
-								style={buttonStyles}
+								placement="topRight"
+								title="Delete this request series?"
+								onConfirm={this.deleteRequest}
+								okText="Delete"
 							>
-								Delete
-							</Button>,
+								<Button
+									type="primary"
+									danger
+									disabled={!agency.data()?.approved}
+									style={buttonStyles}
+								>
+									Delete
+								</Button>
+							</Popconfirm>,
 						];
 
 					default:

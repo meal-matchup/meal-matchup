@@ -92,6 +92,7 @@ class NewRequestDrawer extends React.Component<
 				from: dates[0].toDate(),
 				to: dates[1].toDate(),
 			},
+			deleted: false,
 			donator: agencyId,
 			deliverer: AgencyTypes.ANY,
 			receiver: AgencyTypes.ANY,

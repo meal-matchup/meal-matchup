@@ -157,6 +157,7 @@ export type Request = {
 		from: firebase.firestore.Timestamp | Date;
 		to: firebase.firestore.Timestamp | Date;
 	};
+	deleted: boolean;
 	deliverer: string;
 	deliverers?: AgencyUser[];
 	donator: string;

@@ -56,6 +56,7 @@ export const createKeyAndEmailUser = functions.pubsub
 			.firestore()
 			.collection("requests")
 			.where("dates.to", ">=", yesterday)
+			.where("deleted", "==", false)
 			.get()
 			.then(snapshot => {
 				console.log("today", today);
