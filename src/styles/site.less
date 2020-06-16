@@ -244,6 +244,7 @@ img {
 	@media (min-width: @bp-md) {
 		margin-left: 1.6rem;
 		margin-right: 1.6rem;
+		width: 30%;
 
 		&:first-child {
 			margin-left: 0;
@@ -271,6 +272,19 @@ img {
 	}
 }
 
+.wp-block-button__link {
+	border-radius:15px;
+	width: 50%;
+	padding: .5em;
+}
+
+.wp-block-button {
+	background-color:pink;
+	border-radius:15px;
+	padding: .5em;
+	color: black;
+}
+
 .wp-block-columns {
 	margin-left: auto;
 	margin-right: auto;
@@ -279,11 +293,13 @@ img {
 	@media (min-width: @bp-md) {
 		align-items: flex-start;
 		display: flex;
+		justify-content: center;
 	}
 
 	&.alignfull {
 		@media (min-width: @bp-md) {
 			padding: 2em;
+			width: 75%;
 		}
 	}
 }
