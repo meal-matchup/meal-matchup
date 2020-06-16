@@ -413,7 +413,7 @@ class App extends React.Component<React.ComponentProps<"div">, AppState> {
 						break;
 				}
 			} else if (this.state.userData.admin === true) {
-				// Adminns can see all requests in the same umbrella
+				// Admins can see all requests in the same umbrella
 				this.requestsSnapshot = firebase
 					.firestore()
 					.collection("requests")
