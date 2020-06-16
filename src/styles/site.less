@@ -274,15 +274,21 @@ img {
 
 .wp-block-button__link {
 	border-radius:15px;
-	width: 50%;
 	padding: .5em;
 }
 
-.wp-block-button {
-	background-color:pink;
+.wp-block-button { // border color right?
+	border: .2em solid darken(@c4, 15%);
 	border-radius:15px;
+	text-align: center;
+	width: 50%;
+	margin-left: auto;
+	margin-right: auto;
 	padding: .5em;
-	color: black;
+
+	&:hover {
+		border-color: @c4;
+	}
 }
 
 .wp-block-columns {
