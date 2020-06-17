@@ -542,6 +542,61 @@ Meal Matchup`;
 	});
 
 /**
+ * When a new agency is added, notify the umbrella admin so that they can
+ * approve or not.
+ */
+export const agencyCreated = functions.firestore
+	.document("agences/{agencyId}")
+	.onCreate(doc => {
+		const umbrella = doc.data().umbrella;
+
+		admin
+			.firestore()
+			.collection("users")
+			.where("umbrella", "==", umbrella)
+			.get()
+			.then(snapshot => {
+				const uids: { uid: string }[] = [];
+				snapshot.docs.forEach(userDoc => uids.push({ uid: userDoc.id }));
+
+				admin
+					.auth()
+					.getUsers(uids)
+					.then(getUsersResult => {
+						const addresses: string[] = [];
+
+						getUsersResult.users.forEach(userRecord => {
+							if (userRecord.email) addresses.push();
+						});
+
+						if (addresses.length > 0) {
+							return mg
+								.messages()
+								.send({
+									to: addresses.join(", "),
+									from: "Meal Matchup <no-reply@mealmatchup.org>",
+									subject: "A new agency joined Meal Matchup!",
+									text: `Howdy!
+
+A new agency has joined Meal Matchup!
+
+You can view and approve this agency by logging in at https://www.mealmatchup.org/app
+
+Thanks, and stay safe!
+Meal Matchup
+`,
+								})
+								.catch(error => console.error(error));
+						} else {
+							return Promise.reject("No admins");
+						}
+					})
+					.catch(error => console.error(error));
+			})
+			.catch(error => console.error(error));
+	});
+
+/**
  * When an entry is made from a one-off link, create an actual log
  * in the database and reference it in the request and occurrence
  */
