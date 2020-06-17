@@ -21,7 +21,7 @@ const serviceAccount = functions.config().sk;
 /** Initialize the app using the service account in our env variables */
 admin.initializeApp({
 	credential: admin.credential.cert(serviceAccount),
-	databaseURL: "https://meal-matchup-development.firebaseio.com",
+	databaseURL: functions.config().fb.dburl,
 });
 
 // The domain we use for mailgun
