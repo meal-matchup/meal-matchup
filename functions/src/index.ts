@@ -56,15 +56,15 @@ export const createKeyAndEmailUser = functions.pubsub
 			.where("dates.to", ">=", yesterday)
 			.where("deleted", "==", false)
 			.get()
-			.then(snapshot => {
+			.then((snapshot) => {
 				console.log("today", today);
-				snapshot.docs.forEach(doc => {
+				snapshot.docs.forEach((doc) => {
 					doc.ref
 						.collection("occurrences")
 						.where("date", ">=", yesterday)
 						.get()
-						.then(ocSnapshot => {
-							ocSnapshot.docs.forEach(ocDoc => {
+						.then((ocSnapshot) => {
+							ocSnapshot.docs.forEach((ocDoc) => {
 								if (ocDoc && !ocDoc.data().complete) {
 									const ocDate = ocDoc.data().date.toDate();
 									console.log(today, ocDate);
@@ -98,10 +98,10 @@ export const createKeyAndEmailUser = functions.pubsub
 
 											admin
 												.firestore()
-												.runTransaction(transaction => {
+												.runTransaction((transaction) => {
 													return transaction
 														.get(donatorRef)
-														.then(donatorDoc => {
+														.then((donatorDoc) => {
 															keyData.donatorInfo = {
 																address: { ...donatorDoc.data()?.address },
 																phone: donatorDoc.data()?.phone,
@@ -133,11 +133,11 @@ Meal Matchup`,
 
 															mg.messages()
 																.send(donatorMailData)
-																.catch(error => console.error(error));
+																.catch((error) => console.error(error));
 
 															return transaction
 																.get(receiverRef)
-																.then(receiverDoc => {
+																.then((receiverDoc) => {
 																	keyData.receiverInfo = {
 																		address: { ...receiverDoc.data()?.address },
 																		phone: receiverDoc.data()?.phone,
@@ -172,7 +172,7 @@ Meal Matchup`,
 
 																	mg.messages()
 																		.send(receiverMailData)
-																		.catch(error => console.error(error));
+																		.catch((error) => console.error(error));
 																});
 														});
 												})
@@ -209,11 +209,11 @@ Meal Matchup`,
 
 															mg.messages()
 																.send(mailData)
-																.catch(error => console.error(error));
+																.catch((error) => console.error(error));
 														})
-														.catch(error => console.error(error));
+														.catch((error) => console.error(error));
 												})
-												.catch(error => console.error(error));
+												.catch((error) => console.error(error));
 
 											break;
 										}
@@ -221,10 +221,10 @@ Meal Matchup`,
 								}
 							});
 						})
-						.catch(error => console.error(error));
+						.catch((error) => console.error(error));
 				});
 			})
-			.catch(error => console.error(error));
+			.catch((error) => console.error(error));
 	});
 
 /**
@@ -258,7 +258,7 @@ export const scheduledFirestoreExport = functions.pubsub
  */
 export const newRequestCreated = functions.firestore
 	.document("requests/{requestId}")
-	.onCreate(newDoc => {
+	.onCreate((newDoc) => {
 		console.log("new doc", newDoc);
 		console.log("new doc dates", newDoc.data().dates);
 		if (newDoc.data().deliverer === "ANY") {
@@ -269,22 +269,22 @@ export const newRequestCreated = functions.firestore
 				.where("umbrella", "==", newDoc.data().umbrella)
 				.where("type", "==", "DELIVERER")
 				.get()
-				.then(snapshot => {
+				.then((snapshot) => {
 					console.log("got snapshot");
 					const uids: { uid: string }[] = [];
 
-					snapshot.docs.forEach(doc => {
-						Object.keys(doc.data().admins).forEach(uid => uids.push({ uid }));
+					snapshot.docs.forEach((doc) => {
+						Object.keys(doc.data().admins).forEach((uid) => uids.push({ uid }));
 					});
 
 					console.log("got uids", uids);
 
 					return admin.auth().getUsers(uids);
 				})
-				.then(getUsersResult => {
+				.then((getUsersResult) => {
 					const addresses: string[] = [];
 
-					getUsersResult.users.forEach(userRecord => {
+					getUsersResult.users.forEach((userRecord) => {
 						if (userRecord.email) addresses.push(userRecord.email);
 					});
 
@@ -296,7 +296,7 @@ export const newRequestCreated = functions.firestore
 						} = {};
 
 						addresses.forEach(
-							address => (recipientVariables[address] = { uid: uniqid() })
+							(address) => (recipientVariables[address] = { uid: uniqid() })
 						);
 
 						console.log("recipient variables", recipientVariables);
@@ -335,10 +335,10 @@ Meal Matchup
 `,
 								"recipient-variables": JSON.stringify({}),
 							})
-							.catch(error => console.error(error));
+							.catch((error) => console.error(error));
 					}
 				})
-				.catch(e => {
+				.catch((e) => {
 					debug(e);
 					console.error(e);
 				});
@@ -351,19 +351,19 @@ Meal Matchup
 				.where("umbrella", "==", newDoc.data().umbrella)
 				.where("type", "==", "RECEIVER")
 				.get()
-				.then(snapshot => {
+				.then((snapshot) => {
 					const uids: { uid: string }[] = [];
 
-					snapshot.docs.forEach(doc => {
-						Object.keys(doc.data().admins).forEach(uid => uids.push({ uid }));
+					snapshot.docs.forEach((doc) => {
+						Object.keys(doc.data().admins).forEach((uid) => uids.push({ uid }));
 					});
 
 					return admin.auth().getUsers(uids);
 				})
-				.then(getUsersResult => {
+				.then((getUsersResult) => {
 					const addresses: string[] = [];
 
-					getUsersResult.users.forEach(userRecord => {
+					getUsersResult.users.forEach((userRecord) => {
 						if (userRecord.email) addresses.push(userRecord.email);
 					});
 
@@ -373,7 +373,7 @@ Meal Matchup
 						} = {};
 
 						addresses.forEach(
-							address => (recipientVariables[address] = { uid: uniqid() })
+							(address) => (recipientVariables[address] = { uid: uniqid() })
 						);
 
 						mg.messages()
@@ -410,10 +410,10 @@ Meal Matchup
 `,
 								"recipient-variables": JSON.stringify({}),
 							})
-							.catch(error => console.error(error));
+							.catch((error) => console.error(error));
 					}
 				})
-				.catch(e => {
+				.catch((e) => {
 					debug(e);
 					console.error(e);
 				});
@@ -422,7 +422,7 @@ Meal Matchup
 
 export const requestUpdated = functions.firestore
 	.document("requests/{requestId}")
-	.onUpdate(change => {
+	.onUpdate((change) => {
 		if (
 			change.after.data().deliverer !== "ANY" &&
 			change.before.data().deliverer !== change.after.data().deliverer
@@ -444,7 +444,7 @@ Meal Matchup`;
 				.collection("agencies")
 				.doc(change.after.data().donator)
 				.get()
-				.then(agencyDoc => {
+				.then((agencyDoc) => {
 					const agencyDocData = agencyDoc.data();
 					if (agencyDoc && agencyDocData) {
 						if (agencyDocData.contact?.email) {
@@ -453,15 +453,15 @@ Meal Matchup`;
 
 						const admins: { uid: string }[] = [];
 
-						Object.keys(agencyDocData.admins).forEach(uid =>
+						Object.keys(agencyDocData.admins).forEach((uid) =>
 							admins.push({ uid })
 						);
 
 						return admin
 							.auth()
 							.getUsers(admins)
-							.then(getUsersResult => {
-								getUsersResult.users.forEach(userRecord => {
+							.then((getUsersResult) => {
+								getUsersResult.users.forEach((userRecord) => {
 									if (userRecord.email) addresses.push(userRecord.email);
 								});
 
@@ -472,13 +472,13 @@ Meal Matchup`;
 										subject: "Your request was claimed!",
 										text: body,
 									})
-									.catch(error => console.error(error));
+									.catch((error) => console.error(error));
 							});
 					} else {
 						return Promise.reject("No agency doc data");
 					}
 				})
-				.catch(error => console.error(error));
+				.catch((error) => console.error(error));
 		}
 
 		if (
@@ -501,7 +501,7 @@ Meal Matchup`;
 				.collection("agencies")
 				.doc(change.after.data().donator)
 				.get()
-				.then(agencyDoc => {
+				.then((agencyDoc) => {
 					const agencyDocData = agencyDoc.data();
 					if (agencyDoc && agencyDocData) {
 						if (agencyDocData.contact?.email) {
@@ -510,15 +510,15 @@ Meal Matchup`;
 
 						const admins: { uid: string }[] = [];
 
-						Object.keys(agencyDocData.admins).forEach(uid =>
+						Object.keys(agencyDocData.admins).forEach((uid) =>
 							admins.push({ uid })
 						);
 
 						return admin
 							.auth()
 							.getUsers(admins)
-							.then(getUsersResult => {
-								getUsersResult.users.forEach(userRecord => {
+							.then((getUsersResult) => {
+								getUsersResult.users.forEach((userRecord) => {
 									if (userRecord.email) addresses.push(userRecord.email);
 								});
 
@@ -529,13 +529,13 @@ Meal Matchup`;
 										subject: "Your request was claimed!",
 										text: body,
 									})
-									.catch(error => console.error(error));
+									.catch((error) => console.error(error));
 							});
 					} else {
 						return Promise.reject("No agency doc data");
 					}
 				})
-				.catch(error => console.error(error));
+				.catch((error) => console.error(error));
 		}
 	});
 
@@ -545,7 +545,7 @@ Meal Matchup`;
  */
 export const agencyCreated = functions.firestore
 	.document("agences/{agencyId}")
-	.onCreate(doc => {
+	.onCreate((doc) => {
 		const umbrella = doc.data().umbrella;
 
 		admin
@@ -553,17 +553,17 @@ export const agencyCreated = functions.firestore
 			.collection("users")
 			.where("umbrella", "==", umbrella)
 			.get()
-			.then(snapshot => {
+			.then((snapshot) => {
 				const uids: { uid: string }[] = [];
-				snapshot.docs.forEach(userDoc => uids.push({ uid: userDoc.id }));
+				snapshot.docs.forEach((userDoc) => uids.push({ uid: userDoc.id }));
 
 				admin
 					.auth()
 					.getUsers(uids)
-					.then(getUsersResult => {
+					.then((getUsersResult) => {
 						const addresses: string[] = [];
 
-						getUsersResult.users.forEach(userRecord => {
+						getUsersResult.users.forEach((userRecord) => {
 							if (userRecord.email) addresses.push();
 						});
 
@@ -584,14 +584,14 @@ Thanks, and stay safe!
 Meal Matchup
 `,
 								})
-								.catch(error => console.error(error));
+								.catch((error) => console.error(error));
 						} else {
 							return Promise.reject("No admins");
 						}
 					})
-					.catch(error => console.error(error));
+					.catch((error) => console.error(error));
 			})
-			.catch(error => console.error(error));
+			.catch((error) => console.error(error));
 	});
 
 /**
@@ -600,7 +600,7 @@ Meal Matchup
  */
 export const keyLogMade = functions.firestore
 	.document("keys/{keyId}")
-	.onUpdate(change => {
+	.onUpdate((change) => {
 		if (
 			change.after.data().complete &&
 			change.after.data().items &&

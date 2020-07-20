@@ -82,7 +82,6 @@
 					{ "avoidEscape": true }
 				],
 				"prettier/prettier": "warn",
-				"react/prop-types": "warn",
 				"no-unused-vars": "warn",
 				"sort-imports": "warn"
 			}
