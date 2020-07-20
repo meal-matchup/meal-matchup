@@ -1,5 +1,3 @@
-"use strict";
-
 import admin = require("firebase-admin");
 import Debug = require("debug");
 import firestore = require("@google-cloud/firestore");

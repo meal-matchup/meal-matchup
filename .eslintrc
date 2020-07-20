@@ -3,7 +3,20 @@
 		{
 			"files": ["**/*.js"],
 			"excludedFiles": ["./functions/*"],
-			"extends": "react-app"
+			"extends": "react-app",
+			"rules": {
+				"strict": 1,
+				"no-console": "warn",
+				"quotes": [
+					"warn",
+					"double",
+					{ "avoidEscape": true }
+				],
+				"prettier/prettier": "warn",
+				"react/prop-types": "warn",
+				"no-unused-vars": "warn",
+				"sort-imports": "warn"
+			}
 		},
 		{
 			"files": ["**/*.ts", "**/*.tsx"],
@@ -22,11 +35,12 @@
 				"es6": true
 			},
 			"rules": {
-				"strict": 0,
+				"strict": 1,
 				"no-console": "warn",
 				"quotes": [
 					"warn",
-					"double"
+					"double",
+					{ "avoidEscape": true }
 				],
 				"prettier/prettier": "warn",
 				"react/prop-types": "warn",
@@ -60,7 +74,17 @@
 				"ecmaVersion": 2017
 			},
 			"rules": {
-				"no-console": "off"
+				"strict": 1,
+				"no-console": "off",
+				"quotes": [
+					"warn",
+					"double",
+					{ "avoidEscape": true }
+				],
+				"prettier/prettier": "warn",
+				"react/prop-types": "warn",
+				"no-unused-vars": "warn",
+				"sort-imports": "warn"
 			}
 		}
 	]
