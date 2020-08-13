@@ -1,4 +1,5 @@
 import { Link, StaticQuery, graphql } from "gatsby";
+import Nav from "./Nav";
 import React from "react";
 import { SiteContext } from "./";
 import styled from "styled-components";
@@ -33,7 +34,7 @@ class Header extends React.Component {
 				{siteContext => (
 					<header className="site-header">
 						<div className="site-header-inner">
-							<Link to="/" className="site-logo">
+							<Link to="/" className="special site-logo">
 								<StaticQuery
 									query={logoQuery}
 									render={data => (
@@ -47,9 +48,7 @@ class Header extends React.Component {
 								/>
 							</Link>
 
-							<nav className="site-header-nav">
-								<Link to="/about">About</Link>
-							</nav>
+							<Nav />
 
 							<div className="app-link-container">
 								<Link className="btn special" to="/app">

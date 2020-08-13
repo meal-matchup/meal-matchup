@@ -29,7 +29,9 @@ module.exports = {
 		{
 			resolve: "gatsby-plugin-less",
 			options: {
-				javascriptEnabled: true,
+				lessOptions: {
+					javascriptEnabled: true,
+				},
 			},
 		},
 		{
@@ -54,7 +56,11 @@ module.exports = {
 				baseUrl: "depts.washington.edu/mealmatchup",
 				protocol: "https",
 				hostingWPCOM: false,
-				useACT: false,
+				useACF: false,
+				includedRoutes: [
+					"**/pages",
+					"**/media",
+				],
 			},
 		},
 		{

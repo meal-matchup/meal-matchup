@@ -16,10 +16,10 @@
 
 @bp-md: 767px;
 @content: 640px;
-@content-wide: 960px;
+@content-wide: 1200px;
+@col-size: 5;
 
 // Styles
-
 .subtitle {
 	font-size: 1.4em;
 	font-style: italic;
@@ -29,6 +29,18 @@
 
 .site-logo {
 	margin: 1em 0;
+}
+
+.site-header-nav {
+	display: none;
+
+	a {
+		margin: 0 1em;
+	}
+
+	@media (min-width: @bp-md) {
+		display: block;
+	}
 }
 
 .site-header-inner {
@@ -62,7 +74,8 @@
 	p,
 	ul,
 	ol,
-	figcaption {
+	figcaption,
+	blockquote {
 		margin-left: auto;
 		margin-right: auto;
 		max-width: @content;
@@ -70,10 +83,64 @@
 	}
 }
 
+.footer-logos-row {
+	display: grid;
+	grid-template-columns: 1fr;
+
+	& > a {
+		align-items: center;
+		display: flex;
+		justify-content: center;
+		padding: 1em 0;
+		width: 100%;
+
+		@media (min-width: @bp-md) {
+			grid-column: auto / span @col-size;
+			padding: 1em;
+		}
+	}
+
+	.logo {
+		height: auto;
+		width: 100%;
+	}
+
+	&:nth-child(2) {
+		& > a:first-child {
+			@media (min-width: @bp-md) {
+				grid-column: 2 / span @col-size;
+			}
+		}
+	}
+
+	@media (min-width: @bp-md) {
+		grid-template-columns: repeat(@col-size * 3 + 1, 1fr);
+	}
+}
+
+.footer-logos {
+	margin: 0 auto;
+	max-width: @content-wide;
+	padding: 2em;
+}
+
 .site-footer {
 	background-color: @c1;
 	color: @c1-copy;
 	overflow: auto;
+
+	a {
+		color: inherit;
+	}
+
+	p {
+		padding: 0 2em;
+
+		@media (min-width: @bp-md) {
+			padding: 0 2em 2em;
+			text-align: center;
+		}
+	}
 }
 
 .site {
@@ -85,11 +152,13 @@
 		}
 	}
 
-	a:not(.btn) {
+	a:not(.btn):not(.special) {
+		border-bottom: 1px solid rgba(darken(@c4, 25%), 0.25);
 		color: darken(@c4, 25%);
 		transition: 0.15s;
 
 		&:hover {
+			border-bottom-color: darken(@c4, 15%);
 			color: darken(@c4, 15%);
 		}
 	}
@@ -140,8 +209,8 @@ img {
 .wp-block-image {
 	margin-bottom: 2em;
 	position: relative;
-	width: 75%;
-    margin: auto;
+	width: 100%;
+	margin: auto;
 
 	&.alignwide,
 	&.alignfull {
@@ -177,6 +246,10 @@ img {
 		font-style: italic;
 		font-weight: 700;
 		line-height: 1.4;
+
+		&:last-child {
+			margin-bottom: 0;
+		}
 	}
 
 	.btn {
@@ -187,7 +260,7 @@ img {
 .wp-block-cover {
 	background-size: cover;
 	height: 0;
-	padding-bottom: calc(9 / 16 * 100%);
+	padding-bottom: 100%;
 	position: relative;
 	width: 100%;
 
@@ -211,7 +284,7 @@ img {
 	}
 
 	@media (min-width: @bp-md) {
-		padding-bottom: 50%;
+		padding-bottom: 30%;
 	}
 
 	&.has-parallax {
@@ -246,7 +319,6 @@ img {
 	@media (min-width: @bp-md) {
 		margin-left: 1.6rem;
 		margin-right: 1.6rem;
-		width: 30%;
 
 		&:first-child {
 			margin-left: 0;
@@ -264,7 +336,8 @@ img {
 		h6,
 		p,
 		ul,
-		ol {
+		ol,
+		blockquote {
 			width: 100%;
 		}
 
@@ -306,16 +379,10 @@ img {
 
 	&.alignfull {
 		@media (min-width: @bp-md) {
+			max-width: @content-wide;
 			padding: 2em;
-			width: 75%;
 		}
 	}
-}
-
-.svg-inline--fa {
-	width: 75%;
-	height: 8rem;
-	margin: auto;
 }
 
 .alignfull {
