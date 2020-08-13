@@ -5,13 +5,13 @@ require("firebase/firestore");
 
 // Require fonts
 require("fontsource-nunito-sans");
-
-// Require site styles
-require("./src/styles/site.less");
+require("fontsource-playfair-display");
 
 // Require ant design on all pages
 require("antd/dist/antd.less");
 
+// Require site styles
+require("./src/styles/site.less");
 
 // Set up wrapping
 export const wrapPageElement = require("./src/utils/wrapPageElement").default;
