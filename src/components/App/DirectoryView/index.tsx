@@ -43,6 +43,12 @@ class DirectoryView extends React.Component<
 										</Select.Option>
 									)
 							)}
+
+							{appContext.userData?.admin === true && (
+								<Select.Option value="unapproved">
+									Pending Agencies
+								</Select.Option>
+							)}
 						</Select>
 
 						{appContext.agencies && (
@@ -52,11 +58,16 @@ class DirectoryView extends React.Component<
 									.map(agency => {
 										if (
 											filter === AgencyTypes.ANY ||
-											agency.data().type === filter
+											agency.data().type === filter ||
+											(appContext.userData?.admin === true &&
+												filter === "unapproved" &&
+												agency.data().approved !== true)
 										) {
 											return (
 												<List.Item key={agency.id}>
 													<DirectoryCard
+														approved={agency.data()?.approved}
+														id={agency.id}
 														name={agency.data()?.name}
 														type={agency.data()?.type}
 														contact={agency.data()?.contact}

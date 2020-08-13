@@ -74,7 +74,8 @@ service cloud.firestore {
 						(
 							request.resource.data.deliverer == "ANY" ||
 							exists(/databases/$(database)/documents/agencies/$(request.resource.data.deliverer))
-						)
+						) &&
+						request.resource.data.deleted == false
 					)
 				);
 			allow update: if request.auth != null &&

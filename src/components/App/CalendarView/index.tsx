@@ -142,8 +142,14 @@ class CalendarView extends React.Component<
 							status = "success";
 						}
 
+						if (request.data().deleted === true && status !== "success")
+							return null;
+
 						return (
-							<li key={request.id}>
+							<li
+								key={request.id}
+								style={{ opacity: request.data()?.deleted ? 0.5 : 1 }}
+							>
 								<Button
 									type="link"
 									onClick={() => this.openExistingRequestDrawer(request)}
@@ -188,7 +194,7 @@ class CalendarView extends React.Component<
 	 * @param request A firebase query document snapshot
 	 */
 	openExistingRequestDrawer(request: firebase.firestore.QueryDocumentSnapshot) {
-		if (request) {
+		if (request && !request.data().deleted) {
 			this.setState({
 				currentRequest: request,
 				existingRequestDrawerOpen: true,
