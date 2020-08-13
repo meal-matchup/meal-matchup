@@ -184,3 +184,7 @@ export type FoodLogEntry = {
 	donatorSignature?: string;
 	receiverSignature?: string;
 };
+
+export interface SiteContextInterface {
+	isHome: boolean;
+}

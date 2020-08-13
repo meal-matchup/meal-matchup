@@ -5,7 +5,7 @@ require("dotenv").config({
 
 const {
 	NODE_ENV,
-	URL: NETLIFY_SITE_URL = "https://www.mmuw.xyz",
+	URL: NETLIFY_SITE_URL = "https://www.mealmatchup.org",
 	DEPLOY_PRIME_URL: NETLIFY_DEPLOY_URL = NETLIFY_SITE_URL,
 	CONTEXT: NETLIFY_ENV = NODE_ENV,
 } = process.env;
@@ -29,7 +29,9 @@ module.exports = {
 		{
 			resolve: "gatsby-plugin-less",
 			options: {
-				javascriptEnabled: true,
+				lessOptions: {
+					javascriptEnabled: true,
+				},
 			},
 		},
 		{
@@ -46,6 +48,26 @@ module.exports = {
 						process.env[`${firebasePrefix}_FIREBASE_MESSAGING_SENDER_ID`],
 					appId: process.env[`${firebasePrefix}_FIREBASE_APP_ID`],
 				},
+			},
+		},
+		{
+			resolve: "gatsby-source-wordpress",
+			options: {
+				baseUrl: "depts.washington.edu/mealmatchup",
+				protocol: "https",
+				hostingWPCOM: false,
+				useACF: false,
+				includedRoutes: [
+					"**/pages",
+					"**/media",
+				],
+			},
+		},
+		{
+			resolve: "gatsby-source-filesystem",
+			options: {
+				name: "graphics",
+				path: `${__dirname}/src/graphics/`,
 			},
 		},
 		{

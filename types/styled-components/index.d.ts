@@ -7,12 +7,23 @@ import "styled-components";
 declare module "styled-components" {
 	export interface DefaultTheme {
 		breakpoints: {
-			xs: string;
+			xs?: string;
 			sm: string;
 			md: string;
 			lg: string;
 			xl: string;
-			xxl: string;
+			xxl?: string;
+		};
+
+		colors: {
+			accent: string;
+			background: string;
+			copy: string;
+		};
+
+		fonts: {
+			copy: string;
+			heading: string;
 		};
 	}
 }
