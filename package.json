@@ -36,7 +36,7 @@
 		"gatsby-plugin-manifest": "^2.4.23",
 		"gatsby-plugin-react-helmet": "^3.3.10",
 		"gatsby-plugin-sass": "^2.3.12",
-		"gatsby-source-wordpress": "^3.3.28",
+		"gatsby-source-wordpress": "^4.0.8",
 		"less": "^3.12.2",
 		"moment": "^2.27.0",
 		"node-sass": "^4.14.1",
