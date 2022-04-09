@@ -20,7 +20,7 @@
 		"firebase-admin": "^8.12.1",
 		"firebase-functions": "^3.7.0",
 		"mailgun-js": "^0.22.0",
-		"moment": "^2.26.0",
+		"moment": "^2.29.2",
 		"moment-timezone": "^0.5.31",
 		"twilio": "^3.46.0",
 		"uniqid": "^5.2.0"
